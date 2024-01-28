@@ -1,9 +1,15 @@
 // Settings.tsx
+import { useRouter } from 'next/router';
 import React from 'react';
 
 
-export default function Settings() {
 
+export default function Settings() {
+    const router = useRouter()
+    const handleStart = () => {
+        // 시작하기 버튼을 누르면 settings.tsx로 이동
+        router.push('/writer');
+    };
 
     return (
         <div className="flex flex-col w-[1440px]">
@@ -56,7 +62,7 @@ export default function Settings() {
                                             <button className='w-[82px] h-[40px] border-1 border-black rounded-lg bg-white'>00시간</button><a className='my-auto'>동안</a>
                                         </div>
                                     </div>
-                                    <button className='rounded-xl mx-auto mt-[30px] w-[386px] h-[42px] bg-black text-white'>글쓰기 도전 시작</button>
+                                    <button className='rounded-xl mx-auto mt-[30px] w-[386px] h-[42px] bg-black text-white' onClick={handleStart}>글쓰기 도전 시작</button>
                                 </div>
                             </div>
                         </div>

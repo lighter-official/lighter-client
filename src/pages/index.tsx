@@ -4,7 +4,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useNavigate } from 'react-router-dom';
 import "./globals.css";
 import axios from 'axios';
-import Settings from './settings';
+import Settings from './text-setting';
 
 
 // const Login = () => {
@@ -115,7 +115,7 @@ export default function Home() {
   const router = useRouter()
   const handleClick = () => {
     // 시작하기 버튼을 누르면 settings.tsx로 이동
-    router.push('/settings');
+    router.push('/text-setting');
   };
   return (
     <div className="flex flex-col w-[1440px]">
