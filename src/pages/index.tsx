@@ -118,21 +118,22 @@ export default function Home() {
     router.push('/text-setting');
   };
   return (
-    <div className="flex flex-col w-[1440px]">
+    <div className="flex flex-col my-[50px] w-full">
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
-      <div className='flex flex-row mx-[45px] w-full'>
-        <div className='flex flex-col w-full mx-[20px] mt-[20px]'>
-          <img className="w-[105px] h-[35px] mb-[20px]" src="image/logo.svg" alt="Logo" /><Redirection />
+      <div className='flex flex-row mx-auto w-full'>
+        <div className='flex flex-col w-full mx-[120px]'>
+          <img className="w-[105px] h-[35px] mb-[20px]" src="image/logo.svg" alt="Logo" />
+          {/* <Redirection /> */}
           <hr className='bg-[#7C766C] w-full h-[2px]' />
-          <div className='flex flex-row justify-between'>
-            <div className='w-[368px] h-[264px] mt-[265px] border-1'>
+          <div className='flex my-[90px] flex-row justify-between'>
+            <div className='w-[368px] h-[264px] my-auto border-1'>
               <div className='mb-[20px] text-[44px]'>
                 <a className='font-bold'>글로</a>
                 <br />시작하는
                 <br /><a className='font-bold'>우리</a>의 이야기</div>
               <button className='rounded-xl w-[200px] h-[42px] bg-black text-orange-500' onClick={handleClick}>시작하기</button>
             </div>
-            <div className='flex mt-[30px] items-end w-[876px] h-[657px] border-1'>
+            <div className='flex items-end w-[876px] h-[657px] border-1'>
               <img className="w-[875px] h-[657px]" src="image/badges.svg" alt="Badges" />
             </div>
           </div>
