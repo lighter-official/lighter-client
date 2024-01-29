@@ -122,8 +122,15 @@ export default function Home() {
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
       <div className='flex flex-row mx-auto w-full'>
         <div className='flex flex-col w-full mx-[120px]'>
-          <img className="w-[105px] h-[35px] mb-[20px]" src="image/logo.svg" alt="Logo" />
+
           {/* <Redirection /> */}
+          <div className='flex flex-row justify-between'><img className="w-[105px] h-[35px] mb-[20px]" src="image/logo.svg" alt="Logo" />
+            <div className='flex gap-x-[70px]'>
+            <a className='cursor-pointer' onClick={()=>router.push('/')}>글루ING</a>
+              <a className='cursor-pointer' onClick={()=>router.push('/my-page')}>나의 보관함</a>
+              <a className='cursor-pointer' onClick={()=>router.push('/')}>로그아웃</a>
+            </div>
+          </div>
           <hr className='bg-[#7C766C] w-full h-[2px]' />
           <div className='flex my-[90px] flex-row justify-between'>
             <div className='w-[368px] h-[264px] my-auto border-1'>

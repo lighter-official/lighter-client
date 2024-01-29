@@ -1,23 +1,77 @@
 // Settings.tsx
 import { useRouter } from 'next/router';
-import React from 'react';
+import React, { useState } from 'react';
+
+interface ModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+}
+
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
+            <div className="absolute w-full h-full bg-gray-800 opacity-50" onClick={onClose}></div>
+            <div className="relative flex flex-col bg-white w-[800px] h-[550px] rounded-lg z-50">
+                <div className='p-8'>
+                    <div className='text-[16px]'>4번째 글</div>
+                    <div className='mb-[10px] text-[22px]'>뮤직비디오 해석하기</div>
+                    <textarea className='text-[40px] w-full mb-[30px] h-[50px]' placeholder='제목을 입력해주세요.' />
+                    <hr className='bg-[#7C766C] w-full h-[2px]' />
+                    <textarea className='mt-[30px] w-full h-[220px] overflow-y-auto' placeholder='내용을 입력해주세요.' />
+                </div>
+                <div className='flex flex-col w-full rounded-md'>
+                    <div className='h-[100px] flex justify-between  p-8 items-center rounded-md w-full' style={{ backgroundColor: '#F1F1F1' }}>
+                        <a className='items-start justify-start flex'>남은 시간 01:03:55</a>
+                        <button
+                            className='w-[152px] h-[53px] rounded-md'
+                            style={{ backgroundColor: '#979797' }}
+                            onClick={onClose}
+                        >
+                            저장
+                        </button>
+                    </div>
 
 
+                </div>
+            </div>
+        </div>
+    );
+};
 
-export default function Settings() {
+
+export default function Writer() {
     // const router = useRouter()
     // const handleClick = () => {
     //     // 시작하기 버튼을 누르면 settings.tsx로 이동
     //     router.push('/writer');
     // };
+    const router = useRouter()
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const handleOpenModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+    };
+
 
     return (
         <div className="flex flex-col my-[50px] w-full">
             <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
             <div className='flex flex-row mx-auto w-full'>
                 <div className='flex flex-col w-full mx-[120px]'>
-                    <img className="w-[105px] h-[35px] mb-[20px]" src="image/logo.svg" alt="Logo" />
                     {/* <Redirection /> */}
+                    <div className='flex flex-row justify-between'><img className="w-[105px] h-[35px] mb-[20px]" src="image/logo.svg" alt="Logo" />
+            <div className='flex gap-x-[70px]'>
+            <a className='cursor-pointer font-bold' style={{color:'#191919'}}  onClick={()=>router.push('/')}>글루ING</a>
+            <a className='cursor-pointer'  style={{color:'#A49E90'}} onClick={()=>router.push('/my-page')}>나의 보관함</a>
+            <a className='cursor-pointer'  style={{color:'#A49E90'}} onClick={()=>router.push('/')}>로그아웃</a>
+            </div>
+          </div>
                     <hr className='bg-[#7C766C] w-full h-[2px]' />
                     <div className='flex mt-[20px] justify-between flex-row my-[30px]'>
                         <div className='bg-black rounded-sm  flex flex-col w-[400px] h-[600px]'>
@@ -34,7 +88,7 @@ export default function Settings() {
                                 <div className='w-full justify-center text-[60px]' style={{ color: '#F2EBDD' }}>12 : 40 : 50</div>
                             </div>
                             <div className='flex justify-center items-center mt-[110px]'>
-                                <button className='rounded-xl w-[333px] h-[62px] text-white' style={{ backgroundColor: '#3F3F3F', color: '#8E887B' }}>글 작성하기</button>
+                                <button className='rounded-xl w-[333px] h-[62px] text-white' style={{ backgroundColor: '#3F3F3F', color: '#8E887B' }} onClick={handleOpenModal}>글 작성하기</button>
                             </div>
                         </div>
                         <div className='w-[1120px] rounded-sm border-black border-1 flex flex-row max-h-[797px]' style={{ backgroundColor: '#E0D5BF' }}>
@@ -91,6 +145,7 @@ export default function Settings() {
                 </div>
 
             </div>
+            <Modal isOpen={isModalOpen} onClose={handleCloseModal} />
         </div>
     );
 }
