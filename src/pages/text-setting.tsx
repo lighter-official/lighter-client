@@ -21,7 +21,7 @@ export default function Settings() {
                     <div className='flex flex-row justify-between'><img className="w-[105px] h-[35px] mb-[20px]" src="image/logo.svg" alt="Logo" />
             <div className='flex gap-x-[70px]'>
             <a className='cursor-pointer' onClick={()=>router.push('/')}>글루ING</a>
-              <a className='cursor-pointer' onClick={()=>router.push('/my-page')}>나의 보관함</a>
+              <a className='cursor-pointer' onClick={()=>router.push('/mypage/badge')}>나의 보관함</a>
               <a className='cursor-pointer' onClick={()=>router.push('/')}>로그아웃</a>
             </div>
           </div>
