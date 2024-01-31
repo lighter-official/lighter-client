@@ -1,44 +1,13 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useNavigate } from 'react-router-dom';
+import { NavigateOptions, useNavigate } from 'react-router-dom';
 import "./globals.css";
 import axios from 'axios';
 import Settings from './text-setting';
 import { getLoginInfo } from '@/api/api';
-
-// export const fetchData = async (lessonId) => {
-//   const response = await axiosGet(apis.lessons.preparation.getV5({ lessonId }))
-
-//   if (response) {
-//     return response
-//   }
-// }
-
-// const Login = () => {
-//   const REST_API_KEY = '042aae38695b074b539c155e83aa75a5';
-//   const REDIRECT_URI = 'http://localhost:3000';
-//   const link = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
-//   const [isLoggedIn, setLoggedIn] = useState(false);
-//   const handleLoginClick = () => {
-//     window.location.href = link;
-//   };
-//   const noData = () => {
-//     console.log('no')
-//   }
-//   useEffect(() => {
-//     if (localStorage.getItem('name')) {
-//       setLoggedIn(true);
-//     }
-//   }, []);
-
-
-//   return (
-//     <button type='button' onClick={isLoggedIn ? noData : handleLoginClick}>
-//       {isLoggedIn ? '로그인 완료' : '로그인 하기'}
-//     </button>
-//   );
-// };
+import Cookies from 'js-cookie';
+import { access } from 'fs';
 
 
 const Redirection = () => {
@@ -47,6 +16,7 @@ const Redirection = () => {
   const REDIRECT_URI = 'http://localhost:3000';
   const [isLoggedIn, setLoggedIn] = useState(false);
   const [nickname, setNickname] = useState<string | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
   const link = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
   const getCode = () => {
     // 현재 URL에서 쿼리 매개변수 'code'를 추출
@@ -65,45 +35,16 @@ const Redirection = () => {
     console.log('no');
   };
 
-  // useEffect(() => {
-  //   const code = new URL(document.location.toString()).searchParams.get('code');
-  //   const getToken = async (code: string) => {
-  //     const KAKAO_REST_API_KEY = process.env.REACT_APP_KAKAO_REST_API_KEY;
-  //     const KAKAO_REDIRECT_URI = process.env.REACT_APP_KAKAO_REDIRECT_URI;
-  //     const response = await fetch(`https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${KAKAO_REST_API_KEY}&redirect_uri=${KAKAO_REDIRECT_URI}&code=${code}`, {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-  //       },
-  //     });
-  //     return response.json();
-  //   }
-  //   useEffect(() => {
-  //     if (code) {
-  //       getToken(code).then((res) => {
-  //         console.log(res.access_token);
-  //       })
-  //     }
-  //   }, []);
-  //   console.log(code, '=================')
-  //   // if (code) {
-  //   //   // console.log(process.env.REACT_APP_URL);
-  //   //   axios.post(`https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&code=${code}`).then((r) => {
-  //   //     console.log(r.data);
 
-  //   //     localStorage.setItem('name', r.data.user_name); // 일단 이름만 저장
-  //   //     setLoggedIn(true);
-  //   //     router.push('/settings');  // 수정된 부분
-  //   //   });
-  //   // }
-  // }, []);
   const handleClick = async (code:any) => {
     try {
       const loginInfo = await getLoginInfo(code);
       console.log(loginInfo);
       localStorage.setItem('name', loginInfo.profile.nickname);
+      localStorage.setItem('access_token', loginInfo.access_token);
       setLoggedIn(true);
       setNickname(loginInfo.profile.nickname);
+      setAccessToken(loginInfo.access_token)
     } catch (error) {
       console.error('Login failed:', error);
     }
@@ -113,16 +54,8 @@ const Redirection = () => {
   useEffect(() => {
     const code = new URL(document.location.toString()).searchParams.get('code');
     const bodyData: {
-      // grant_type: string;
-      // client_id: string;
-      // redirect_uri: string;
-      // client_secret:string;
       code: any;
     } = {
-      // grant_type: "authorization_code",
-      // client_id: '042aae38695b074b539c155e83aa75a5',
-      // redirect_uri: 'http://localhost:3000',
-      // client_secret: 'JXCuUd5clcXmA7rvODgM76abo4viANap',
       code: code
     };
 
@@ -145,13 +78,18 @@ const Redirection = () => {
   
         console.log(response);
         const data = await response.json();
-        console.log(data);
+        console.log(data,'=======');
   
         if (code) {
           console.log(code, 'code!!!');
-          localStorage.setItem('name', data.profile.nickname); // 수정된 부분
+          localStorage.setItem('name', data.profile.nickname); 
+          if (typeof document !== 'undefined') {
+            document.cookie = `access_token=${data.access_token}; Secure; SameSite=Strict`;
+          }
           setLoggedIn(true);
           setNickname(data.profile.nickname);
+          setAccessToken(data.access_token) // 이용하기, code 재사용 불가
+          console.log('ACCESS-TOKEN', data.access_token)
         }
       } catch (error) {
         console.error('Error during token request:', error);
@@ -172,15 +110,25 @@ const Redirection = () => {
   );
 };
 
-
+export function getCookie(name: any) {
+  console.log(Cookies.get(name),'쿠키?')
+  return Cookies.get(name);
+}
 
 export default function Home() {
   // const navigate = useNavigate();
   const router = useRouter()
+  const accessToken = getCookie('access_token');
+
   const handleClick = () => {
-    // 시작하기 버튼을 누르면 settings.tsx로 이동
-    router.push('/text-setting');
+    console.log(accessToken,'index의 토큰?')
+    router.push({
+      pathname: '/text-setting',
+      query: { access_token: accessToken },
+    } as any); // 'as any'를 사용하여 타입 명시
   };
+
+  
   return (
     <div className="flex flex-col my-[50px] w-full">
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>

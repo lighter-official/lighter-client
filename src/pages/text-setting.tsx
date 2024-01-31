@@ -4,17 +4,17 @@ import axios from 'axios';
 import { fork } from 'child_process';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
-import { start } from 'repl';
 
 type DropdownItem = {
     name: string;
-    id: number;
+    value: number
   };
   type DropdownProps = {
     items: DropdownItem[];
     onSelect: (selectedItem: DropdownItem) => void;
   };
   
+
 
 function DropDown({ items, onSelect }: DropdownProps) {
     const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
@@ -24,51 +24,48 @@ function DropDown({ items, onSelect }: DropdownProps) {
         setSelectedItem(item);
         setIsDropdownOpen(false);
         console.log('Selected Item:', item);
-        onSelect(item); // 확인을 위해 onSelect를 호출하여 로그를 출력
-      };
-  
+        onSelect(item);
+    };
+
     return (
-      <div
-        className="bg-white rounded-md"
-        onBlur={() => {
-          setIsDropdownOpen(false);
-        }}
-      >
-        <button
-          onClick={() => {
-            setIsDropdownOpen((prev) => !prev);
-          }}
-          className="w-[112px]  bg-white h-[40px] rounded-md flex items-center justify-between p-[16px]"
-        >
-          <div className={`${selectedItem?.name === "선택" && "text-[#a0a0a0]"} w-fit`}>
-            {selectedItem?.name || "선택"}
-          </div>
-          <div className={`${isDropdownOpen && "rotate-180"}`}></div>
-        </button>
-  
-        <div
-          className={`${
-            isDropdownOpen ? "" : "hidden"
-          } absolute bg-white w-[112px] rounded-md max-h-[150px] overflow-y-auto   `}
-        >
-          {items.map((item) => (
-            <div
-              key={item.id}
-              className="h-[50px] text-left  p-[16px] cursor-pointer"
-              onMouseDown={() => {
-                setSelectedItem(item);
-                setIsDropdownOpen(false);
-                handleSelect(item)
-                console.log(selectedItem, typeof(selectedItem))
-              }}
+        <div className="relative inline-block">
+            <button
+                onClick={() => {
+                    setIsDropdownOpen((prev) => !prev);
+                }}
+                className="w-[112px] bg-white h-[40px] rounded-md flex items-center justify-between p-[16px]"
             >
-              {item.name}
+                <div className={`${selectedItem?.name === "선택" && "text-[#a0a0a0]"} w-fit`}>
+                    {selectedItem?.name || "선택"}
+                </div>
+                <div className={`${isDropdownOpen && "rotate-180"}`}></div>
+            </button>
+
+            <div
+                className={`${
+                    isDropdownOpen ? "" : "hidden"
+                } absolute bg-white w-[112px] rounded-md max-h-[150px] overflow-y-auto`}
+            >
+                {items.map((item) => (
+                    <div
+                        key={item.value}
+                        className="h-[50px] text-left p-[16px] cursor-pointer"
+                        onMouseDown={() => {
+                            setSelectedItem(item);
+                            setIsDropdownOpen(false);
+                            handleSelect(item);
+                            console.log(selectedItem, typeof(selectedItem));
+                        }}
+                    >
+                        {item.name}
+                    </div>
+                ))}
             </div>
-          ))}
         </div>
-      </div>
     );
-  }
+}
+
+
   
 
 
@@ -77,9 +74,10 @@ export default function Settings() {
     const [subject, setSubject] = useState('');
     const [period, setPeriod] = useState(0);
     const [page, setPage] = useState(0);
-    const [start_time, setStartTime] = useState<[string, number, number]>(['', 0, 0]);
+    const [start_time, setStartTime] = useState<[string, number|undefined, number|undefined]>(['', undefined, undefined]);
     const [for_hours, setForHours] = useState(0);
-    const disabled = !subject || !period || !page || !start_time[0] || !start_time[1] || !start_time[2] || !for_hours;
+    const disabled = !subject || !period || !page || !start_time[0] || start_time[1] == undefined || start_time[2] == undefined || !for_hours;
+    const accessToken = router.query.access_token as string
 
 
   useEffect(() => {
@@ -92,6 +90,7 @@ export default function Settings() {
 
   // 시작하기 버튼 클릭 시 서버로 설정된 값들을 전송
   const handleStart = async () => {
+
     try {
         const response = await postSetUp({
             subject,
@@ -99,7 +98,7 @@ export default function Settings() {
             page,
             start_time,
             for_hours,
-          });
+          }, accessToken);
 
       console.log(response.data, '============');
       router.push('/writer');
@@ -167,23 +166,27 @@ export default function Settings() {
                                     <div className='flex flex-col gap-y-[20px]'>
                                         <a className='font-bold'>2. 글쓰기 페이지 수</a>
                                         <div className='flex flex-row gap-x-[20px]'>
-                                        <button className={`w-[82px] h-[40px] border-1 rounded-md ${page === 10 ? 'bg-black text-white' : ' bg-white'}`} onClick={() => {
+                                        <button className={`w-[82px] h-[40px] border-1 rounded-md ${page === 10 ? 'bg-black text-white' : ' bg-white'}`} 
+                                            onClick={() => {
                                                 setPage(10)
                                                 console.log(page, 'page 10')
                                                 }}>10편</button>
-                                        <button className={`w-[82px] h-[40px] border-1 rounded-md ${page === 20 ? 'bg-black text-white' : ' bg-white'}`} onClick={() => {
+                                        <button className={`w-[82px] h-[40px] border-1 rounded-md ${page === 20 ? 'bg-black text-white' : ' bg-white'}`} 
+                                            onClick={() => {
                                                 setPage(20)
                                                 console.log(page, 'page 20')
                                                 }}>20편</button>
-                                        <button className={`w-[82px] h-[40px] border-1 rounded-md ${page === 30 ? 'bg-black text-white' : ' bg-white'}`} onClick={() => {
+                                        <button className={`w-[82px] h-[40px] border-1 rounded-md ${page === 30 ? 'bg-black text-white' : ' bg-white'}`} 
+                                            onClick={() => {
                                                 setPage(30)
                                                 console.log(page, 'page 30')
                                                 }}>30편</button>
                                            <textarea
-                                            className='w-[82px] flex text-center items-center justify-center h-[40px] border-1 border-black rounded-lg bg-white'
-                                            placeholder='직접입력'
+                                            className={`w-[82px] flex text-center items-center justify-center h-[40px] border-1 border-black rounded-lg`}
+                                            placeholder= '직접입력'
                                             style={{ lineHeight: '40px' }}
                                             onChange={(e) => {
+                                                setPage(0)
                                                 const inputValue = e.target.value;
                                                 const numericValue = parseInt(inputValue, 10); // 문자열을 숫자로 변환
 
@@ -219,46 +222,46 @@ export default function Settings() {
                                         </button>
                                            <DropDown
                                                 items={[
-                                                { name: '1시', id: 1 },
-                                                { name: '2시', id: 2 },
-                                                { name: '3시', id: 3 },
-                                                { name: '4시', id: 4 },
-                                                { name: '5시', id: 5 },
-                                                { name: '6시', id: 6 },
-                                                { name: '7시', id: 7 },
-                                                { name: '8시', id: 8 },
-                                                { name: '9시', id: 9 },
-                                                { name: '10시', id: 10 },
-                                                { name: '11시', id: 11 },
-                                                { name: '12시', id: 12 },
+                                                { name: '1시', value: 1 },
+                                                { name: '2시', value: 2 },
+                                                { name: '3시', value: 3 },
+                                                { name: '4시', value: 4 },
+                                                { name: '5시', value: 5 },
+                                                { name: '6시', value: 6 },
+                                                { name: '7시', value: 7 },
+                                                { name: '8시', value: 8 },
+                                                { name: '9시', value: 9 },
+                                                { name: '10시', value: 10 },
+                                                { name: '11시', value: 11 },
+                                                { name: '12시', value: 12 },
                                                 ]}
                                                 onSelect={(selectedHour) => {
-                                                    setStartTime([start_time[0], selectedHour.id, start_time[2]]);
+                                                    setStartTime([start_time[0], selectedHour.value, start_time[2]]);
 
                                                   }}
                                             />
                                             <DropDown
                                                 items={[
-                                                { name: '00분', id: 0 },
-                                                { name: '15분', id: 15 },
-                                                { name: '30분', id: 30 },
-                                                { name: '45분', id: 45 },
+                                                { name: '00분', value: 0 },
+                                                { name: '15분', value: 15 },
+                                                { name: '30분', value: 30 },
+                                                { name: '45분', value: 45 },
                                                 ]}
                                                 onSelect={(selectedMinute) => {
-                                                    setStartTime([start_time[0], start_time[1], selectedMinute.id]);
+                                                    setStartTime([start_time[0], start_time[1], selectedMinute.value]);
                                                   }}
                                             /><a className='my-auto'>부터</a>
                                             <button className='w-[82px] h-[40px] border-1 border-black rounded-md bg-white'>
                                             <DropDown
                                                 items={[
-                                                { name: '1시간', id: 1 },
-                                                { name: '2시간', id: 2 },
-                                                { name: '3시간', id: 3 },
-                                                { name: '4시간', id: 4 },
-                                                { name: '5시간', id: 5 },
+                                                { name: '1시간', value: 1 },
+                                                { name: '2시간', value: 2 },
+                                                { name: '3시간', value: 3 },
+                                                { name: '4시간', value: 4 },
+                                                { name: '5시간', value: 5 },
                                                 ]}
                                             onSelect={(selectedForHours) => {
-                                                setForHours(selectedForHours.id)
+                                                setForHours(selectedForHours.value)
                                             }}
                                             />
                                               
