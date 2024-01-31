@@ -12,3 +12,16 @@ export const getLoginInfo = async (code:any) => {
     throw error;
   }
 };
+
+export const postSetUp = async (data: any) => {
+  try {
+    const response = await axios.post(apiUrl, data);
+    console.log(response.data, '============');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    throw error;
+  }
+};
+
+//현재 405 error 발생, 버튼 입력란으로 바꾸고 다시 시도!!
