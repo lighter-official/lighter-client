@@ -120,6 +120,9 @@ export default function Writer() {
                                 
                             </div>
                         </div>
+                        <div style={{ position: 'absolute', top: '50%', left: '55%'}}>
+                            <img className="w-[184px] h-[53px] z-9999" src="/image/soon.png" alt="soon" />
+                        </div>
 
                     </div>
                 </div>

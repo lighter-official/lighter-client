@@ -1,4 +1,5 @@
 // Settings.tsx
+'use client'
 import { postSetUp } from '@/api/api';
 import axios from 'axios';
 import { fork } from 'child_process';
@@ -89,6 +90,7 @@ export default function Settings() {
   }, [subject, period, page, start_time, for_hours]);
 
   // 시작하기 버튼 클릭 시 서버로 설정된 값들을 전송
+  const isPageValid = page < 10;  // 10 미만이면 필수 필드 채워지지 않은 것으로 간주
   const handleStart = async () => {
 
     try {
@@ -101,7 +103,10 @@ export default function Settings() {
           }, accessToken);
 
       console.log(response.data, '============');
-      router.push('/writer');
+      router.push({
+        pathname: '/writer',
+        query: { access_token: accessToken },
+      } as any);
       // 서버 응답에 따른 처리 추가
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -191,12 +196,15 @@ export default function Settings() {
                                                 const numericValue = parseInt(inputValue, 10); // 문자열을 숫자로 변환
 
                                                 // 숫자로 변환 가능한 경우에만 set
-                                                if (!isNaN(numericValue)) {
-                                                setPage(numericValue);
-                                                console.log(numericValue, typeof(numericValue));
+                                                if (!isNaN(numericValue) && numericValue >= 10) {
+                                                    setPage(numericValue);
+                                                    console.log(numericValue, typeof(numericValue));
                                                 }
+                                                
                                             }}
-                                            ></textarea>
+                                            >
+                                           </textarea>
+                                           {isPageValid ? <div className='items-center flex text-[10px]' style={{color:'red'}}>*10일 이상 입력해주세요.</div> : ''}
                                         </div>
                                     </div>
                                     <div className='flex flex-col gap-y-[20px]'>

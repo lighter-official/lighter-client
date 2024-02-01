@@ -88,12 +88,11 @@ export default function Writer() {
                                 </div>
                             </div>
                         </div>
-                        <div className='w-[1120px] rounded-sm border-black  border-1 flex flex-row h-[759px]' style={{ backgroundColor: '#E0D5BF', border: '1px solid black' }}>
+                        {/* <img className="w-[184px] h-[53px] mb-[20px] z-50" src="/image/soon.png" alt="soon" /> */}
+                        <div className='w-[1120px]  bg-gray-800 opacity-20 rounded-sm border-black  border-1 flex flex-row h-[759px]' style={{ backgroundColor: '#E0D5BF', border: '1px solid black' }}>
                             <div className='w-full  my-[30px] ml-[53px] '>
-
                                 <div className='flex flex-row items-center '>
                                <div className='w-[205px] text-black mt-[8px] text-[36px] font-bold'>설정</div>
-                     
                                    </div>
                                    <div className='flex text-[20px] cursor-pointer mt-[20px]' >글쓰기 시간 변경</div>
                                    <div className='flex text-[14px] cursor-pointer mt-[8px]'  style={{ color: '#918A7C' }}>*주 최대 2회 변경 가능합니다. 0/2</div>
@@ -105,7 +104,7 @@ export default function Writer() {
                                     <button className='rounded-md  w-[93px] h-[45px] bg-white' style={{ border: '1px solid gray'}}>9시</button>
                                     <button className='rounded-md w-[148px] h-[45px] bg-white' style={{ border: '1px solid gray'}}>00분</button>
                                     <a className='my-auto'>부터</a>
-                                    <button className='rounded-md w-[105px] h-[45px] bg-white' style={{ border: '1px solid gray'}}>1시간</button><a className='my-auto'>시간 동안</a>
+                                    <button className='rounded-md w-[105px] h-[45px] bg-white' style={{ border: '1px solid gray'}}>1시간</button><a className='my-auto'>동안</a>
                                  
                                    </div>
                                    <button className='rounded-md mx-auto mt-[30px] w-[148px] h-[45px] bg-black text-white'>변경하기</button>
@@ -114,6 +113,9 @@ export default function Writer() {
                                 
                                 
                             </div>
+                        </div>
+                        <div style={{ position: 'absolute', top: '50%', left: '55%'}}>
+                            <img className="w-[184px] h-[53px] z-9999" src="/image/soon.png" alt="soon" />
                         </div>
 
                     </div>

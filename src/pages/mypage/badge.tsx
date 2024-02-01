@@ -1,6 +1,7 @@
 // Settings.tsx
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
+import { Redirection, getCookie } from '..';
 
 interface ModalProps {
     isOpen: boolean;
@@ -48,7 +49,9 @@ export default function Writer() {
     //     router.push('/writer');
     // };
     const router = useRouter()
+    const accessToken = getCookie('access_token');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isLoggedIn, setLoggedIn] = useState(false);
 
     const handleOpenModal = () => {
         setIsModalOpen(true);
@@ -66,12 +69,18 @@ export default function Writer() {
                 <div className='flex flex-col w-full mx-[120px]'>
                     {/* <Redirection /> */}
                     <div className='flex flex-row justify-between'><img className="w-[105px] h-[35px] mb-[20px]" src="/image/logo.svg" alt="Logo" />
-            <div className='flex gap-x-[70px]'>
-            <a className='cursor-pointer'  style={{color:'#A49E90'}} onClick={()=>router.push('/')}>글루ING</a>
-            <a className='cursor-pointer font-bold' style={{color:'#191919'}} onClick={()=>router.push('/mypage/badge')}>나의 보관함</a>
-            <a className='cursor-pointer'  style={{color:'#A49E90'}} onClick={()=>router.push('/')}>로그아웃</a>
-            </div>
-          </div>
+                        <div className='flex gap-x-[70px]'>
+                        <a className='cursor-pointer' onClick={()=>router.push({
+                            pathname: '/writer',
+                            query: { access_token: accessToken },
+                        } as any)}>글루ING</a>
+                        <a className='cursor-pointer  font-bold' onClick={()=>router.push({
+                            pathname: '/mypage/badge',
+                            query: { access_token: accessToken },
+                        } as any)}>나의 보관함</a>
+                        <a className='cursor-pointer' onClick={()=> setLoggedIn(false)}><Redirection isLoggedIn={isLoggedIn} setLoggedIn={setLoggedIn} /></a>
+                        </div>
+                    </div>
                     <hr className='bg-[#7C766C] w-full h-[2px]' />
                     <div className='flex mt-[20px] justify-between flex-row my-[30px]'>
                         <div className='bg-black rounded-sm  flex flex-col w-[400px] h-[471px]'>

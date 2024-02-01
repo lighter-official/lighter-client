@@ -8,13 +8,13 @@ import Settings from './text-setting';
 import { getLoginInfo } from '@/api/api';
 import Cookies from 'js-cookie';
 import { access } from 'fs';
+import nookies from 'nookies';
 
 
-const Redirection = () => {
+export const Redirection = ({ isLoggedIn, setLoggedIn }) => {
   const router = useRouter();  // 수정된 부분
   const REST_API_KEY = '042aae38695b074b539c155e83aa75a5';
   const REDIRECT_URI = 'http://localhost:3000';
-  const [isLoggedIn, setLoggedIn] = useState(false);
   const [nickname, setNickname] = useState<string | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const link = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
@@ -26,9 +26,16 @@ const Redirection = () => {
     return code;
   };
   const handleLoginClick = (code:any) => {
-    window.location.href = link;
+    window.location.href = link
     console.log(link,'--------------')
     handleClick(code)
+    if (accessToken) {
+      // 로그인된 경우
+      router.push({
+        pathname: '/text-setting',
+        query: { access_token: accessToken },
+      } as any); // 'as any'를 사용하여 타입 명시
+    }
   };
 
   const noData = () => {
@@ -63,7 +70,7 @@ const Redirection = () => {
       .map(k => encodeURIComponent(k) + "=" + encodeURIComponent(bodyData[k as keyof typeof bodyData]))
       .join("&");
   
- const getToken = async (code: any) => {
+    const getToken = async (code: any) => {
       const KAKAO_REST_API_KEY = '042aae38695b074b539c155e83aa75a5';
       const KAKAO_REDIRECT_URI = 'http://localhost.3000';
   
@@ -83,9 +90,13 @@ const Redirection = () => {
         if (code) {
           console.log(code, 'code!!!');
           localStorage.setItem('name', data.profile.nickname); 
-          if (typeof document !== 'undefined') {
-            document.cookie = `access_token=${data.access_token}; Secure; SameSite=Strict`;
-          }
+          const cookies = nookies.get();
+          nookies.set({}, 'access_token', data.access_token, {
+            path: '/',
+            secure: true,
+            maxAge: 3600, // Set the expiration time in seconds
+            sameSite: 'Strict',
+          });
           setLoggedIn(true);
           setNickname(data.profile.nickname);
           setAccessToken(data.access_token) // 이용하기, code 재사용 불가
@@ -102,32 +113,35 @@ const Redirection = () => {
     }
   }, []);
   
+  
 
   return (
     <button type='button' onClick={isLoggedIn ? noData : (code)=>handleLoginClick(code)}>
-      {isLoggedIn ? `안녕하세요, ${nickname}님!` : '로그인 하기'}
+      {isLoggedIn ? `로그아웃` : '로그인'}
     </button>
   );
 };
 
 export function getCookie(name: any) {
-  console.log(Cookies.get(name),'쿠키?')
-  return Cookies.get(name);
+  console.log(nookies.get(null)[name], '쿠키?');
+  return nookies.get(null)[name];
 }
 
 export default function Home() {
   // const navigate = useNavigate();
   const router = useRouter()
   const accessToken = getCookie('access_token');
+  const [isLoggedIn, setLoggedIn] = useState(false);
 
   const handleClick = () => {
-    console.log(accessToken,'index의 토큰?')
-    router.push({
-      pathname: '/text-setting',
-      query: { access_token: accessToken },
-    } as any); // 'as any'를 사용하여 타입 명시
+    if (accessToken) {
+      // 로그인된 경우
+      router.push({
+        pathname: '/text-setting',
+        query: { access_token: accessToken },
+      } as any); // 'as any'를 사용하여 타입 명시
+    }
   };
-
   
   return (
     <div className="flex flex-col my-[50px] w-full">
@@ -135,12 +149,19 @@ export default function Home() {
       <div className='flex flex-row mx-auto w-full'>
         <div className='flex flex-col w-full mx-[120px]'>
 
-          <Redirection />
+          {/* <Redirection /> */}
           <div className='flex flex-row justify-between'><img className="w-[105px] h-[35px] mb-[20px]" src="image/logo.svg" alt="Logo" />
             <div className='flex gap-x-[70px]'>
-            <a className='cursor-pointer' onClick={()=>router.push('/')}>글루ING</a>
-              <a className='cursor-pointer' onClick={()=>router.push('/mypage/book')}>나의 보관함</a>
-              <a className='cursor-pointer' onClick={()=>router.push('/')}>로그아웃</a>
+            <a className='cursor-pointer' onClick={()=>router.push({
+                pathname: '/writer',
+                query: { access_token: accessToken },
+              } as any)}>글루ING</a>
+              <a className='cursor-pointer' onClick={()=>router.push({
+                pathname: '/mypage/badge',
+                query: { access_token: accessToken },
+              } as any)}>나의 보관함</a>
+              <a className='cursor-pointer' onClick={()=>setLoggedIn(false)}> 
+              <Redirection isLoggedIn={isLoggedIn} setLoggedIn={setLoggedIn} /></a>
             </div>
           </div>
           <hr className='bg-[#7C766C] w-full h-[2px]' />
@@ -149,8 +170,10 @@ export default function Home() {
               <div className='mb-[20px] text-[44px]'>
                 <a className='font-bold'>글로</a>
                 <br />시작하는
-                <br /><a className='font-bold'>우리</a>의 이야기</div>
-              <button className='rounded-xl w-[200px] h-[42px] bg-black text-orange-500' onClick={handleClick}>시작하기</button>
+                <br /><a className='font-bold'>우리</a>의 이야기
+                </div>
+                
+              <button className='rounded-xl w-[200px] h-[42px] text-black' style={{backgroundColor: '#FFE000'}} onClick={handleClick}>카카오 로그인</button>
             </div>
             <div className='flex items-end w-[876px] h-[657px] border-1'>
               <img className="w-[875px] h-[657px]" src="image/badges.svg" alt="Badges" />
