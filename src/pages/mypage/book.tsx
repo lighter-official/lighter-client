@@ -92,7 +92,7 @@ export default function Writer() {
                             <div className='w-full  my-[30px] ml-[53px] '>
 
                                 <div className='flex flex-row items-center '>
-                               <div className='w-[205px] text-black mt-[8px] text-[36px] font-bold'>내가 발행한 책</div>
+                               <div className='w-full text-black mt-[8px] text-[36px] font-bold'>내가 발행한 책</div>
                      
                                    </div>
                                

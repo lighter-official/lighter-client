@@ -100,10 +100,10 @@ export const getWritingInfo = async (id:string, accessToken: string) => {
 };
 
 // 각 글 수정하는 API
-export const patchWriting = async (id:string, data: any, accessToken:string) => {
+export const putWriting = async (id:string, data: any, accessToken:string) => {
   try {
     console.log(accessToken, 'APIAPIAPI')
-    const response = await axios.patch(`${apiUrl}/api/glooing/writings/${id}`, data, {
+    const response = await axios.put(`${apiUrl}/api/glooing/writings/${id}`, data, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },

@@ -1,11 +1,12 @@
 // Settings.tsx
 'use client'
-import { getGlooingInfo, getUserInfo, getWritingInfo, patchWriting, postWriting } from '@/api/api';
+import { getGlooingInfo, getUserInfo, getWritingInfo, postWriting, putWriting } from '@/api/api';
 import router, { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import nookies from 'nookies';
 import { Redirection } from '.';
 import { access } from 'fs';
+import "./globals.css";
 
 interface ModalProps {
     isOpen: boolean;
@@ -38,15 +39,14 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, data, writingData }) => 
     const handlePost = async () => {
         // 모달 열기 전에 확인 모달을 띄우도록 수정
         setIsConfirmationModalOpen(true);
-      };
+    };
       
-      const handleConfirmPost = async () => {
-       
+    const handleConfirmPost = async () => {
         // 작성한 글을 서버에 저장
         const writingData = {
-          title,
-          desc,
-        };
+                title: title || null,  // 만약 title이 빈 문자열이면 null로 설정
+                desc: desc || null,    // 만약 desc가 빈 문자열이면 null로 설정
+            };
       
         try {
             // 새로운 글 작성
@@ -59,7 +59,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, data, writingData }) => 
         // 모달 닫기
         onClose();
         setIsConfirmationModalOpen(false);
-      };
+    };
       
 
 
@@ -115,17 +115,17 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, data, writingData }) => 
                     <div className="absolute w-full h-full bg-gray-800 opacity-50" onClick={onClose}></div>
                     <div className="flex flex-col bg-white w-[300px] h-[155px] text-center justify-center items-center rounded-lg z-50">
                         <div className='p-8 '>
-                            <div className='text-[18px] mb-[30px]'>해당 내용으로 발행하시겠습니까?</div>
+                            <div className='text-[16px] mb-[30px]'>해당 내용으로 발행하시겠습니까?</div>
                             <div className='flex justify-center gap-x-[10px]'>
                                 <button
-                                    className='w-[120px] cursor-pointer h-[40px] rounded-md'
+                                    className='w-[120px] text-[14px] cursor-pointer h-[40px] rounded-md'
                                     style={{ backgroundColor: '#D9D9D9' }}
                                     onClick={handleCancelPost}
                                 >
                                     취소
                                 </button>
                                 <button
-                                    className='w-[120px] cursor-pointer h-[40px] rounded-md'
+                                    className='w-[120px] text-[14px] cursor-pointer h-[40px] rounded-md'
                                     style={{ backgroundColor: '#FF8126' }}
                                     onClick={handleConfirmPost}
                                 >
@@ -152,28 +152,31 @@ const EditModal: React.FC<ModalProps> = ({ isOpen, onClose, data, id, writingDat
     const [writingDetails, setWritingDetails] = useState<any>(null);
 
     useEffect(() => {
-        console.log(writingData, 'WRITING')
-      }); // 
+        console.log(id, 'WRITING')
+    }, [writingData, id]); 
       
     const handleCancelPost = () => {
         setIsConfirmationModal2Open(false)
     }
 
     const handleEditPost = async () => {
+        console.log('EDIT')
         // 모달 열기 전에 확인 모달을 띄우도록 수정
         setIsConfirmationModal2Open(true);
     };
       
       const handleConfirmPost = async () => {
+        console.log('DGHALDJGJDJHS')
        
         // 작성한 글을 서버에 저장
-        const data = {
-          title,
-          desc,
+        const editData = {
+            title: title || writingData?.title || null,
+            desc: desc || writingData?.desc || null,
         };
       
         try {
-            await patchWriting(id, data, accessToken);
+            await putWriting(id, editData, accessToken);
+            console.log('들어왔는가')
         } catch (error) {
           console.error('Error saving writing:', error);
         }
@@ -221,7 +224,7 @@ const EditModal: React.FC<ModalProps> = ({ isOpen, onClose, data, id, writingDat
                     <div className='h-[100px] flex p-8  justify-end items-center rounded-md w-full' style={{ backgroundColor: '#F1F1F1' }}>
                         <button
                         className='w-[152px] h-[53px] cursor-pointer rounded-md bg-orange-500 text-black'
-                        disabled={disabled}
+                        // disabled={disabled}
                         onClick={handleEditPost}
                         >
                         수정
@@ -234,17 +237,17 @@ const EditModal: React.FC<ModalProps> = ({ isOpen, onClose, data, id, writingDat
                     <div className="absolute w-full h-full bg-gray-800 opacity-50" onClick={onClose}></div>
                     <div className="flex flex-col bg-white w-[300px] h-[155px] text-center justify-center items-center rounded-lg z-50">
                         <div className='p-8 '>
-                            <div className='text-[18px] mb-[30px]'>해당 내용으로 수정하시겠습니까?</div>
+                            <div className='text-[16px] mb-[30px]'>해당 내용으로 수정하시겠습니까?</div>
                             <div className='flex justify-center gap-x-[10px]'>
                                 <button
-                                    className='w-[120px] cursor-pointer h-[40px] rounded-md'
+                                    className='w-[120px] text-[14px] cursor-pointer h-[40px] rounded-md'
                                     style={{ backgroundColor: '#D9D9D9' }}
                                     onClick={handleCancelPost}
                                 >
                                     취소
                                 </button>
                                 <button
-                                    className='w-[120px] cursor-pointer h-[40px] rounded-md'
+                                    className='w-[120px] text-[14px] cursor-pointer h-[40px] rounded-md'
                                     style={{ backgroundColor: '#FF8126' }}
                                     onClick={handleConfirmPost}
                                 >
@@ -437,7 +440,7 @@ export default function Writer() {
                                 {glooingInfo?.writings?.map((writing, index) => (
                                     <div key={index} className='flex cursor-pointer flex-row w-full h-[197px] mt-[22px] rounded-xl' style={{ backgroundColor: '#F4EDE0' }} onClick={() => handleEditClick(writing.id)}>
                                         <div className='my-[30px] mx-[47px]'>
-                                            <div className=' w-[161px] text-[16px]' style={{ color: '#8A8170' }}>{writing?.created_at[0] + '년 '}{writing?.created_at[1] + '월 '}{writing?.created_at[2] + '일'} {writing.created_at[3]}요일</div>
+                                            <div className=' w-full text-[16px]' style={{ color: '#8A8170' }}>{writing?.created_at[0] + '년 '}{writing?.created_at[1] + '월 '}{writing?.created_at[2] + '일'} {writing.created_at[3]}요일</div>
                                             <div className='w-full h-[39px] text-[26px]'>{writing.title}</div>
                                             <div className='mt-[18px] max-w-[685px] truncate text-[16px]' style={{ color: '#C5BCAB' }}>{writing.desc}</div>
                                         </div>

@@ -1,5 +1,6 @@
 // Settings.tsx
 'use client'
+import "./globals.css";
 import { postSetUp } from '@/api/api';
 import axios from 'axios';
 import { fork } from 'child_process';
