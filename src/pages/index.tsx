@@ -17,6 +17,7 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }) => {
   const REDIRECT_URI = 'http://localhost:3000';
   const [nickname, setNickname] = useState<string | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
+  
   const link = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
   const getCode = () => {
     // 현재 URL에서 쿼리 매개변수 'code'를 추출
@@ -28,7 +29,8 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }) => {
   const handleLoginClick = (code:any) => {
     window.location.href = link
     console.log(link,'--------------')
-    handleClick(code)
+    // handleClick(code)
+    getToken(code)
     if (accessToken) {
       // 로그인된 경우
       router.push({
@@ -58,6 +60,50 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }) => {
   };
 
 
+  const getToken = async (code: any) => {
+    const KAKAO_REST_API_KEY = '042aae38695b074b539c155e83aa75a5';
+    const KAKAO_REDIRECT_URI = 'http://localhost.3000';
+
+    try {
+      const response = await fetch(`http://localhost:8000/api/login/kakao?code=${code}`, {
+        method: "GET",
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+       
+      });
+
+      console.log(response);
+      const data = await response.json();
+      console.log(data,'=======');
+
+      if (code) {
+        console.log(code, 'code!!!');
+        localStorage.setItem('name', data.profile.nickname); 
+        const cookies = nookies.get();
+        nookies.set({}, 'access_token', data.access_token, {
+          path: '/',
+          secure: true,
+          maxAge: 3600, // Set the expiration time in seconds
+          sameSite: 'Strict',
+        });
+        setLoggedIn(true);
+        setNickname(data.profile.nickname);
+        setAccessToken(data.access_token) // 이용하기, code 재사용 불가
+        console.log('ACCESS-TOKEN', data.access_token)
+
+        router.push({
+          pathname: '/text-setting',
+          query: { access_token: data.access_token },
+        } as any);
+      }
+    } catch (error) {
+      console.error('Error during token request:', error);
+      throw error;
+    }
+  };
+
+
   useEffect(() => {
     const code = new URL(document.location.toString()).searchParams.get('code');
     const bodyData: {
@@ -70,44 +116,7 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }) => {
       .map(k => encodeURIComponent(k) + "=" + encodeURIComponent(bodyData[k as keyof typeof bodyData]))
       .join("&");
   
-    const getToken = async (code: any) => {
-      const KAKAO_REST_API_KEY = '042aae38695b074b539c155e83aa75a5';
-      const KAKAO_REDIRECT_URI = 'http://localhost.3000';
-  
-      try {
-        const response = await fetch(`http://localhost:8000/api/login/kakao?code=${code}`, {
-          method: "GET",
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-         
-        });
-  
-        console.log(response);
-        const data = await response.json();
-        console.log(data,'=======');
-  
-        if (code) {
-          console.log(code, 'code!!!');
-          localStorage.setItem('name', data.profile.nickname); 
-          const cookies = nookies.get();
-          nookies.set({}, 'access_token', data.access_token, {
-            path: '/',
-            secure: true,
-            maxAge: 3600, // Set the expiration time in seconds
-            sameSite: 'Strict',
-          });
-          setLoggedIn(true);
-          setNickname(data.profile.nickname);
-          setAccessToken(data.access_token) // 이용하기, code 재사용 불가
-          console.log('ACCESS-TOKEN', data.access_token)
-        }
-      } catch (error) {
-        console.error('Error during token request:', error);
-        throw error;
-      }
-    };
-  
+
     if (code) {
       getToken(code);
     }

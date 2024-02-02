@@ -281,9 +281,9 @@ export default function Writer() {
     const [writingData, setWritingData] = useState<any>({}); 
     const [isLoggedIn, setLoggedIn] = useState(false);
     const [wsMessage, setWsMessage] = useState<string>('')
-    const [remainingTime, setRemainingTime] = useState<number | null>(null);
-    const [buttonActivated, setButtonActivated] = useState<boolean | undefined>(false);
-    const [textColor, setTextColor] = useState<boolean | undefined>(false);
+    const [remainingTime, setRemainingTime] = useState<number>();
+    const [buttonActivated, setButtonActivated] = useState<boolean>();
+    const [textColor, setTextColor] = useState<boolean>();
 
     const ws = initWebSocket();
 
@@ -448,27 +448,26 @@ export default function Writer() {
                             <div className='flex flex-col mx-[20px]'>
                                 <div className='text-white mt-[34px] w-full h-[120px] text-[36px]'><a>{userInfo?.nickname}</a>님의<br />글쓰기 시간</div>
                                 <div className='flex flex-row gap-x-[8px] mt-[8px]'>
-                                    <div className='flex text-[26px]' style={{ color: '#CEB292' }}><a>{glooingInfo?.setting?.start_time[0]}:{glooingInfo?.setting?.start_time[1]}</a></div>
-
+                                    <div className='flex text-[26px]' style={{ color: '#CEB292' }}><a>{glooingInfo?.setting?.start_time[0]}:{glooingInfo?.setting?.start_time[1]}</a></div>ㄴ
                                     {/* <button className='flex text-white w-[106px] rounded-lg' style={{ backgroundColor: '#3F3F3F' }}><a className="w-full text-[14px] my-auto" style={{ color: '#8E887B' }}>변경하기 <a>{glooingInfo?.setting?.change_num}</a>/<a>{glooingInfo?.max_change_num}</a></a></button> */}
                                 </div>
                             </div>
                             <div className='flex flex-col mx-[20px] mt-[76px]'>
-                                <div className='' style={{ color: '#BAB1A0' }}>글쓰기 시간까지</div>
+                                <div className='' style={{ color: '#BAB1A0' }}>{buttonActivated === true ? '남은 시간' : '글쓰기 시간까지'}</div>
                                 <div className='flex w-full justify-start text-[66px]' style={{ color: '#F2EBDD' }}>{remainingTime}</div>
                             </div>
                             <div className='flex justify-center items-center mt-[110px]'>
                             <button
                             className={`rounded-xl w-[333px] h-[62px] ${
-                                buttonActivated ? 'bg-orange-500 text-black' : 'bg-zinc-700  text-white'
+                                buttonActivated === true ? 'bg-orange-500 text-black' : 'bg-zinc-700  text-white'
                             }`}
-                            disabled={buttonActivated}
+                            disabled={!buttonActivated}
                             onClick={handleOpenWriterModal}
                             >
                             글 작성하기
                             </button>
                                 <div style={{ position: 'absolute', top: '60%', left: '20%'}}>
-                            <img className="w-[120px] h-[42px] z-9999" src="/image/soon2.png" alt="soon2" />
+                            {buttonActivated === false && <img className="w-[120px] h-[42px] z-9999" src="/image/soon2.png" alt="soon2" />}
                         </div>
                             </div>
                         </div>
