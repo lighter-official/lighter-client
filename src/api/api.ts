@@ -124,3 +124,20 @@ export const initWebSocket = (): WebSocket => {
     return ws;
 };
 
+
+// 뱃지 API
+export const getMyBadge = async (accessToken: string) => {
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+    const response = await axios.get(`${apiUrl}/api/my/badge`, config);
+    console.log('뱃지 정보----------------', response.data)
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    throw error;
+  }
+};

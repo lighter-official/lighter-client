@@ -1,7 +1,8 @@
 // Settings.tsx
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Redirection, getCookie } from '..';
+import { getGlooingInfo, getMyBadge, getUserInfo } from '@/api/api';
 
 interface ModalProps {
     isOpen: boolean;
@@ -52,6 +53,9 @@ export default function Writer() {
     const accessToken = getCookie('access_token');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isLoggedIn, setLoggedIn] = useState(false);
+    const [glooingInfo, setGlooingInfo] = useState<any>({}); 
+    const [userInfo, setUserInfo] = useState<any>({}); 
+    const [badgeInfo, setBadgeInfo] = useState<any>({}); 
 
     const handleOpenModal = () => {
         setIsModalOpen(true);
@@ -61,6 +65,38 @@ export default function Writer() {
         setIsModalOpen(false);
     };
 
+    useEffect(() => {
+        const fetchUserData = async () => {
+          try {
+            const glooingData = await getGlooingInfo(accessToken);
+            setGlooingInfo(glooingData);
+            console.log(glooingInfo,'세팅 정보-------------------')
+    
+            // 유저 정보 가져오기
+            const userData = await getUserInfo(accessToken);
+            setUserInfo(userData);
+            console.log(userInfo,'유저 정보-------------------')
+    
+            // const id = glooingInfo?.writings[i]
+            // const writingData = await getWritingInfo(id, accessToken);
+            // setWritingData(writingData)
+            // console.log('각 글의 정보 ----------------:', writingData)
+            const badgeData = await getMyBadge(accessToken);
+            setBadgeInfo(badgeData)
+            console.log(badgeInfo,'뱃지 정보-------------------')
+                
+    
+            setLoggedIn(true)
+    
+          } catch (error) {
+            console.error('Error fetching user data:', error);
+          }
+        }
+    
+        // 페이지 로드 시 데이터 호출
+        fetchUserData();
+      }, []); // 빈 배열을 전달하여 페이지가 로드될 때 한 번만 실행되도록 설정
+    
 
     return (
         <div className="flex flex-col my-[50px] w-full">
@@ -97,20 +133,28 @@ export default function Writer() {
                                 </div>
                             </div>
                         </div>
-                        <div className='w-[1120px] rounded-sm border-black border-1 flex flex-row max-h-[797px]' style={{ backgroundColor: '#E0D5BF'}}>
+                        <div className='w-[1120px] rounded-sm flex flex-row max-h-[797px]' style={{ backgroundColor: '#E0D5BF', border:'1px solid black'}}>
                             <div className='w-full  my-[30px] ml-[53px] '>
 
                                 <div className='flex flex-row items-center '>
                                <div className='w-[205px] text-black mt-[8px] text-[36px] font-bold'>나의 뱃지</div>
-                     
-                                   </div>
                                
+                                   </div>
+                                   <div className='w-full mt-[8px] text-[24px]' style={{color: '#8E8070'}}>매일 글을 쓰고 뱃지를 획득해보세요!</div>
+                     
                                 <div className='flex flex-col  h-[759px] overflow-y-auto mt-[21px] mb-[21px] '>
-                                    <div className=' mt-[53px] flex flex-row gap-x-[46px]'>
+                                    <div className='flex text-center items-center jusify-center text-[18px] bg-black w-[80px] h-[40px]' style={{color: '#D5C8AE'}}>
+                                        <a className='flex items-center justify-center mx-auto'>나비</a>
+                                        </div>
+                                    <div className=' mt-[33px] flex flex-row gap-x-[46px]'>
                                         <div>
-                                            <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}></div>
-                                            {/* <div className='mt-[10px] text-[36px]'>영화</div>
-                                            <div className='mt-[10px] text-[16px]' style={{color:'#8A8170'}}>2023년 11월 7일 발행</div> */}
+                                            {/* <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}></div> */}
+                                            <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}>
+                                                <img className="w-[152px] h-[153px] z-50" src="/image/egg.png" alt="Logo" />
+                                            </div>
+                                            
+                                            <div className='mt-[10px] text-[36px]'>{badgeInfo?.name}알</div>
+                                            <div className='mt-[10px] text-[16px]' style={{color:'#8A8170'}}>2024년 2월 3일 발행{badgeInfo?.created_at}</div>
                                         </div>
                                         <div>
                                             <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}></div>
