@@ -280,34 +280,35 @@ export default function Writer() {
     const [selectedWritingId, setSelectedWritingId] = useState('')
     const [writingData, setWritingData] = useState<any>({}); 
     const [isLoggedIn, setLoggedIn] = useState(false);
-    const [wsMessage, setWsMessage] = useState<string>('')
-    const [remainingTime, setRemainingTime] = useState<number>();
-    const [buttonActivated, setButtonActivated] = useState<boolean>();
-    const [textColor, setTextColor] = useState<boolean>();
+    // const [remainingTime, setRemainingTime] = useState<number>();
+    // const [buttonActivated, setButtonActivated] = useState<boolean>();
+    // const [textColor, setTextColor] = useState<boolean>();
 
-    const ws = initWebSocket();
+    // const [wsMessage, setWsMessage] = useState<string>('')
 
-    interface WebSocketData {
-        remaining_time: number;
-        write_button_activated: boolean;
-        text_red: boolean;
-      }
+    // const ws = initWebSocket();
+
+    // interface WebSocketData {
+    //     remaining_time: number;
+    //     write_button_activated: boolean;
+    //     text_red: boolean;
+    //   }
 
   useEffect(() => {
-    ws.onopen = () => {
-        console.log('WebSocket connection opened.====================');
-      };
-      ws.onmessage = (event) => {
-         const jsonData: WebSocketData = JSON.parse(event.data);
-        console.log(jsonData, '받은 JSON---------------------------');
-        setRemainingTime(jsonData.remaining_time);
-        setButtonActivated(jsonData.write_button_activated);
-        setTextColor(jsonData.text_red);
+//     ws.onopen = () => {
+//         console.log('WebSocket connection opened.====================');
+//       };
+//       ws.onmessage = (event) => {
+//          const jsonData: WebSocketData = JSON.parse(event.data);
+//         console.log(jsonData, '받은 JSON---------------------------');
+//         setRemainingTime(jsonData.remaining_time);
+//         setButtonActivated(jsonData.write_button_activated);
+//         setTextColor(jsonData.text_red);
     
-        // Handle WebSocket data as needed
-        setWsMessage(`Remaining Time: ${remainingTime}, Button activated: ${buttonActivated}`);
-        console.log(`Remaining Time: ${remainingTime}, Button activated: ${buttonActivated}`);
-    };
+//         // Handle WebSocket data as needed
+//         setWsMessage(`Remaining Time: ${remainingTime}, Button activated: ${buttonActivated}`);
+//         console.log(`Remaining Time: ${remainingTime}, Button activated: ${buttonActivated}`);
+//     };
     
 
     const fetchUserData = async () => {
@@ -333,22 +334,22 @@ export default function Writer() {
         // console.log('각 글의 정보 ----------------:', writingData)
 
             
-    const sendMessage = () => {
-        const input1 = glooingData?.setting?.start_time[0]
-        const input2 = glooingData?.setting?.start_time[1]
-        const input3 = glooingData?.setting?.for_hours
-        console.log('==============', input1,input2,input3);
+    // const sendMessage = () => {
+    //     const input1 = glooingData?.setting?.start_time[0]
+    //     const input2 = glooingData?.setting?.start_time[1]
+    //     const input3 = glooingData?.setting?.for_hours
+    //     console.log('==============', input1,input2,input3);
     
-        if (ws.readyState === WebSocket.OPEN) {
-            ws.send(input1);
-            ws.send(input2);
-            ws.send(input3);
-            console.log('ready!')
-        } else {
-            console.error('WebSocket is not open.');
-        }
-    };
-        sendMessage()
+    //     if (ws.readyState === WebSocket.OPEN) {
+    //         ws.send(input1);
+    //         ws.send(input2);
+    //         ws.send(input3);
+    //         console.log('ready!')
+    //     } else {
+    //         console.error('WebSocket is not open.');
+    //     }
+    // };
+    //     sendMessage()
         setLoggedIn(true)
 
       } catch (error) {
@@ -453,21 +454,28 @@ export default function Writer() {
                                 </div>
                             </div>
                             <div className='flex flex-col mx-[20px] mt-[76px]'>
-                                <div className='' style={{ color: '#BAB1A0' }}>{buttonActivated === true ? '남은 시간' : '글쓰기 시간까지'}</div>
-                                <div className='flex w-full justify-start text-[66px]' style={{ color: '#F2EBDD' }}>{remainingTime}</div>
+                                {/* <div className='' style={{ color: '#BAB1A0' }}>{buttonActivated === true ? '남은 시간' : '글쓰기 시간까지'}</div> */}
+                                <div className='' style={{ color: '#BAB1A0' }}>글쓰기 시간까지</div>
+                                {/* <div className='flex w-full justify-start text-[66px]' style={{ color: '#F2EBDD' }}>{remainingTime}</div> */}
+                                <div className='flex w-full justify-start text-[66px]' style={{ color: '#F2EBDD' }}>12 : 30 : 00</div>
                             </div>
                             <div className='flex justify-center items-center mt-[110px]'>
-                            <button
+                            {/* <button
                             className={`rounded-xl w-[333px] h-[62px] ${
                                 buttonActivated === true ? 'bg-orange-500 text-black' : 'bg-zinc-700  text-white'
+                            }`} */}
+                            <button
+                            className={`rounded-xl w-[333px] h-[62px] ${
+                                'bg-zinc-700  text-white'
                             }`}
-                            disabled={!buttonActivated}
+                            // disabled={!buttonActivated}
                             onClick={handleOpenWriterModal}
                             >
                             글 작성하기
                             </button>
                                 <div style={{ position: 'absolute', top: '60%', left: '20%'}}>
-                            {buttonActivated === false && <img className="w-[120px] h-[42px] z-9999" src="/image/soon2.png" alt="soon2" />}
+                            {/* {buttonActivated === false && <img className="w-[120px] h-[42px] z-9999" src="/image/soon2.png" alt="soon2" />} */}
+                            <img className="w-[120px] h-[42px] z-9999" src="/image/soon2.png" alt="soon2" />
                         </div>
                             </div>
                         </div>
@@ -517,7 +525,8 @@ export default function Writer() {
                 </div>
 
             </div>
-            <Modal isOpen={isWriterModalOpen} onClose={handleCloseWriterModal} data={glooingInfo} writingData={writingData} remainingTime={remainingTime} textColor={textColor}/>
+            {/* <Modal isOpen={isWriterModalOpen} onClose={handleCloseWriterModal} data={glooingInfo} writingData={writingData} remainingTime={remainingTime} textColor={textColor}/> */}
+            <Modal isOpen={isWriterModalOpen} onClose={handleCloseWriterModal} data={glooingInfo} writingData={writingData} />
             <EditModal isOpen={isEditModalOpen} onClose={handleCloseEditModal} data={glooingInfo} id={selectedWritingId} writingData={writingData}/>
         </div>
     );
