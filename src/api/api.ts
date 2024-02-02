@@ -1,6 +1,8 @@
 import axios from 'axios';
 
 const apiUrl = process.env.API_URL || 'http://localhost:8000';
+const WS_BASE_URL = "ws://localhost:8000/ws/timer/main";  // WebSocket 서버 주소
+
 
 export const getLoginInfo = async (code:any) => {
   try {
@@ -115,3 +117,10 @@ export const putWriting = async (id:string, data: any, accessToken:string) => {
     throw error;
   }
 }
+
+// WebSocket 연결 초기화 함수
+export const initWebSocket = (): WebSocket => {
+    const ws = new WebSocket(`${WS_BASE_URL}`);
+    return ws;
+};
+

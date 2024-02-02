@@ -1,6 +1,6 @@
 // Settings.tsx
 'use client'
-import { getGlooingInfo, getUserInfo, getWritingInfo, postWriting, putWriting } from '@/api/api';
+import { getGlooingInfo, getUserInfo, getWritingInfo, initWebSocket, postWriting, putWriting } from '@/api/api';
 import router, { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import nookies from 'nookies';
@@ -14,11 +14,12 @@ interface ModalProps {
     data: any;
     id?: string;
     writingData: any;
+    remainingTime?: any;
+    textColor?: boolean;
 }
 
-
 // 새로 등록하는 모달로 사용
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, data, writingData }) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, data, writingData, remainingTime, textColor }) => {
     const router = useRouter()
     const [title, setTitle] = useState('');
     const [desc, setDesc] = useState('');
@@ -56,9 +57,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, data, writingData }) => 
           console.error('Error saving writing:', error);
         }
       
-        // 모달 닫기
         onClose();
         setIsConfirmationModalOpen(false);
+        window.location.reload()
     };
       
 
@@ -97,7 +98,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, data, writingData }) => 
                 </div>
                 <div className='flex flex-col w-full rounded-md'>
                     <div className='h-[100px] flex justify-between  p-8 items-center rounded-md w-full' style={{ backgroundColor: '#F1F1F1' }}>
-                        <a className='items-start justify-start flex'>남은 시간 01:03:55</a>
+                        <a className='items-start justify-start flex'  style={{ color: textColor ? '#FF4500' : 'black' }} >남은 시간 {remainingTime}</a>
                         <button
                         className={`w-[152px] h-[53px] cursor-pointer rounded-md ${
                             disabled ? 'bg-zinc-400 text-gray-100' : 'bg-orange-500 text-black'
@@ -184,6 +185,7 @@ const EditModal: React.FC<ModalProps> = ({ isOpen, onClose, data, id, writingDat
         // 모달 닫기
         onClose();
         setIsConfirmationModal2Open(false);
+        window.location.reload()
       };
       
 
@@ -278,8 +280,36 @@ export default function Writer() {
     const [selectedWritingId, setSelectedWritingId] = useState('')
     const [writingData, setWritingData] = useState<any>({}); 
     const [isLoggedIn, setLoggedIn] = useState(false);
+    const [wsMessage, setWsMessage] = useState<string>('')
+    const [remainingTime, setRemainingTime] = useState<number | null>(null);
+    const [buttonActivated, setButtonActivated] = useState<boolean | undefined>(false);
+    const [textColor, setTextColor] = useState<boolean | undefined>(false);
+
+    const ws = initWebSocket();
+
+    interface WebSocketData {
+        remaining_time: number;
+        write_button_activated: boolean;
+        text_red: boolean;
+      }
 
   useEffect(() => {
+    ws.onopen = () => {
+        console.log('WebSocket connection opened.====================');
+      };
+      ws.onmessage = (event) => {
+         const jsonData: WebSocketData = JSON.parse(event.data);
+        console.log(jsonData, '받은 JSON---------------------------');
+        setRemainingTime(jsonData.remaining_time);
+        setButtonActivated(jsonData.write_button_activated);
+        setTextColor(jsonData.text_red);
+    
+        // Handle WebSocket data as needed
+        setWsMessage(`Remaining Time: ${remainingTime}, Button activated: ${buttonActivated}`);
+        console.log(`Remaining Time: ${remainingTime}, Button activated: ${buttonActivated}`);
+    };
+    
+
     const fetchUserData = async () => {
       try {
         const accessToken = router.query.access_token as string
@@ -302,6 +332,23 @@ export default function Writer() {
         // setWritingData(writingData)
         // console.log('각 글의 정보 ----------------:', writingData)
 
+            
+    const sendMessage = () => {
+        const input1 = glooingData?.setting?.start_time[0]
+        const input2 = glooingData?.setting?.start_time[1]
+        const input3 = glooingData?.setting?.for_hours
+        console.log('==============', input1,input2,input3);
+    
+        if (ws.readyState === WebSocket.OPEN) {
+            ws.send(input1);
+            ws.send(input2);
+            ws.send(input3);
+            console.log('ready!')
+        } else {
+            console.error('WebSocket is not open.');
+        }
+    };
+        sendMessage()
         setLoggedIn(true)
 
       } catch (error) {
@@ -313,10 +360,6 @@ export default function Writer() {
     fetchUserData();
   }, []); // 빈 배열을 전달하여 페이지가 로드될 때 한 번만 실행되도록 설정
 
-  useEffect(() => {
-    console.log('세팅 정보:', glooingInfo);
-    console.log('유저 정보:', userInfo);
-}, [glooingInfo, userInfo]);
 
 
     const handleOpenWriterModal = () => {
@@ -368,6 +411,18 @@ export default function Writer() {
     const completion_percentage = (glooingInfo?.writings?.length / glooingInfo?.setting?.page) * 100;
     const accessToken = getCookie('access_token');
 
+    useEffect(() => {
+        const accessToken = getCookie('access_token');
+
+        // 페이지에 변동사항이 있을 때 리다이렉트
+        if (accessToken) {
+            router.push({
+                pathname: router.pathname,
+                query: { access_token: accessToken },
+            });
+        }
+    }, [glooingInfo, userInfo]);
+    
     return (
         <div className="flex flex-col my-[50px] w-full overflow-hidden">
             <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
@@ -400,10 +455,18 @@ export default function Writer() {
                             </div>
                             <div className='flex flex-col mx-[20px] mt-[76px]'>
                                 <div className='' style={{ color: '#BAB1A0' }}>글쓰기 시간까지</div>
-                                <div className='w-full justify-center text-[60px]' style={{ color: '#F2EBDD' }}>12 : 40 : 50</div>
+                                <div className='flex w-full justify-start text-[66px]' style={{ color: '#F2EBDD' }}>{remainingTime}</div>
                             </div>
                             <div className='flex justify-center items-center mt-[110px]'>
-                                <button className='rounded-xl w-[333px] h-[62px] text-white' style={{ backgroundColor: '#3F3F3F', color: '#8E887B' }} onClick={handleOpenWriterModal}>글 작성하기</button>
+                            <button
+                            className={`rounded-xl w-[333px] h-[62px] ${
+                                buttonActivated ? 'bg-orange-500 text-black' : 'bg-zinc-700  text-white'
+                            }`}
+                            disabled={buttonActivated}
+                            onClick={handleOpenWriterModal}
+                            >
+                            글 작성하기
+                            </button>
                                 <div style={{ position: 'absolute', top: '60%', left: '20%'}}>
                             <img className="w-[120px] h-[42px] z-9999" src="/image/soon2.png" alt="soon2" />
                         </div>
@@ -455,7 +518,7 @@ export default function Writer() {
                 </div>
 
             </div>
-            <Modal isOpen={isWriterModalOpen} onClose={handleCloseWriterModal} data={glooingInfo} writingData={writingData}/>
+            <Modal isOpen={isWriterModalOpen} onClose={handleCloseWriterModal} data={glooingInfo} writingData={writingData} remainingTime={remainingTime} textColor={textColor}/>
             <EditModal isOpen={isEditModalOpen} onClose={handleCloseEditModal} data={glooingInfo} id={selectedWritingId} writingData={writingData}/>
         </div>
     );

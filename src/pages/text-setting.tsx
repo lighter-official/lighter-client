@@ -1,7 +1,7 @@
 // Settings.tsx
 'use client'
 import "./globals.css";
-import { postSetUp } from '@/api/api';
+import { initWebSocket, postSetUp } from '@/api/api';
 import axios from 'axios';
 import { fork } from 'child_process';
 import { useRouter } from 'next/router';
@@ -278,6 +278,13 @@ export default function Settings() {
                                             <a className='ml-[20px] my-auto'>동안</a>
                                         </div>
                                     </div>
+                                    {/* <form onSubmit={sendMessage}>
+                                        <input type="text" id="messageText1" />
+                                        <input type="text" id="messageText2" />
+                                        <input type="text" id="messageText3" />
+                                        <input type="text" id="messageText4" />
+                                        <button type="submit">Send Messages</button>
+                                    </form> */}
                                     <button
                                         className={`rounded-md mx-auto mt-[30px] w-[386px] font-bold h-[62px] ${disabled ? 'bg-gray-800 text-gray-600' : 'bg-orange-500 text-black'}`}
                                         onClick={handleStart}
