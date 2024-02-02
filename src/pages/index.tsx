@@ -112,11 +112,6 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }) => {
       code: code
     };
 
-    const queryStringBody = Object.keys(bodyData)
-      .map(k => encodeURIComponent(k) + "=" + encodeURIComponent(bodyData[k as keyof typeof bodyData]))
-      .join("&");
-  
-
     if (code) {
       getToken(code);
     }

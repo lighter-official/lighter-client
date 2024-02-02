@@ -4,7 +4,7 @@ import { getGlooingInfo, getUserInfo, getWritingInfo, initWebSocket, postWriting
 import router, { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import nookies from 'nookies';
-import { Redirection } from '.';
+import { Redirection, getCookie } from '.';
 import { access } from 'fs';
 import "./globals.css";
 
@@ -28,10 +28,10 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, data, writingData, remai
     const disabled = !title || !desc
     const [writingDetails, setWritingDetails] = useState<any>(null);
 
-    useEffect(() => {
-        console.log(data,'DATA!')
-        console.log(writingData, 'WRITING')
-      }); // 
+    // useEffect(() => {
+    //     console.log(data,'DATA!')
+    //     console.log(writingData, 'WRITING')
+    //   }); // 
       
     const handleCancelPost = () => {
         setIsConfirmationModalOpen(false)
@@ -42,24 +42,26 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, data, writingData, remai
         setIsConfirmationModalOpen(true);
     };
       
+
     const handleConfirmPost = async () => {
         // 작성한 글을 서버에 저장
         const writingData = {
                 title: title || null,  // 만약 title이 빈 문자열이면 null로 설정
                 desc: desc || null,    // 만약 desc가 빈 문자열이면 null로 설정
             };
-      
         try {
             // 새로운 글 작성
             await postWriting(writingData, accessToken);
             console.log('들어옴 ???')
+            const currentURL = window.location.href;
+            const newURL = `${currentURL}?access_token=${accessToken}`;
+            window.history.replaceState({}, document.title, newURL);
         } catch (error) {
           console.error('Error saving writing:', error);
         }
       
         onClose();
         setIsConfirmationModalOpen(false);
-        window.location.reload()
     };
       
 
@@ -152,10 +154,12 @@ const EditModal: React.FC<ModalProps> = ({ isOpen, onClose, data, id, writingDat
     const disabled = !title || !desc
     const [writingDetails, setWritingDetails] = useState<any>(null);
 
-    useEffect(() => {
-        console.log(id, 'WRITING')
-    }, [writingData, id]); 
+    // useEffect(() => {
+    //     console.log(id, 'WRITING')
+    // }, [writingData, id]); 
       
+
+    
     const handleCancelPost = () => {
         setIsConfirmationModal2Open(false)
     }
@@ -166,27 +170,30 @@ const EditModal: React.FC<ModalProps> = ({ isOpen, onClose, data, id, writingDat
         setIsConfirmationModal2Open(true);
     };
       
-      const handleConfirmPost = async () => {
-        console.log('DGHALDJGJDJHS')
-       
+
+    const handleConfirmPost = async () => {
         // 작성한 글을 서버에 저장
-        const editData = {
+         const editData = {
             title: title || writingData?.title || null,
             desc: desc || writingData?.desc || null,
         };
-      
+    
         try {
+            // 새로운 글 작성
             await putWriting(id, editData, accessToken);
-            console.log('들어왔는가')
+            console.log('글 작성 완료');
+    
+            // 페이지 새로 고침 없이 현재 URL에 토큰을 포함하여 다시 로드
+            const currentURL = window.location.href;
+            const newURL = `${currentURL}?access_token=${accessToken}`;
+            window.history.replaceState({}, document.title, newURL);
         } catch (error) {
-          console.error('Error saving writing:', error);
+            console.error('Error saving writing:', error);
         }
-      
-        // 모달 닫기
+    
         onClose();
         setIsConfirmationModal2Open(false);
-        window.location.reload()
-      };
+    };
       
 
 
@@ -265,6 +272,43 @@ const EditModal: React.FC<ModalProps> = ({ isOpen, onClose, data, id, writingDat
     );
 };
 
+{/* <BadgeModal isOpen={isMiniModalOpen} onClose={handleCloseMiniModal} data={glooingInfo} id={selectedWritingId} writingData={writingData}/> */}
+// const MiniModal: React.FC<ModalProps> = ({ isOpen, onClose, data, id, writingData }) => {
+//     const router = useRouter()
+//     const [title, setTitle] = useState('');
+//     const [desc, setDesc] = useState('');
+//     const accessToken = router.query.access_token as string
+//     const [isMiniModalOpen, setIsCMiniModalOpen] = useState(false);
+//     const [writingDetails, setWritingDetails] = useState<any>(null);
+
+// (
+//             <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
+//                 <div className="absolute w-full h-full bg-gray-800 opacity-50" onClick={onClose}></div>
+//                     <div className="flex flex-col bg-white w-[300px] h-[155px] text-center justify-center items-center rounded-lg z-50">
+//                         <div className='p-8 '>
+//                             <div className='text-[16px] mb-[30px]'>해당 내용으로 수정하시겠습니까?</div>
+//                             <div className='flex justify-center gap-x-[10px]'>
+//                                 <button
+//                                     className='w-[120px] text-[14px] cursor-pointer h-[40px] rounded-md'
+//                                     style={{ backgroundColor: '#D9D9D9' }}
+//                                     onClick={handleCancelPost}
+//                                 >
+//                                     취소
+//                                 </button>
+//                                 <button
+//                                     className='w-[120px] text-[14px] cursor-pointer h-[40px] rounded-md'
+//                                     style={{ backgroundColor: '#FF8126' }}
+//                                     onClick={handleConfirmPost}
+//                                 >
+//                                     확인
+//                                 </button>
+                                
+//                             </div>
+//                         </div>
+//                     </div>
+//                 </div>
+//                 )}
+
 
 export default function Writer() {
     // const router = useRouter()
@@ -294,8 +338,8 @@ export default function Writer() {
     //     text_red: boolean;
     //   }
 
-  useEffect(() => {
-//     ws.onopen = () => {
+    // 웹소켓 - useeffect 내부
+    //     ws.onopen = () => {
 //         console.log('WebSocket connection opened.====================');
 //       };
 //       ws.onmessage = (event) => {
@@ -309,31 +353,7 @@ export default function Writer() {
 //         setWsMessage(`Remaining Time: ${remainingTime}, Button activated: ${buttonActivated}`);
 //         console.log(`Remaining Time: ${remainingTime}, Button activated: ${buttonActivated}`);
 //     };
-    
 
-    const fetchUserData = async () => {
-      try {
-        const accessToken = router.query.access_token as string
-        
-        
-        // 글루ING 정보 가져오기
-        const glooingData = await getGlooingInfo(accessToken);
-        console.log(glooingData,'세팅 정보-------------------')
-        setGlooingInfo(glooingData);
-        console.log(glooingInfo,'세팅 정보-------------------')
-
-        // 유저 정보 가져오기
-        const userData = await getUserInfo(accessToken);
-        console.log(userData,'유저 정보-------------------')
-        setUserInfo(userData);
-        console.log(userInfo,'유저 정보-------------------')
-
-        // const id = glooingInfo?.writings[i]
-        // const writingData = await getWritingInfo(id, accessToken);
-        // setWritingData(writingData)
-        // console.log('각 글의 정보 ----------------:', writingData)
-
-            
     // const sendMessage = () => {
     //     const input1 = glooingData?.setting?.start_time[0]
     //     const input2 = glooingData?.setting?.start_time[1]
@@ -350,16 +370,40 @@ export default function Writer() {
     //     }
     // };
     //     sendMessage()
+
+    // 이를 계속해서 실행함 .
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const glooingData = await getGlooingInfo(accessToken);
+        setGlooingInfo(glooingData);
+        console.log(glooingInfo,'세팅 정보-------------------')
+
+        // 유저 정보 가져오기
+        const userData = await getUserInfo(accessToken);
+        setUserInfo(userData);
+        console.log(userInfo,'유저 정보-------------------')
+
+        // const id = glooingInfo?.writings[i]
+        // const writingData = await getWritingInfo(id, accessToken);
+        // setWritingData(writingData)
+        // console.log('각 글의 정보 ----------------:', writingData)
+
+            
+
         setLoggedIn(true)
 
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
-    };
+    }
 
     // 페이지 로드 시 데이터 호출
     fetchUserData();
   }, []); // 빈 배열을 전달하여 페이지가 로드될 때 한 번만 실행되도록 설정
+
+
 
 
 
@@ -528,6 +572,7 @@ export default function Writer() {
             {/* <Modal isOpen={isWriterModalOpen} onClose={handleCloseWriterModal} data={glooingInfo} writingData={writingData} remainingTime={remainingTime} textColor={textColor}/> */}
             <Modal isOpen={isWriterModalOpen} onClose={handleCloseWriterModal} data={glooingInfo} writingData={writingData} />
             <EditModal isOpen={isEditModalOpen} onClose={handleCloseEditModal} data={glooingInfo} id={selectedWritingId} writingData={writingData}/>
+            {/* <BadgeModal isOpen={isMiniModalOpen} onClose={handleCloseMiniModal} data={glooingInfo} id={selectedWritingId} writingData={writingData}/> */}
         </div>
     );
 }
