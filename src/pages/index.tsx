@@ -14,7 +14,7 @@ import nookies from 'nookies';
 export const Redirection = ({ isLoggedIn, setLoggedIn }) => {
   const router = useRouter();  // 수정된 부분
   const REST_API_KEY = '042aae38695b074b539c155e83aa75a5';
-  const REDIRECT_URI = 'http://localhost:3000';
+  const REDIRECT_URI = 'http://localhost:3000/text-setting';
   const [nickname, setNickname] = useState<string | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   
@@ -61,8 +61,8 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }) => {
 
 
   const getToken = async (code: any) => {
-    const KAKAO_REST_API_KEY = '042aae38695b074b539c155e83aa75a5';
-    const KAKAO_REDIRECT_URI = 'http://localhost.3000';
+    // const KAKAO_REST_API_KEY = '042aae38695b074b539c155e83aa75a5';
+    // const KAKAO_REDIRECT_URI = 'http://localhost.3000';
 
     try {
       const response = await fetch(`http://localhost:8000/api/login/kakao?code=${code}`, {

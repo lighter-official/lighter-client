@@ -391,11 +391,15 @@ export default function Writer() {
             const input2 = glooingData?.setting?.start_time[1]
             const input3 = glooingData?.setting?.for_hours
             console.log('==============', input1,input2,input3);
+
+            const dataToSend = {
+                h: input1,
+                m: input2,
+                for_hours: input3
+            }
         
             if (ws.readyState === WebSocket.OPEN) {
-                ws.send(input1);
-                ws.send(input2);
-                ws.send(input3);
+                ws.send(JSON.stringify(dataToSend))
                 console.log('ready!')
             } else {
                 console.error('WebSocket is not open.');
