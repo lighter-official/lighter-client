@@ -14,7 +14,7 @@ import nookies from 'nookies';
 export const Redirection = ({ isLoggedIn, setLoggedIn }) => {
   const router = useRouter();  // 수정된 부분
   const REST_API_KEY = '042aae38695b074b539c155e83aa75a5';
-  const REDIRECT_URI = 'http://localhost:3000/text-setting';
+  const REDIRECT_URI = 'http://localhost:3000';
   const [nickname, setNickname] = useState<string | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   
@@ -39,6 +39,7 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }) => {
       } as any); // 'as any'를 사용하여 타입 명시
     }
   };
+  
 
   const noData = () => {
     console.log('no');
