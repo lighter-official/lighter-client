@@ -92,28 +92,32 @@ export default function Writer() {
                             <div className='w-full  my-[30px] ml-[53px] '>
 
                                 <div className='flex flex-row items-center '>
-                               <div className='w-full text-black mt-[8px] text-[36px] font-bold'>내가 발행한 책</div>
+                               <div className='w-full text-black mt-[8px] text-[36px] font-bold'>내가 발행한 책 (2) </div>
                      
                                    </div>
                                
                                 <div className='flex flex-col  max-h-[643px] overflow-y-auto mt-[21px] mb-[21px] '>
                                     <div className=' mt-[53px] flex flex-row gap-x-[46px]'>
                                         <div>
-                                            <div className='w-[266px] h-[370px]' style={{backgroundColor: '#D5C8AE', border: '1px solid gray'}}></div>
-                                            {/* <div className='mt-[10px] text-[36px]'>영화</div>
-                                            <div className='mt-[10px] text-[16px]' style={{color:'#8A8170'}}>2023년 11월 7일 발행</div> */}
+                                            <div className='w-[266px] h-[367px]' style={{backgroundColor: '#D5C8AE', border: '1px solid gray'}}>
+                                            <img className="z-50" src="/image/book_1.png" alt="book1" />
+                                            </div>
+                                            <div className='mt-[10px] text-[32px]'>영화</div>
+                                            <div className='mt-[10px] text-[16px]' style={{color:'#8A8170'}}>2023년 12월 15일 발행</div>
                                         </div>
                                         <div>
-                                            <div className='w-[266px] h-[370px]' style={{backgroundColor: '#D5C8AE', border: '1px solid gray'}}></div>
-                                            {/* <div className='mt-[10px] text-[36px]'>반려동물에 대하여</div>
-                                            <div className='mt-[10px] text-[16px]' style={{color:'#8A8170'}}>2023년 11월 7일 발행</div> */}
+                                            <div className='w-[266px] h-[367px]' style={{backgroundColor: '#D5C8AE', border: '1px solid gray'}}>
+                                            <img className="z-50" src="/image/book_2.png" alt="book2" />
+                                            </div>
+                                            <div className='mt-[10px] text-[32px]'>반려동물에 대하여</div>
+                                            <div className='mt-[10px] text-[16px]' style={{color:'#8A8170'}}>2023년 12월 25일 발행</div>
                                         </div>
                                         <div className='w-[266px] h-[370px]' style={{backgroundColor: '#D5C8AE', border: '1px solid gray'}}></div>                                    
                                     </div>
                                     <div className=' mt-[43px] flex flex-row gap-x-[46px]'>
-                                        <div className='w-[266px] h-[370px]' style={{backgroundColor: '#D5C8AE', border: '1px solid gray'}}></div>
-                                        <div className='w-[266px] h-[370px]' style={{backgroundColor: '#D5C8AE', border: '1px solid gray'}}></div>
-                                        <div className='w-[266px] h-[370px]' style={{backgroundColor: '#D5C8AE', border: '1px solid gray'}}></div>                                    
+                                        <div className='w-[266px] h-[367px]' style={{backgroundColor: '#D5C8AE', border: '1px solid gray'}}></div>
+                                        <div className='w-[266px] h-[367px]' style={{backgroundColor: '#D5C8AE', border: '1px solid gray'}}></div>
+                                        <div className='w-[266px] h-[367px]' style={{backgroundColor: '#D5C8AE', border: '1px solid gray'}}></div>                                    
                                     </div>
                                     
                                 </div>

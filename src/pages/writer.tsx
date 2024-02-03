@@ -400,7 +400,7 @@ export default function Writer() {
         
             if (ws.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify(dataToSend))
-                console.log('ready!')
+                console.log('data----------!',dataToSend)
             } else {
                 console.error('WebSocket is not open.');
             }
