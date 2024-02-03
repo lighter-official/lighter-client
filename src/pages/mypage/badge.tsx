@@ -133,14 +133,14 @@ export default function Writer() {
                                 </div>
                             </div>
                         </div>
-                        <div className='w-[1120px] rounded-sm flex flex-row max-h-[797px]' style={{ backgroundColor: '#E0D5BF', border:'1px solid black'}}>
+                        <div className='w-[1120px] rounded-sm  bg-gray-800 opacity-25 flex flex-row max-h-[797px]' style={{ backgroundColor: '#E0D5BF', border:'1px solid black'}}>
                             <div className='w-full  my-[30px] ml-[53px] '>
 
                                 <div className='flex flex-row items-center '>
                                <div className='w-[205px] text-black mt-[8px] text-[36px] font-bold'>나의 뱃지</div>
                                
                                    </div>
-                                   <div className='w-full mt-[8px] text-[24px]' style={{color: '#8E8070'}}>매일 글을 쓰고 뱃지를 획득해보세요!</div>
+                                   {/* <div className='w-full mt-[8px] text-[24px]' style={{color: '#8E8070'}}>매일 글을 쓰고 뱃지를 획득해보세요!</div> */}
                      
                                 <div className='flex flex-col  h-[759px] overflow-y-auto mt-[21px] mb-[21px] '>
                                     <div className='flex text-center items-center jusify-center text-[18px] bg-black w-[80px] h-[40px]' style={{color: '#D5C8AE'}}>
@@ -150,23 +150,57 @@ export default function Writer() {
                                         <div>
                                             {/* <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}></div> */}
                                             <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}>
-                                                <img className="w-[152px] h-[153px] z-50" src="/image/egg.png" alt="Logo" />
+                                                <img className="w-[152px] h-[153px] z-50" src="/image/butterfly_1.jpg" alt="egg" />
                                             </div>
                                             
                                             <div className='mt-[10px] text-[36px]'>{badgeInfo?.name}알</div>
-                                            <div className='mt-[10px] text-[16px]' style={{color:'#8A8170'}}>2024년 2월 3일 발행{badgeInfo?.created_at}</div>
+                                            <div className='mt-[10px] text-[16px]' style={{color:'#8A8170'}}>2024년 1월 20일 발행{badgeInfo?.created_at}</div>
                                         </div>
                                         <div>
-                                            <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}></div>
-                                            {/* <div className='mt-[10px] text-[36px]'>반려동물에 대하여</div>
-                                            <div className='mt-[10px] text-[16px]' style={{color:'#8A8170'}}>2023년 11월 7일 발행</div> */}
+                                            {/* <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}></div> */}
+                                            <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}>
+                                                <img className="w-[152px] h-[153px] z-50" src="/image/butterfly_2.png" alt="bug" />
+                                            </div>
+                                            
+                                            <div className='mt-[10px] text-[36px]'>{badgeInfo?.name}애벌레</div>
+                                            <div className='mt-[10px] text-[16px]' style={{color:'#8A8170'}}>2024년 1월 25일 발행{badgeInfo?.created_at}</div>
+                                        </div>     
+                                        <div>
+                                            <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}>
+                                                <img className="w-[152px] h-[153px] z-50" src="/image/butterfly_3.png" alt="beondaegi" />
+                                            </div>
+                                            
+                                            <div className='mt-[10px] text-[36px]'>{badgeInfo?.name}번데기</div>
+                                            <div className='mt-[10px] text-[16px]' style={{color:'#8A8170'}}>2024년 1월 31일 발행{badgeInfo?.created_at}</div>
+                                        </div>                        
+                                    </div>
+                                    <div className=' mt-[33px] flex flex-row gap-x-[46px]'>
+                                        <div>
+                                            {/* <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}></div> */}
+                                            <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}>
+                                                <img className="w-[152px] h-[153px] z-50" src="/image/butterfly_4.png" alt="gochi" />
+                                            </div>
+                                            
+                                            <div className='mt-[10px] text-[36px]'>{badgeInfo?.name}고치</div>
+                                            <div className='mt-[10px] text-[16px]' style={{color:'#8A8170'}}>2024년 2월 2일 발행{badgeInfo?.created_at}</div>
                                         </div>
-                                        <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}></div>                                    
+                                        <div>
+                                            {/* <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}></div> */}
+                                            <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}>
+                                                <img className="w-[152px] h-[153px] z-50" src="/image/butterfly_5.png" alt="nabi" />
+                                            </div>
+                                            
+                                            <div className='mt-[10px] text-[36px]'>{badgeInfo?.name}나비</div>
+                                            <div className='mt-[10px] text-[16px]' style={{color:'#8A8170'}}>2024년 2월 4일 발행{badgeInfo?.created_at}</div>
+                                        </div>                    
                                     </div>
                                     
                                 </div>
                                 
                             </div>
+                        </div>
+                        <div style={{ position: 'absolute', top: '50%', left: '55%'}}>
+                            <img className="w-[184px] h-[53px] z-9999" src="/image/soon.png" alt="soon" />
                         </div>
 
                     </div>
