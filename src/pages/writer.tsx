@@ -319,11 +319,6 @@ const EditModal: React.FC<ModalProps> = ({ isOpen, onClose, data, id, writingDat
 
 
 export default function Writer() {
-    // const router = useRouter()
-    // const handleClick = () => {
-    //     // 시작하기 버튼을 누르면 settings.tsx로 이동
-    //     router.push('/writer');
-    // };
     const router = useRouter()
     const [isWriterModalOpen, setIsWriterModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -334,92 +329,76 @@ export default function Writer() {
     const [writingData, setWritingData] = useState<any>({}); 
     const [isLoggedIn, setLoggedIn] = useState(false);
     const [writingCount, setWritingCount] = useState(0);
-    const [remainingTime, setRemainingTime] = useState<number>();
+    const [remainingTime, setRemainingTime] = useState<string>();
     const [buttonActivated, setButtonActivated] = useState<boolean>();
     const [textColor, setTextColor] = useState<boolean>();
 
-    const [wsMessage, setWsMessage] = useState<string>('')
-
-    const ws = initWebSocket();
-
-    interface WebSocketData {
-        remaining_time: number;
-        write_button_activated: boolean;
-        text_red: boolean;
-      }
-
-    // 웹소켓 - useeffect 내부
-
-
-
-    // 이를 계속해서 실행함 .
-
-  useEffect(() => {
+useEffect(() => {
     const fetchUserData = async () => {
-      try {
-        const glooingData = await getGlooingInfo(accessToken);
-        setGlooingInfo(glooingData);
-        console.log(glooingInfo,'세팅 정보-------------------')
+        try {
+            const glooingData = await getGlooingInfo(accessToken);
+            setGlooingInfo(glooingData);
 
-        // 유저 정보 가져오기
-        const userData = await getUserInfo(accessToken);
-        setUserInfo(userData);
-        console.log(userInfo,'유저 정보-------------------')
+            const userData = await getUserInfo(accessToken);
+            setUserInfo(userData);
 
-        // const id = glooingInfo?.writings[i]
-        // const writingData = await getWritingInfo(id, accessToken);
-        // setWritingData(writingData)
-        // console.log('각 글의 정보 ----------------:', writingData)
+            // 시작 시간 계산
+            const startHour = parseInt(glooingData.setting.start_time[0], 10); // 10진수 파싱
+            const startMinute = parseInt(glooingData.setting.start_time[1], 10); // 10진수 파싱
 
-        ws.onopen = () => {
-            console.log('WebSocket connection opened.====================');
-          };
-          ws.onmessage = (event) => {
-             const jsonData: WebSocketData = JSON.parse(event.data);
-            console.log(jsonData, '받은 JSON---------------------------');
-            setRemainingTime(jsonData.remaining_time);
-            setButtonActivated(jsonData.write_button_activated);
-            setTextColor(jsonData.text_red);
-        
-            // Handle WebSocket data as needed
-            setWsMessage(`Remaining Time: ${remainingTime}, Button activated: ${buttonActivated}`);
-            console.log(`Remaining Time: ${remainingTime}, Button activated: ${buttonActivated}`);
-        };
-    
-        const sendMessage = () => {
-            const input1 = glooingData?.setting?.start_time[0]
-            const input2 = glooingData?.setting?.start_time[1]
-            const input3 = glooingData?.setting?.for_hours
-            console.log('==============', input1,input2,input3);
+            // 현재 시간 & 시작 시간
+            const currentTime = new Date();
+            const startTime = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), startHour, startMinute);
+            const timeDiff = startTime.getTime() - currentTime.getTime();
 
-            const dataToSend = {
-                h: input1,
-                m: input2,
-                for_hours: input3
-            }
-        
-            if (ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify(dataToSend))
-                console.log('data----------!',dataToSend)
-            } else {
-                console.error('WebSocket is not open.');
-            }
-        };
-            sendMessage()
-    
+            // timeDiff를 초로 변환
+            const seconds = Math.floor(timeDiff / 1000);
 
-        setLoggedIn(true)
+            // 초->시, 분, 초로 변환
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const remainingSeconds = seconds % 60;
 
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
+            // 형식에 맞게 문자열 포매팅
+            const formattedTime = `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+            setRemainingTime(formattedTime);
+
+             // 남은 시간 
+             setTextColor(false); // 텍스트 컬러 비활성화
+             setButtonActivated(false); // 글 작성 비활성화
+ 
+             const intervalId = setInterval(() => {
+                // 시간 계산
+                const currentTime = new Date();
+                const timeDiff = startTime.getTime() - currentTime.getTime();
+                const seconds = Math.floor(timeDiff / 1000);
+                const updatedHours = Math.floor(seconds / 3600);
+                const updatedMinutes = Math.floor((seconds % 3600) / 60);
+                const updatedRemainingSeconds = seconds % 60;
+            
+                // hh:mm:dd로 포맷팅
+                const updatedTime = `${updatedHours < 10 ? '0' : ' '}${updatedHours}:${updatedMinutes < 10 ? '0' : ' '}${updatedMinutes}:${updatedRemainingSeconds < 10 ? '0' : ''}${updatedRemainingSeconds}`;
+                setRemainingTime(updatedTime);
+            
+                // 남은 시간이 0보다 작으면 interval 종료
+                if (seconds <= 0) {
+                    setButtonActivated(true);
+                    clearInterval(intervalId);
+                }
+
+                if (seconds <= 10) {
+                    setTextColor(true);
+                }
+            }, 1000); // 1초마다 업데이트
+
+
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
     }
 
-    // 페이지 로드 시 데이터 호출
     fetchUserData();
-  }, []); // 빈 배열을 전달하여 페이지가 로드될 때 한 번만 실행되도록 설정
-
-
+}, []);
 
 
 
@@ -540,7 +519,6 @@ export default function Writer() {
                             </button>
                                 <div style={{ position: 'absolute', top: '60%', left: '20%'}}>
                             {buttonActivated === false && <img className="w-[120px] h-[42px] z-9999" src="/image/soon2.png" alt="soon2" />}
-                            {/* <img className="w-[120px] h-[42px] z-9999" src="/image/soon2.png" alt="soon2" /> */}
                         </div>
                             </div>
                         </div>
@@ -611,7 +589,7 @@ export default function Writer() {
             
             </div>
             {/* <Modal isOpen={isWriterModalOpen} onClose={handleCloseWriterModal} data={glooingInfo} writingData={writingData} remainingTime={remainingTime} textColor={textColor}/> */}
-            <Modal isOpen={isWriterModalOpen} onClose={handleCloseWriterModal} data={glooingInfo} writingData={writingData} mini={setIsMiniModalOpen}/>
+            <Modal isOpen={isWriterModalOpen} onClose={handleCloseWriterModal} data={glooingInfo} writingData={writingData} mini={setIsMiniModalOpen} textColor={textColor}/>
             <EditModal isOpen={isEditModalOpen} onClose={handleCloseEditModal} data={glooingInfo} id={selectedWritingId} writingData={writingData}/>
             {/* <MiniModal isOpen={isMiniModalOpen} onClose={handleCloseMiniModal} data={glooingInfo} id={selectedWritingId} writingData={writingData} mini={handleCloseMiniModal} /> */}
 
