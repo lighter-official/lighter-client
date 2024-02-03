@@ -130,7 +130,7 @@ export default function Settings() {
               <a className='cursor-pointer' onClick={()=>router.push('/')}>로그아웃</a>
             </div>
           </div>
-                    <hr className='bg-[#7C766C] w-full h-[2px]' />
+          <hr className='w-full bg-[#7C766C] h-[1px] my-[17px]' style={{color: '#7C766C', borderColor:'#7C766C'}} />
                     <div className='flex flex-col mx-auto'>
                         <div className='flex w-full font-bold items-center justify-center mt-[40px] text-[40px] h-[55px]'>
                             글쓰기의 첫걸음

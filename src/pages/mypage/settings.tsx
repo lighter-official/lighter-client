@@ -1,4 +1,4 @@
-// Settings.tsx
+'use client'
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 
@@ -18,7 +18,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
                     <div className='text-[16px]'>4번째 글</div>
                     <div className='mb-[10px] text-[22px]'>뮤직비디오 해석하기</div>
                     <textarea className='text-[40px] w-full mb-[30px] h-[50px]' placeholder='제목을 입력해주세요.' />
-                    <hr className='bg-[#7C766C] w-full h-[2px]' />
+                    <hr className='w-full bg-[#7C766C] h-[1px] my-[17px]' style={{color: '#7C766C', borderColor:'#7C766C'}} />
                     <textarea className='mt-[30px] w-full h-[220px] overflow-y-auto' placeholder='내용을 입력해주세요.' />
                 </div>
                 <div className='flex flex-col w-full rounded-md'>
@@ -72,7 +72,7 @@ export default function Writer() {
             <a className='cursor-pointer'  style={{color:'#A49E90'}} onClick={()=>router.push('/')}>로그아웃</a>
             </div>
           </div>
-                    <hr className='bg-[#7C766C] w-full h-[2px]' />
+          <hr className='w-full bg-[#7C766C] h-[1px] my-[17px]' style={{color: '#7C766C', borderColor:'#7C766C'}} />
                     <div className='flex mt-[20px] justify-between flex-row my-[30px]'>
                         <div className='bg-black rounded-sm  flex flex-col w-[400px] h-[471px]'>
                             <div className='flex flex-col mx-[20px]'>

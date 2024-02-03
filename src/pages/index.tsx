@@ -169,7 +169,7 @@ export default function Home() {
               <Redirection isLoggedIn={isLoggedIn} setLoggedIn={setLoggedIn} /></a>
             </div>
           </div>
-          <hr className='bg-[#7C766C] w-full h-[2px]' />
+          <hr className='w-full bg-[#7C766C] h-[1px] my-[17px]' style={{color: '#7C766C', borderColor:'#7C766C'}} />
           <div className='flex my-[90px] flex-row justify-between'>
             <div className='w-[368px] h-[264px] my-auto border-1'>
               <div className='mb-[20px] text-[44px]'>

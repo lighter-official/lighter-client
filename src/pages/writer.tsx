@@ -1,4 +1,3 @@
-// Settings.tsx
 'use client'
 import { getGlooingInfo, getUserInfo, getWritingInfo, initWebSocket, postWriting, putWriting } from '@/api/api';
 import router, { useRouter } from 'next/router';
@@ -17,10 +16,12 @@ interface ModalProps {
     remainingTime?: any;
     textColor?: boolean;
     mini?: any;
+    remainingSecond?: any;
+    remainingTime2?: any;
 }
 
 // 새로 등록하는 모달로 사용
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, data, writingData, remainingTime, textColor, mini }) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, data, writingData, remainingTime, textColor, mini, remainingSecond, remainingTime2 }) => {
     const router = useRouter()
     const [title, setTitle] = useState('');
     const [desc, setDesc] = useState('');
@@ -29,12 +30,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, data, writingData, remai
     const disabled = !title || !desc
     const [writingDetails, setWritingDetails] = useState<any>(null);
 
-
-    // useEffect(() => {
-    //     console.log(data,'DATA!')
-    //     console.log(writingData, 'WRITING')
-    //   }); // 
-      
+    console.log(textColor,'==-=-=-=-')
     const handleCancelPost = () => {
         setIsConfirmationModalOpen(false)
     }
@@ -94,7 +90,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, data, writingData, remai
                         onChange={(e) => setTitle(e.target.value)}
                         />
 
-                    <hr className='bg-[#7C766C] w-full h-[2px]' />
+                    <hr className='w-full bg-[#7C766C] h-[1px] my-[17px]' style={{color: '#7C766C', borderColor:'#7C766C'}} />
                     <textarea
                         className='mt-[20px] w-full h-[220px] overflow-y-auto'
                         placeholder='내용을 입력해주세요.'
@@ -111,7 +107,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, data, writingData, remai
                 </div>
                 <div className='flex flex-col w-full rounded-md'>
                     <div className='h-[100px] flex justify-between  p-8 items-center rounded-md w-full' style={{ backgroundColor: '#F1F1F1' }}>
-                        <a className='items-start justify-start flex'  style={{ color: textColor ? '#FF4500' : 'black' }} >남은 시간 {remainingTime}</a>
+                    <a className={`items-start justify-start flex ${textColor ? 'text-orange-500' : 'text-black'}`}>남은 시간 {remainingTime}</a>
                         <button
                         className={`w-[152px] h-[53px] cursor-pointer rounded-md ${
                             disabled ? 'bg-zinc-400 text-gray-100' : 'bg-orange-500 text-black'
@@ -259,7 +255,7 @@ const EditModal: React.FC<ModalProps> = ({ isOpen, onClose, data, id, writingDat
                         onChange={(e) => setTitle(e.target.value)}
                         />
 
-                    <hr className='bg-[#7C766C] w-full h-[2px]' />
+                        <hr className='w-full bg-[#7C766C] h-[1px] my-[17px]' style={{color: '#7C766C', borderColor:'#7C766C'}} />
                     <textarea
                         className='mt-[20px] w-full h-[220px] overflow-y-auto'
                         placeholder='내용을 입력해주세요.'
@@ -319,87 +315,121 @@ const EditModal: React.FC<ModalProps> = ({ isOpen, onClose, data, id, writingDat
 
 
 export default function Writer() {
-    const router = useRouter()
+    // 미니 모달이 오픈됨과 동시에 타이머 바꾸기
+    const router = useRouter();
     const [isWriterModalOpen, setIsWriterModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isMiniModalOpen, setIsMiniModalOpen] = useState(false);
-    const [glooingInfo, setGlooingInfo] = useState<any>({}); 
-    const [userInfo, setUserInfo] = useState<any>({}); 
-    const [selectedWritingId, setSelectedWritingId] = useState('')
-    const [writingData, setWritingData] = useState<any>({}); 
+    const [glooingInfo, setGlooingInfo] = useState<any>({});
+    const [userInfo, setUserInfo] = useState<any>({});
+    const [selectedWritingId, setSelectedWritingId] = useState('');
+    const [writingData, setWritingData] = useState<any>({});
     const [isLoggedIn, setLoggedIn] = useState(false);
     const [writingCount, setWritingCount] = useState(0);
     const [remainingTime, setRemainingTime] = useState<string>();
-    const [buttonActivated, setButtonActivated] = useState<boolean>();
-    const [textColor, setTextColor] = useState<boolean>();
-
-useEffect(() => {
-    const fetchUserData = async () => {
-        try {
-            const glooingData = await getGlooingInfo(accessToken);
-            setGlooingInfo(glooingData);
-
-            const userData = await getUserInfo(accessToken);
-            setUserInfo(userData);
-
-            // 시작 시간 계산
-            const startHour = parseInt(glooingData.setting.start_time[0], 10); // 10진수 파싱
-            const startMinute = parseInt(glooingData.setting.start_time[1], 10); // 10진수 파싱
-
-            // 현재 시간 & 시작 시간
-            const currentTime = new Date();
-            const startTime = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), startHour, startMinute);
-            const timeDiff = startTime.getTime() - currentTime.getTime();
-
-            // timeDiff를 초로 변환
-            const seconds = Math.floor(timeDiff / 1000);
-
-            // 초->시, 분, 초로 변환
-            const hours = Math.floor(seconds / 3600);
-            const minutes = Math.floor((seconds % 3600) / 60);
-            const remainingSeconds = seconds % 60;
-
-            // 형식에 맞게 문자열 포매팅
-            const formattedTime = `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
-            setRemainingTime(formattedTime);
-
-             // 남은 시간 
-             setTextColor(false); // 텍스트 컬러 비활성화
-             setButtonActivated(false); // 글 작성 비활성화
- 
-             const intervalId = setInterval(() => {
-                // 시간 계산
+    const [remainingTime2, setRemainingTime2] = useState<string>();
+    const [buttonActivated, setButtonActivated] = useState<boolean>(false);
+    const [textColor, setTextColor] = useState<boolean>(false);
+    const [remainingSecond, setRemainingSecond] = useState<number>();
+    const [remainingSecond2, setRemainingSecond2] = useState<number>();
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const glooingData = await getGlooingInfo(accessToken);
+                setGlooingInfo(glooingData);
+    
+                const userData = await getUserInfo(accessToken);
+                setUserInfo(userData);
+    
+                const startHour = parseInt(glooingData.setting.start_time[0], 10);
+                const startMinute = parseInt(glooingData.setting.start_time[1], 10);
+    
+                const startHour2 = parseInt(glooingData.setting.for_hours[0], 10);
+                const startMinute2 = parseInt(glooingData.setting.for_hours[1], 10);
+    
                 const currentTime = new Date();
+                let startTime = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), startHour, startMinute);
+                let startTime2 = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), startHour + startHour2, startMinute + startMinute2);
+    
                 const timeDiff = startTime.getTime() - currentTime.getTime();
+                const timeDiff2 = startTime2.getTime() - currentTime.getTime();
+    
                 const seconds = Math.floor(timeDiff / 1000);
-                const updatedHours = Math.floor(seconds / 3600);
-                const updatedMinutes = Math.floor((seconds % 3600) / 60);
-                const updatedRemainingSeconds = seconds % 60;
-            
-                // hh:mm:dd로 포맷팅
-                const updatedTime = `${updatedHours < 10 ? '0' : ' '}${updatedHours}:${updatedMinutes < 10 ? '0' : ' '}${updatedMinutes}:${updatedRemainingSeconds < 10 ? '0' : ''}${updatedRemainingSeconds}`;
-                setRemainingTime(updatedTime);
-            
-                // 남은 시간이 0보다 작으면 interval 종료
-                if (seconds <= 0) {
-                    setButtonActivated(true);
-                    clearInterval(intervalId);
-                }
-
-                if (seconds <= 10) {
-                    setTextColor(true);
-                }
-            }, 1000); // 1초마다 업데이트
-
-
-        } catch (error) {
-            console.error('Error fetching user data:', error);
-        }
-    }
-
-    fetchUserData();
-}, []);
-
+                const seconds2 = Math.floor(timeDiff2 / 1000);
+    
+                const hours = Math.floor(seconds / 3600);
+                const minutes = Math.floor((seconds % 3600) / 60);
+                const remainingSeconds = seconds % 60;
+    
+                const hours2 = Math.floor(seconds2 / 3600);
+                const minutes2 = Math.floor((seconds2 % 3600) / 60);
+                const remainingSeconds2 = seconds2 % 60;
+    
+                const formattedTime = `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+                setRemainingTime(formattedTime);
+    
+                const intervalId = setInterval(() => {
+                    const currentTime = new Date();
+                    const timeDiff = startTime.getTime() - currentTime.getTime();
+                    const seconds = Math.floor(timeDiff / 1000);
+                    const updatedHours = Math.floor(seconds / 3600);
+                    const updatedMinutes = Math.floor((seconds % 3600) / 60);
+                    const updatedRemainingSeconds = seconds % 60;
+    
+                    const timeDiff2 = startTime2.getTime() - currentTime.getTime();
+                    const seconds2 = Math.floor(timeDiff2 / 1000);
+                    const updatedHours2 = Math.floor(seconds2 / 3600);
+                    const updatedMinutes2 = Math.floor((seconds2 % 3600) / 60);
+                    const updatedRemainingSeconds2 = seconds2 % 60;
+    
+                    if (!buttonActivated) {
+                        const updatedTime = `${updatedHours < 10 ? '0' : ''}${updatedHours}:${updatedMinutes < 10 ? '0' : ''}${updatedMinutes}:${updatedRemainingSeconds < 10 ? '0' : ''}${updatedRemainingSeconds}`;
+                        setRemainingTime(updatedTime);
+                    } else {
+                        const updatedTime2 = `${updatedHours2 < 10 ? '0' : ''}${updatedHours2}:${updatedMinutes2 < 10 ? '0' : ''}${updatedMinutes2}:${updatedRemainingSeconds2 < 10 ? '0' : ''}${updatedRemainingSeconds2}`;
+                        setRemainingTime(updatedTime2);
+                    }
+    
+                    if (seconds <= 0 && !buttonActivated) {
+                        setButtonActivated(true);
+                        clearInterval(intervalId);
+    
+                        // Set up the second timer for counting down from startTime2
+                        const intervalId2 = setInterval(() => {
+                            const currentTime = new Date();
+                            const timeDiff2 = startTime2.getTime() - currentTime.getTime();
+                            const seconds2 = Math.floor(timeDiff2 / 1000);
+                            const updatedHours2 = Math.floor(seconds2 / 3600);
+                            const updatedMinutes2 = Math.floor((seconds2 % 3600) / 60);
+                            const updatedRemainingSeconds2 = seconds2 % 60;
+    
+                            const updatedTime2 = `${updatedHours2 < 10 ? '0' : ''}${updatedHours2}:${updatedMinutes2 < 10 ? '0' : ''}${updatedMinutes2}:${updatedRemainingSeconds2 < 10 ? '0' : ''}${updatedRemainingSeconds2}`;
+                            setRemainingTime(updatedTime2);
+    
+                            if (seconds2 <= 0) {
+                                setButtonActivated(false);
+    
+                                // Reset the startTime and startTime2 for the next cycle
+                                startTime = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), startHour, startMinute);
+                                startTime2 = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), startHour + startHour2, startMinute + startMinute2);
+    
+                                clearInterval(intervalId2);
+                            }
+                            if (seconds2 <= 600) {
+                                setTextColor(true);
+                            }
+                        }, 1000);
+                    }
+                }, 1000);
+    
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        };
+    
+        fetchUserData();
+    }, []);
+    
 
 
     const handleOpenWriterModal = () => {
@@ -419,8 +449,11 @@ useEffect(() => {
     };
 
     const handleCloseMiniModal = () => {
+        setRemainingTime("00:00:00");
         setIsMiniModalOpen(false);
+ // remainingTime2를 0으로 세팅
     };
+    
     
 
     const handleWritingClick = async (writingId: string) => {
@@ -487,7 +520,7 @@ useEffect(() => {
                         <a className='cursor-pointer' onClick={()=> setLoggedIn(false)}><Redirection isLoggedIn={isLoggedIn} setLoggedIn={setLoggedIn} /></a>
                         </div>
                     </div>
-                    <hr className='bg-[#7C766C] w-full h-[2px]' />
+                    <hr className='w-full bg-[#7C766C] h-[1px] my-[17px]' style={{color: '#7C766C', borderColor:'#7C766C'}} />
                     <div className='flex mt-[20px] justify-between flex-row my-[30px]'>
                         <div className='bg-black rounded-sm  flex flex-col w-[400px] h-[600px]'>
                             <div className='flex flex-col mx-[20px]'>
@@ -500,29 +533,24 @@ useEffect(() => {
                             <div className='flex flex-col mx-[20px] mt-[76px]'>
                                 <div className='' style={{ color: '#BAB1A0' }}>{buttonActivated === true ? '남은 시간' : '글쓰기 시간까지'}</div>
                                 {/* <div className='' style={{ color: '#BAB1A0' }}>글쓰기 시간까지</div> */}
-                                <div className='flex w-full justify-start text-[66px]' style={{ color: '#F2EBDD' }}>{remainingTime}</div>
+                                <div className='flex w-full justify-start text-[60px]' style={{ color: '#F2EBDD' }}>{remainingTime}</div>
                                 {/* <div className='flex w-full justify-start text-[66px]' style={{ color: '#F2EBDD' }}>12 : 30 : 00</div> */}
                             </div>
-                            <div className='flex justify-center items-center mt-[110px]'>
+                            <div className='flex justify-center items-center mt-[100px]'>
                             <button
-                            className={`rounded-xl w-[333px] h-[62px] ${
-                                buttonActivated === true ? 'bg-orange-500 text-black' : 'bg-zinc-700  text-white'
-                            }`}
-                            // <button
-                            // className={`rounded-xl w-[333px] h-[62px] ${
-                            //     'bg-zinc-700  text-white'
-                            // }`}
-                            disabled={!buttonActivated}
-                            onClick={handleOpenWriterModal}
+                                className={`rounded-xl w-[333px] h-[62px] ${
+                                    buttonActivated === true ? 'bg-orange-500 text-black' : 'bg-zinc-700  text-white'}`}
+                                disabled={!buttonActivated}
+                                onClick={handleOpenWriterModal}
                             >
-                            글 작성하기
+                                글 작성하기
                             </button>
-                                <div style={{ position: 'absolute', top: '60%', left: '20%'}}>
-                            {buttonActivated === false && <img className="w-[120px] h-[42px] z-9999" src="/image/soon2.png" alt="soon2" />}
-                        </div>
+                                <div style={{ position: 'absolute', top: '61%', left: '18%'}}>
+                                {buttonActivated === false && <img className="w-[120px] h-[42px] z-9999" src="/image/soon2.png" alt="soon2" />}
+                                </div>
                             </div>
                         </div>
-                        <div className='w-[1120px] rounded-sm border-black border-1 flex flex-row h-[817px]' style={{ backgroundColor: '#E0D5BF' }}>
+                        <div className='w-[1120px] rounded-sm flex flex-row h-[817px]' style={{ border: '1px solid black', backgroundColor: '#E0D5BF' }}>
                             <div className='w-full  my-[30px] mx-[40px]'>
                                 <div className='bg-black text-white w-[60px] text-center'><a>{glooingInfo?.d_day}</a></div>
                                 <div className='flex flex-row items-center justify-between'>
@@ -534,7 +562,7 @@ useEffect(() => {
                                         <a className='text-black'>{glooingInfo?.total_writing}</a>
                                          / 
                                         <a style={{color: '#706B61'}}>{glooingInfo?.setting?.page}</a></div></div>
-                                <hr className='w-full bg-[#7C766C] h-[2px] my-[17px]' />
+                                <hr className='w-full bg-[#7C766C] h-[1px] my-[17px]' style={{color: '#7C766C', borderColor:'#7C766C'}} />
                                 {glooingInfo?.total_writing === 0 && <div className="flex items-center justify-center text-center my-auto h-[580px] text-[20px]" style={{color: '#706B61'}}>나만의 기록으로 채워보아요!</div>}
                                 {glooingInfo?.total_writing !== 0 && 
                                 <div className='w-full h-[29px] flex items-center' style={{ backgroundColor: '#F2EBDD', border: '1px solid black', borderColor: 'black' }}>
@@ -572,7 +600,7 @@ useEffect(() => {
                         <div className='text-center items-center flex flex-col'>
                             <div className='text-[15px] font-bold mb-[2px]'>{glooingInfo?.total_writing + 1}번째</div>
                             <div className='text-[15px] mb-[6px]'>글 등록을 완료했어요!</div>
-                            <div className='text-[13px] mb-[10px]' style={{ color: '#7F7F7F' }}>다음 <a>{glooingInfo?.setting?.start_time[0]}:{glooingInfo?.setting?.start_time[1]}</a>시에 꼭 다시 만나요!</div>
+                            <div className='text-[13px] mb-[10px]' style={{ color: '#7F7F7F' }}>다음 <a>{glooingInfo?.setting?.start_time[0]}:{glooingInfo?.setting?.start_time[1]}</a>에 꼭 다시 만나요!</div>
                                 <div className='flex justify-center'>
                                     <button
                                         className='w-[120px] text-[15px] font-bold cursor-pointer h-[40px] rounded-md'
@@ -588,10 +616,8 @@ useEffect(() => {
                     </div>
             
             </div>
-            {/* <Modal isOpen={isWriterModalOpen} onClose={handleCloseWriterModal} data={glooingInfo} writingData={writingData} remainingTime={remainingTime} textColor={textColor}/> */}
-            <Modal isOpen={isWriterModalOpen} onClose={handleCloseWriterModal} data={glooingInfo} writingData={writingData} mini={setIsMiniModalOpen} textColor={textColor}/>
+            <Modal isOpen={isWriterModalOpen} onClose={handleCloseWriterModal} data={glooingInfo} writingData={writingData} mini={setIsMiniModalOpen} remainingTime={remainingTime} textColor={textColor} remainingSecond={remainingSecond} remainingTime2={remainingTime2}/>
             <EditModal isOpen={isEditModalOpen} onClose={handleCloseEditModal} data={glooingInfo} id={selectedWritingId} writingData={writingData}/>
-            {/* <MiniModal isOpen={isMiniModalOpen} onClose={handleCloseMiniModal} data={glooingInfo} id={selectedWritingId} writingData={writingData} mini={handleCloseMiniModal} /> */}
 
 
         </div>
