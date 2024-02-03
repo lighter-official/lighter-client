@@ -348,26 +348,6 @@ export default function Writer() {
                 let startTime = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), startHour, startMinute);
                 let startTime2 = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), startHour + startHour2, startMinute + startMinute2);
 
-                const timeDiff = startTime.getTime() - currentTime.getTime();
-                const timeDiff2 = startTime2.getTime() - currentTime.getTime();
-
-                const seconds = Math.floor(timeDiff / 1000);
-                const seconds2 = Math.floor(timeDiff2 / 1000);
-
-                const hours = Math.floor(seconds / 3600);
-                const minutes = Math.floor((seconds % 3600) / 60);
-                const remainingSeconds = seconds % 60;
-
-                const hours2 = Math.floor(seconds2 / 3600);
-                const minutes2 = Math.floor((seconds2 % 3600) / 60);
-                const remainingSeconds2 = seconds2 % 60;
-
-                // const formattedTime = `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
-                // setRemainingTime(formattedTime);
-                // console.log(formattedTime,'너냐?', remainingTime)
-                
-
-
                 // 첫 번째 타이머
                 const newIntervalId = setInterval(() => {
                     const currentTime = new Date();
@@ -377,7 +357,7 @@ export default function Writer() {
                     const updatedMinutes = Math.floor((seconds % 3600) / 60);
                     const updatedRemainingSeconds = seconds % 60;
 
-                    let timeDiff2 = startTime2.getTime() - currentTime.getTime();
+                    const timeDiff2 = startTime2.getTime() - currentTime.getTime();
                     const seconds2 = Math.floor(timeDiff2 / 1000);
                     const updatedHours2 = Math.floor(seconds2 / 3600);
                     const updatedMinutes2 = Math.floor((seconds2 % 3600) / 60);
@@ -386,14 +366,38 @@ export default function Writer() {
                     // if (timeDiff < 0) {
                     //     timeDiff = startTime.getTime() + (24 * 60 * 60 * 1000) - currentTime.getTime();
                     // }
+                    // if (!buttonActivated) {
+                    //     const updatedTime = `${updatedHours < 10 ? updatedHours + 24 * 60 * 60 : ''}${updatedHours}:${updatedMinutes < 10 ? '0' : ''}${updatedMinutes}:${updatedRemainingSeconds < 0 ? '0' : updatedRemainingSeconds}`;
+                    //     setRemainingTime(updatedTime);
+                    //     console.log(updatedTime, 'updatedTime', remainingTime);
+                    // } else {
+                    //     const updatedTime2 = `${updatedHours2 < 10 ? updatedHours2 + 24 * 60 * 60 : ''}${updatedHours2}:${updatedMinutes2 < 10 ? '0' : ''}${updatedMinutes2}:${updatedRemainingSeconds2 < 0 ? '0' : updatedRemainingSeconds2}`;
+                    //     setRemainingTime(updatedTime2);
+                    // }
                     if (!buttonActivated) {
-                        const updatedTime = `${updatedHours < 10 ? '0' : ''}${updatedHours}:${updatedMinutes < 10 ? '0' : ''}${updatedMinutes}:${updatedRemainingSeconds < 10 ? '0' : ''}${updatedRemainingSeconds}`;
+                        const updatedTime = `${
+                            updatedHours < 10 ? (updatedHours < 0 ? updatedHours + 23 : '0' + updatedHours) : updatedHours
+                            }:${
+                            updatedMinutes < 10 ? (updatedMinutes < 0 ? updatedMinutes + 59 : '0' + updatedMinutes) : updatedMinutes
+                            }:${
+                            updatedRemainingSeconds < 0 ? (updatedRemainingSeconds + 59) : (updatedRemainingSeconds < 10 ? '0' + updatedRemainingSeconds : updatedRemainingSeconds)
+                        }`;
+                    
                         setRemainingTime(updatedTime);
-                        console.log(updatedTime,'updatedTime', remainingTime)
+                        console.log(updatedTime, 'updatedTime', remainingTime);
                     } else {
-                        const updatedTime2 = `${updatedHours2 < 10 ? '0' : ''}${updatedHours2}:${updatedMinutes2 < 10 ? '0' : ''}${updatedMinutes2}:${updatedRemainingSeconds2 < 10 ? '0' : ''}${updatedRemainingSeconds2}`;
+                        const updatedTime2 = `${
+                            updatedHours2 < 10 ? (updatedHours2 < 0 ? updatedHours2 + 23 : '0' + updatedHours2) : updatedHours2
+                            }:${
+                            updatedMinutes2 < 10 ? (updatedMinutes2 < 0 ? updatedMinutes2 + 59 : '0' + updatedMinutes2) : updatedMinutes2
+                            }:${
+                            updatedRemainingSeconds2 < 0 ? (updatedRemainingSeconds2 + 59) : (updatedRemainingSeconds2 < 10 ? '0' + updatedRemainingSeconds2 : updatedRemainingSeconds2)
+                        }`;
+                    
                         setRemainingTime(updatedTime2);
                     }
+                    
+                    
 
                     if (seconds <= 0 && !buttonActivated) {
                         setButtonActivated(true);
@@ -426,6 +430,25 @@ export default function Writer() {
                         setTextColor(true);
                     }
                 }, 1000);
+
+                // const intervalId3 = setInterval(() => {
+                //     const currentTime = new Date();
+                //     const startTime = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), 18, 0);
+                //     const nextDayStartTime = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate() + 1, 18, 0);
+                //     const timeDiff3 = nextDayStartTime.getTime() - currentTime.getTime();
+                //     const seconds3 = Math.floor(timeDiff3 / 1000);
+                //     const updatedHours2 = Math.floor(seconds3 / 3600);
+                //     const updatedMinutes2 = Math.floor((seconds3 % 3600) / 60);
+                //     const updatedRemainingSeconds2 = seconds3 % 60;
+
+
+                //     if (seconds3 <= 0) {
+                //         setButtonActivated(true);
+                //         setIsWriterModalOpen(false)
+
+                //         clearInterval(intervalId3);
+                //     }
+                // }, 1000);
 
                 
                 setIntervalId(newIntervalId);
@@ -464,6 +487,7 @@ export default function Writer() {
 
     const handleCloseMiniModal = () => {
         setIsMiniModalOpen(false);
+        setButtonActivated(false)
         window.location.reload()
     };
     
@@ -549,7 +573,7 @@ export default function Writer() {
                             <div className='flex flex-col mx-[20px] mt-[76px]'>
                                 <div className='' style={{ color: '#BAB1A0' }}>{buttonActivated === true ? '남은 시간' : '글쓰기 시간까지'}</div>
                                 {/* <div className='' style={{ color: '#BAB1A0' }}>글쓰기 시간까지</div> */}
-                                <div className='flex w-full justify-start text-[60px]' style={{ color: '#F2EBDD' }}>{remainingTime}</div>
+                                <div className='flex w-full justify-start text-[72px]' style={{ color: '#F2EBDD' }}>{remainingTime}</div>
                                 {/* <div className='flex w-full justify-start text-[66px]' style={{ color: '#F2EBDD' }}>12 : 30 : 00</div> */}
                             </div>
                             <div className='flex justify-center items-center mt-[100px]'>
@@ -561,7 +585,7 @@ export default function Writer() {
                             >
                                 글 작성하기
                             </button>
-                                <div style={{ position: 'absolute', top: '61%', left: '18%'}}>
+                                <div style={{ position: 'absolute', top: '63%', left: '18%'}}>
                                 {buttonActivated === false && <img className="w-[120px] h-[42px] z-9999" src="/image/soon2.png" alt="soon2" />}
                                 </div>
                             </div>
