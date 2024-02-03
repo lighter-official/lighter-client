@@ -195,12 +195,6 @@ const EditModal: React.FC<ModalProps> = ({ isOpen, onClose, data, id, writingDat
     const disabled = !title || !desc
     const [writingDetails, setWritingDetails] = useState<any>(null);
 
-    // useEffect(() => {
-    //     console.log(id, 'WRITING')
-    // }, [writingData, id]); 
-      
-
-    
     const handleCancelPost = () => {
         setIsConfirmationModal2Open(false)
     }
@@ -332,104 +326,123 @@ export default function Writer() {
     const [textColor, setTextColor] = useState<boolean>(false);
     const [remainingSecond, setRemainingSecond] = useState<number>();
     const [remainingSecond2, setRemainingSecond2] = useState<number>();
+    const [intervalId, setIntervalId] = useState<number | null>(null);
+
+       
     useEffect(() => {
         const fetchUserData = async () => {
             try {
                 const glooingData = await getGlooingInfo(accessToken);
                 setGlooingInfo(glooingData);
-    
+
                 const userData = await getUserInfo(accessToken);
                 setUserInfo(userData);
-    
+
                 const startHour = parseInt(glooingData.setting.start_time[0], 10);
                 const startMinute = parseInt(glooingData.setting.start_time[1], 10);
-    
+
                 const startHour2 = parseInt(glooingData.setting.for_hours[0], 10);
                 const startMinute2 = parseInt(glooingData.setting.for_hours[1], 10);
-    
+
                 const currentTime = new Date();
                 let startTime = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), startHour, startMinute);
                 let startTime2 = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), startHour + startHour2, startMinute + startMinute2);
-    
+
                 const timeDiff = startTime.getTime() - currentTime.getTime();
                 const timeDiff2 = startTime2.getTime() - currentTime.getTime();
-    
+
                 const seconds = Math.floor(timeDiff / 1000);
                 const seconds2 = Math.floor(timeDiff2 / 1000);
-    
+
                 const hours = Math.floor(seconds / 3600);
                 const minutes = Math.floor((seconds % 3600) / 60);
                 const remainingSeconds = seconds % 60;
-    
+
                 const hours2 = Math.floor(seconds2 / 3600);
                 const minutes2 = Math.floor((seconds2 % 3600) / 60);
                 const remainingSeconds2 = seconds2 % 60;
-    
-                const formattedTime = `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
-                setRemainingTime(formattedTime);
-    
-                const intervalId = setInterval(() => {
+
+                // const formattedTime = `${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+                // setRemainingTime(formattedTime);
+                // console.log(formattedTime,'너냐?', remainingTime)
+                
+
+
+                // 첫 번째 타이머
+                const newIntervalId = setInterval(() => {
                     const currentTime = new Date();
                     const timeDiff = startTime.getTime() - currentTime.getTime();
                     const seconds = Math.floor(timeDiff / 1000);
                     const updatedHours = Math.floor(seconds / 3600);
                     const updatedMinutes = Math.floor((seconds % 3600) / 60);
                     const updatedRemainingSeconds = seconds % 60;
-    
+
+                    let timeDiff2 = startTime2.getTime() - currentTime.getTime();
+                    const seconds2 = Math.floor(timeDiff2 / 1000);
+                    const updatedHours2 = Math.floor(seconds2 / 3600);
+                    const updatedMinutes2 = Math.floor((seconds2 % 3600) / 60);
+                    const updatedRemainingSeconds2 = seconds2 % 60;
+
+                    // if (timeDiff < 0) {
+                    //     timeDiff = startTime.getTime() + (24 * 60 * 60 * 1000) - currentTime.getTime();
+                    // }
+                    if (!buttonActivated) {
+                        const updatedTime = `${updatedHours < 10 ? '0' : ''}${updatedHours}:${updatedMinutes < 10 ? '0' : ''}${updatedMinutes}:${updatedRemainingSeconds < 10 ? '0' : ''}${updatedRemainingSeconds}`;
+                        setRemainingTime(updatedTime);
+                        console.log(updatedTime,'updatedTime', remainingTime)
+                    } else {
+                        const updatedTime2 = `${updatedHours2 < 10 ? '0' : ''}${updatedHours2}:${updatedMinutes2 < 10 ? '0' : ''}${updatedMinutes2}:${updatedRemainingSeconds2 < 10 ? '0' : ''}${updatedRemainingSeconds2}`;
+                        setRemainingTime(updatedTime2);
+                    }
+
+                    if (seconds <= 0 && !buttonActivated) {
+                        setButtonActivated(true);
+                        clearInterval(newIntervalId);
+
+                        
+                    }
+                }, 1000);
+
+                // 두 번째 타이머
+                const intervalId2 = setInterval(() => {
+                    const currentTime = new Date();
                     const timeDiff2 = startTime2.getTime() - currentTime.getTime();
                     const seconds2 = Math.floor(timeDiff2 / 1000);
                     const updatedHours2 = Math.floor(seconds2 / 3600);
                     const updatedMinutes2 = Math.floor((seconds2 % 3600) / 60);
                     const updatedRemainingSeconds2 = seconds2 % 60;
-    
-                    if (!buttonActivated) {
-                        const updatedTime = `${updatedHours < 10 ? '0' : ''}${updatedHours}:${updatedMinutes < 10 ? '0' : ''}${updatedMinutes}:${updatedRemainingSeconds < 10 ? '0' : ''}${updatedRemainingSeconds}`;
-                        setRemainingTime(updatedTime);
-                    } else {
-                        const updatedTime2 = `${updatedHours2 < 10 ? '0' : ''}${updatedHours2}:${updatedMinutes2 < 10 ? '0' : ''}${updatedMinutes2}:${updatedRemainingSeconds2 < 10 ? '0' : ''}${updatedRemainingSeconds2}`;
-                        setRemainingTime(updatedTime2);
+
+
+                    if (seconds2 <= 0) {
+                        setButtonActivated(false);
+                        setIsWriterModalOpen(false)
+
+                        startTime = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), startHour, startMinute);
+                        startTime2 = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), startHour + startHour2, startMinute + startMinute2);
+
+                        clearInterval(intervalId2);
                     }
-    
-                    if (seconds <= 0 && !buttonActivated) {
-                        setButtonActivated(true);
-                        clearInterval(intervalId);
-    
-                        // Set up the second timer for counting down from startTime2
-                        const intervalId2 = setInterval(() => {
-                            const currentTime = new Date();
-                            const timeDiff2 = startTime2.getTime() - currentTime.getTime();
-                            const seconds2 = Math.floor(timeDiff2 / 1000);
-                            const updatedHours2 = Math.floor(seconds2 / 3600);
-                            const updatedMinutes2 = Math.floor((seconds2 % 3600) / 60);
-                            const updatedRemainingSeconds2 = seconds2 % 60;
-    
-                            const updatedTime2 = `${updatedHours2 < 10 ? '0' : ''}${updatedHours2}:${updatedMinutes2 < 10 ? '0' : ''}${updatedMinutes2}:${updatedRemainingSeconds2 < 10 ? '0' : ''}${updatedRemainingSeconds2}`;
-                            setRemainingTime(updatedTime2);
-    
-                            if (seconds2 <= 0) {
-                                setButtonActivated(false);
-    
-                                // Reset the startTime and startTime2 for the next cycle
-                                startTime = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), startHour, startMinute);
-                                startTime2 = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), startHour + startHour2, startMinute + startMinute2);
-    
-                                clearInterval(intervalId2);
-                            }
-                            if (seconds2 <= 600) {
-                                setTextColor(true);
-                            }
-                        }, 1000);
+                    if (seconds2 <= 600) {
+                        setTextColor(true);
                     }
                 }, 1000);
-    
+
+                
+                setIntervalId(newIntervalId);
+
             } catch (error) {
                 console.error('Error fetching user data:', error);
             }
         };
     
         fetchUserData();
-    }, []);
-    
+        return () => {
+                if (intervalId !== null) {
+                    clearInterval(intervalId);
+                    setIntervalId(null); 
+                }
+        };
+    }, [buttonActivated]);
 
 
     const handleOpenWriterModal = () => {
@@ -446,13 +459,14 @@ export default function Writer() {
 
     const handleCloseEditModal = () => {
         setIsEditModalOpen(false);
+        window.location.reload()
     };
 
     const handleCloseMiniModal = () => {
-        setRemainingTime("00:00:00");
         setIsMiniModalOpen(false);
- // remainingTime2를 0으로 세팅
+        window.location.reload()
     };
+    
     
     
 
@@ -500,6 +514,8 @@ export default function Writer() {
             });
         }
     }, [glooingInfo, userInfo]);
+
+    console.log(remainingTime,'????????????')
     
     return (
         <div className="flex flex-col my-[50px] w-full overflow-hidden">

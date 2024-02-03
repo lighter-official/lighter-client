@@ -85,7 +85,7 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }) => {
         nookies.set({}, 'access_token', data.access_token, {
           path: '/',
           secure: true,
-          maxAge: 3600, // Set the expiration time in seconds
+          maxAge: 3600, 
           sameSite: 'Strict',
         });
         setLoggedIn(true);
