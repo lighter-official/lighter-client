@@ -1,6 +1,7 @@
 'use client'
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
+import "../globals.css";
 
 export default function Writer() {
     // const router = useRouter()
