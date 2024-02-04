@@ -32,8 +32,17 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }) => {
     window.location.href = link
     console.log(link,'--------------')
     // handleClick(code)
+    if (isLoggedIn) {
+      setLoggedIn(false);
+      // 로그인된 경우
+      router.push({
+        pathname: '/',
+        query: { access_token: accessToken },
+      } as any); // 'as any'를 사용하여 타입 명시
+      return
+    }
     getToken(code)
-    if (accessToken) {
+    if (!isLoggedIn && accessToken) {
       setLoggedIn(true);
       // 로그인된 경우
       router.push({
@@ -41,6 +50,8 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }) => {
         query: { access_token: accessToken },
       } as any); // 'as any'를 사용하여 타입 명시
     }
+
+    
   };
   
 
@@ -126,11 +137,7 @@ export default function Home() {
   const REDIRECT_URI = 'http://localhost:3000';
   const link = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
 
-
   const getToken = async (code: any) => {
-    // const KAKAO_REST_API_KEY = '042aae38695b074b539c155e83aa75a5';
-    // const KAKAO_REDIRECT_URI = 'http://localhost.3000';
-
     try {
       const response = await fetch(`http://localhost:8000/api/login/kakao?code=${code}`, {
         method: "GET",
@@ -171,11 +178,29 @@ export default function Home() {
   };
 
 
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const code = searchParams.get('code');
+
+    const bodyData: {
+      code: any;
+    } = {
+      code: code
+    };
+
+    if (code) {
+      getToken(code);
+    }
+  }, []);
+  
+
   const handleLoginClick = (code:any) => {
+    
     window.location.href = link
     console.log(link,'--------------')
     // handleClick(code)
     getToken(code)
+    setLoggedIn(true)
     if (accessToken) {
       // 로그인된 경우
       router.push({
@@ -191,22 +216,7 @@ export default function Home() {
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
       <div className='flex flex-row mx-auto w-full'>
         <div className='flex flex-col w-full mx-[120px]'>
-
-          {/* <Redirection /> */}
           <div className='flex flex-row justify-between'><img className="w-[105px] h-[35px] mb-[20px]" src="image/logo.svg" alt="Logo" />
-            <div className='flex gap-x-[70px]'>
-            <a className='cursor-pointer' onClick={()=>router.push({
-                pathname: '/writer',
-                query: { access_token: accessToken },
-              } as any)}>글루ING</a>
-              <a className='cursor-pointer' onClick={()=>router.push({
-                pathname: '/mypage/badge',
-                query: { access_token: accessToken },
-              } as any)}>나의 보관함</a>
-              <a className='cursor-pointer' onClick={()=>setLoggedIn(false)}> 
-              <Redirection isLoggedIn={isLoggedIn} setLoggedIn={setLoggedIn} />
-              </a>
-            </div>
           </div>
           <hr className='w-full bg-[#7C766C] h-[1px] my-[17px]' style={{color: '#7C766C', borderColor:'#7C766C'}} />
           <div className='flex my-[90px] flex-row justify-between'>

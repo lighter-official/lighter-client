@@ -124,11 +124,11 @@ export default function Settings() {
                   
                     {/* <Redirection /> */}
                     <div className='flex flex-row justify-between'><img className="w-[105px] h-[35px] mb-[20px]" src="image/logo.svg" alt="Logo" />
-            <div className='flex gap-x-[70px]'>
+            {/* <div className='flex gap-x-[70px]'>
             <a className='cursor-pointer' onClick={()=>router.push('/')}>글루ING</a>
               <a className='cursor-pointer' onClick={()=>router.push('/mypage/badge')}>나의 보관함</a>
               <a className='cursor-pointer' onClick={()=>router.push('/')}>로그아웃</a>
-            </div>
+            </div> */}
           </div>
           <hr className='w-full bg-[#7C766C] h-[1px] my-[17px]' style={{color: '#7C766C', borderColor:'#7C766C'}} />
                     <div className='flex flex-col mx-auto'>
