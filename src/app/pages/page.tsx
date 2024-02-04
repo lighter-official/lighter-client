@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useNavigate } from 'react-router-dom'
-import "./globals.css";
+import "../pages/globals.css";
 import axios from 'axios';
 
 

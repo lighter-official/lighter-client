@@ -30,10 +30,20 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, data, writingData, remai
     const disabled = !title || !desc
     const [writingDetails, setWritingDetails] = useState<any>(null);
 
-    console.log(textColor,'==-=-=-=-')
     const handleCancelPost = () => {
         setIsConfirmationModalOpen(false)
     }
+
+    const handleTitleChange = (e) => {
+        const inputText = e.target.value;
+    
+        // 최대 길이를 40으로 설정
+        if (inputText.length <= 40) {
+          // 40자 이내일 때만 setTitle 호출하여 상태 업데이트
+          setTitle(inputText);
+        }
+        // 만약 40자를 초과하면 무시
+      };
 
     const handlePost = async () => {
         // 모달 열기 전에 확인 모달을 띄우도록 수정
@@ -87,7 +97,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, data, writingData, remai
                         className='text-[40px] w-full mb-[10px] h-[50px]'
                         placeholder='제목을 입력해주세요.'
                         value={title}  
-                        onChange={(e) => setTitle(e.target.value)}
+                        onChange={handleTitleChange}
+                        maxLength={40}
                         />
 
                     <hr className='w-full bg-[#7C766C] h-[1px] my-[17px]' style={{color: '#7C766C', borderColor:'#7C766C'}} />
@@ -195,6 +206,17 @@ const EditModal: React.FC<ModalProps> = ({ isOpen, onClose, data, id, writingDat
     const disabled = !title || !desc
     const [writingDetails, setWritingDetails] = useState<any>(null);
 
+    const handleTitleChange = (e) => {
+        const inputText = e.target.value;
+    
+        // 최대 길이를 40으로 설정
+        if (inputText.length <= 40) {
+          // 40자 이내일 때만 setTitle 호출하여 상태 업데이트
+          setTitle(inputText);
+        }
+        // 만약 40자를 초과하면 무시
+      };
+
     const handleCancelPost = () => {
         setIsConfirmationModal2Open(false)
     }
@@ -246,7 +268,7 @@ const EditModal: React.FC<ModalProps> = ({ isOpen, onClose, data, id, writingDat
                         className='text-[40px] w-full mb-[10px] h-[50px]'
                         placeholder='제목을 입력해주세요.'
                         value={title || writingData?.title}
-                        onChange={(e) => setTitle(e.target.value)}
+                        onChange={handleTitleChange}
                         />
 
                         <hr className='w-full bg-[#7C766C] h-[1px] my-[17px]' style={{color: '#7C766C', borderColor:'#7C766C'}} />
@@ -308,7 +330,7 @@ const EditModal: React.FC<ModalProps> = ({ isOpen, onClose, data, id, writingDat
 };
 
 
-export default function Writer() {
+export default function Writer({ isLoggedIn, setLoggedIn }) {
     // 미니 모달이 오픈됨과 동시에 타이머 바꾸기
     const router = useRouter();
     const [isWriterModalOpen, setIsWriterModalOpen] = useState(false);
@@ -318,7 +340,7 @@ export default function Writer() {
     const [userInfo, setUserInfo] = useState<any>({});
     const [selectedWritingId, setSelectedWritingId] = useState('');
     const [writingData, setWritingData] = useState<any>({});
-    const [isLoggedIn, setLoggedIn] = useState(false);
+    // const [isLoggedIn, setLoggedIn] = useState(false);
     const [writingCount, setWritingCount] = useState(0);
     const [remainingTime, setRemainingTime] = useState<string>();
     const [remainingTime2, setRemainingTime2] = useState<string>();
@@ -576,26 +598,28 @@ export default function Writer() {
                                 <div className='flex w-full justify-start text-[72px]' style={{ color: '#F2EBDD' }}>{remainingTime}</div>
                                 {/* <div className='flex w-full justify-start text-[66px]' style={{ color: '#F2EBDD' }}>12 : 30 : 00</div> */}
                             </div>
-                            <div className='flex justify-center items-center mt-[100px]'>
-                            <button
-                                className={`rounded-xl w-[333px] h-[62px] ${
-                                    buttonActivated === true ? 'bg-orange-500 text-black' : 'bg-zinc-700  text-white'}`}
-                                disabled={!buttonActivated}
-                                onClick={handleOpenWriterModal}
-                            >
-                                글 작성하기
-                            </button>
-                                <div style={{ position: 'absolute', top: '63%', left: '18%'}}>
-                                {buttonActivated === false && <img className="w-[120px] h-[42px] z-9999" src="/image/soon2.png" alt="soon2" />}
+                            <div className='flex justify-center items-center mt-[100px] relative'>
+                                <button
+                                    className={`rounded-xl w-[333px] h-[62px] ${
+                                        buttonActivated === true ? 'bg-orange-500 text-black' : 'bg-zinc-700  text-white'}`}
+                                    disabled={!buttonActivated}
+                                    onClick={handleOpenWriterModal}
+                                    // style={{ zIndex: 1 }}  // 버튼을 위로 올리기 위해 zIndex를 설정
+                                >
+                                    글 작성하기
+                                </button>
+                                <div style={{ position: 'absolute', top: '5%', left: '68%', transform: 'translate(-50%, -50%)', zIndex: 0 }}>
+                                    {buttonActivated === false && <img className="w-[120px] h-[42px]" src="/image/soon2.png" alt="soon2" />}
                                 </div>
                             </div>
+
                         </div>
                         <div className='w-[1120px] rounded-sm flex flex-row h-[817px]' style={{ border: '1px solid black', backgroundColor: '#E0D5BF' }}>
                             <div className='w-full  my-[30px] mx-[40px]'>
                                 <div className='bg-black text-white w-[60px] text-center'><a>{glooingInfo?.d_day}</a></div>
-                                <div className='flex flex-row items-center justify-between'>
+                                <div className='flex flex-row items-center justify-between w-full'>
                                     <div className='flex flex-col'>
-                                        <div className='w-[306px] text-black mt-[8px] text-[36px]'><a>{glooingInfo?.setting?.subject}</a></div>
+                                        <div className='w-full text-black mt-[8px] text-[36px]'><a>{glooingInfo?.setting?.subject}</a></div>
                                         <div className='w-[300px] text-[16px]' style={{ color: '#706B61' }}>{glooingInfo?.start_date} - {glooingInfo?.end_date}</div>
                                     </div>
                                     <div className='w-[83px] h-[49px] text-[36px] justify-end'>
@@ -644,7 +668,7 @@ export default function Writer() {
                                 <div className='flex justify-center'>
                                     <button
                                         className='w-[120px] text-[15px] font-bold cursor-pointer h-[40px] rounded-md'
-                                        style={{ backgroundColor: '#FF5A26' }}
+                                        style={{ backgroundColor: '##FF8126' }}
                                         onClick={handleCloseMiniModal}
                                     >
                                     확인

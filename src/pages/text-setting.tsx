@@ -205,7 +205,7 @@ export default function Settings() {
                                             }}
                                             >
                                            </textarea>
-                                           {isPageValid ? <div className='items-center flex text-[10px]' style={{color:'red'}}>*10일 이상 입력해주세요.</div> : ''}
+                                           {isPageValid ? <div className='items-center flex text-[10px]' style={{color:'#FF8126'}}>*10편 이상 입력해주세요.</div> : ''}
                                         </div>
                                     </div>
                                     <div className='flex flex-col gap-y-[20px]'>

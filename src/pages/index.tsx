@@ -15,10 +15,11 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }) => {
   const router = useRouter();  // 수정된 부분
   const REST_API_KEY = '042aae38695b074b539c155e83aa75a5';
   const REDIRECT_URI = 'http://localhost:3000';
+  const link = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
   const [nickname, setNickname] = useState<string | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   
-  const link = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+
   const getCode = () => {
     // 현재 URL에서 쿼리 매개변수 'code'를 추출
     const searchParams = new URLSearchParams(window.location.search);
@@ -26,12 +27,14 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }) => {
     
     return code;
   };
+  
   const handleLoginClick = (code:any) => {
     window.location.href = link
     console.log(link,'--------------')
     // handleClick(code)
     getToken(code)
     if (accessToken) {
+      setLoggedIn(true);
       // 로그인된 경우
       router.push({
         pathname: '/text-setting',
@@ -40,26 +43,6 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }) => {
     }
   };
   
-
-  const noData = () => {
-    console.log('no');
-  };
-
-
-  const handleClick = async (code:any) => {
-    try {
-      const loginInfo = await getLoginInfo(code);
-      console.log(loginInfo);
-      localStorage.setItem('name', loginInfo.profile.nickname);
-      localStorage.setItem('access_token', loginInfo.access_token);
-      setLoggedIn(true);
-      setNickname(loginInfo.profile.nickname);
-      setAccessToken(loginInfo.access_token)
-    } catch (error) {
-      console.error('Login failed:', error);
-    }
-  };
-
 
   const getToken = async (code: any) => {
     // const KAKAO_REST_API_KEY = '042aae38695b074b539c155e83aa75a5';
@@ -121,7 +104,7 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }) => {
   
 
   return (
-    <button type='button' onClick={isLoggedIn ? noData : (code)=>handleLoginClick(code)}>
+    <button type='button' onClick={isLoggedIn ? setLoggedIn(false) : (code)=>handleLoginClick(code)}>
       {isLoggedIn ? `로그아웃` : '로그인'}
     </button>
   );
@@ -135,10 +118,64 @@ export function getCookie(name: any) {
 export default function Home() {
   // const navigate = useNavigate();
   const router = useRouter()
-  const accessToken = getCookie('access_token');
+  // const accessToken = getCookie('access_token');
   const [isLoggedIn, setLoggedIn] = useState(false);
+  const [nickname, setNickname] = useState<string | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const REST_API_KEY = '042aae38695b074b539c155e83aa75a5';
+  const REDIRECT_URI = 'http://localhost:3000';
+  const link = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
 
-  const handleClick = () => {
+
+  const getToken = async (code: any) => {
+    // const KAKAO_REST_API_KEY = '042aae38695b074b539c155e83aa75a5';
+    // const KAKAO_REDIRECT_URI = 'http://localhost.3000';
+
+    try {
+      const response = await fetch(`http://localhost:8000/api/login/kakao?code=${code}`, {
+        method: "GET",
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+       
+      });
+
+      console.log(response);
+      const data = await response.json();
+      console.log(data,'=======');
+
+      if (code) {
+        console.log(code, 'code!!!');
+        localStorage.setItem('name', data.profile.nickname); 
+        const cookies = nookies.get();
+        nookies.set({}, 'access_token', data.access_token, {
+          path: '/',
+          secure: true,
+          maxAge: 3600, 
+          sameSite: 'Strict',
+        });
+        setLoggedIn(true);
+        setNickname(data.profile.nickname);
+        setAccessToken(data.access_token) // 이용하기, code 재사용 불가
+        console.log('ACCESS-TOKEN', data.access_token)
+
+        router.push({
+          pathname: '/text-setting',
+          query: { access_token: data.access_token },
+        } as any);
+      }
+    } catch (error) {
+      console.error('Error during token request:', error);
+      throw error;
+    }
+  };
+
+
+  const handleLoginClick = (code:any) => {
+    window.location.href = link
+    console.log(link,'--------------')
+    // handleClick(code)
+    getToken(code)
     if (accessToken) {
       // 로그인된 경우
       router.push({
@@ -147,6 +184,7 @@ export default function Home() {
       } as any); // 'as any'를 사용하여 타입 명시
     }
   };
+
   
   return (
     <div className="flex flex-col my-[50px] w-full">
@@ -166,7 +204,8 @@ export default function Home() {
                 query: { access_token: accessToken },
               } as any)}>나의 보관함</a>
               <a className='cursor-pointer' onClick={()=>setLoggedIn(false)}> 
-              <Redirection isLoggedIn={isLoggedIn} setLoggedIn={setLoggedIn} /></a>
+              <Redirection isLoggedIn={isLoggedIn} setLoggedIn={setLoggedIn} />
+              </a>
             </div>
           </div>
           <hr className='w-full bg-[#7C766C] h-[1px] my-[17px]' style={{color: '#7C766C', borderColor:'#7C766C'}} />
@@ -178,7 +217,7 @@ export default function Home() {
                 <br /><a className='font-bold'>우리</a>의 이야기
                 </div>
                 
-              <button className='rounded-xl w-[200px] h-[42px] text-black' style={{backgroundColor: '#FFE000'}} onClick={handleClick}>카카오 로그인</button>
+              <button className='rounded-xl w-[200px] h-[42px] text-black' style={{backgroundColor: '#FFE000'}} onClick={(code)=>handleLoginClick(code)}>카카오 로그인</button>
             </div>
             <div className='flex items-end w-[876px] h-[657px] border-1'>
               <img className="w-[875px] h-[657px]" src="image/badges.svg" alt="Badges" />
