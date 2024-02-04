@@ -330,7 +330,7 @@ const EditModal: React.FC<ModalProps> = ({ isOpen, onClose, data, id, writingDat
 };
 
 
-export default function Writer({ isLoggedIn, setLoggedIn }) {
+export default function Writer({isLoggedIn, setLoggedIn}) {
     // 미니 모달이 오픈됨과 동시에 타이머 바꾸기
     const router = useRouter();
     const [isWriterModalOpen, setIsWriterModalOpen] = useState(false);
@@ -668,7 +668,7 @@ export default function Writer({ isLoggedIn, setLoggedIn }) {
                                 <div className='flex justify-center'>
                                     <button
                                         className='w-[120px] text-[15px] font-bold cursor-pointer h-[40px] rounded-md'
-                                        style={{ backgroundColor: '##FF8126' }}
+                                        style={{ backgroundColor: '#FF5A26' }}
                                         onClick={handleCloseMiniModal}
                                     >
                                     확인
@@ -682,8 +682,6 @@ export default function Writer({ isLoggedIn, setLoggedIn }) {
             </div>
             <Modal isOpen={isWriterModalOpen} onClose={handleCloseWriterModal} data={glooingInfo} writingData={writingData} mini={setIsMiniModalOpen} remainingTime={remainingTime} textColor={textColor} remainingSecond={remainingSecond} remainingTime2={remainingTime2}/>
             <EditModal isOpen={isEditModalOpen} onClose={handleCloseEditModal} data={glooingInfo} id={selectedWritingId} writingData={writingData}/>
-
-
         </div>
     );
 }

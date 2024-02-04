@@ -44,6 +44,7 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }) => {
     getToken(code)
     if (!isLoggedIn && accessToken) {
       setLoggedIn(true);
+
       // 로그인된 경우
       router.push({
         pathname: '/text-setting',
