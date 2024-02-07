@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const apiUrl = process.env.API_URL || 'http://localhost:8000';
+const apiUrl = process.env.API_URL || 'https://api-gloo.koyeb.app';
 const WS_BASE_URL = "ws://localhost:8000/ws/timer/main";  // WebSocket 서버 주소
 
 
