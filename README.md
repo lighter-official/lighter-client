@@ -100,7 +100,7 @@
 
 <br>
 
-## 배운 점 & 아쉬운 점
+<!--## 배운 점 & 아쉬운 점
 
 <p align="justify">
 
@@ -108,7 +108,7 @@
 
 <br>
 
-<!-- ## 라이센스
+ ## 라이센스
 
 MIT &copy; [NoHack](mailto:lbjp114@gmail.com)-->
 
