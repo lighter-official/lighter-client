@@ -2,7 +2,7 @@
 
 <p align="center">
   <br>
-  <img src="/Users/yihyun/Desktop/gloo-main.png">
+  <img src="./sources/gloo-main.png">
   <br>
 </p>
 
