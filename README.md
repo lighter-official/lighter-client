@@ -2,7 +2,7 @@
 
 <p align="center">
   <br>
-  <img src="./desktop/gloo-main.png">
+  <img src="/Users/yihyun/Desktop/gloo-main.png">
   <br>
 </p>
 
@@ -24,7 +24,7 @@ GIF Images
 
 | Next.js | TypeScript |  React   |  tailwind CSS   |
 | :--------: | :--------: | :------: | :-----: |
-|   ![next]    |   ![ts]    | ![react] | ![node] |
+|   ![next]    |   ![ts]    | ![react] | ![tailwind] |
 
 <br>
 
@@ -59,7 +59,7 @@ MIT &copy; [NoHack](mailto:lbjp114@gmail.com)
 
 <!-- Stack Icon Refernces -->
 
-[js]: /images/stack/javascript.svg
-[ts]: /images/stack/typescript.svg
-[react]: /images/stack/react.svg
-[node]: /images/stack/node.svg
+[next]: /Users/yihyun/Desktop/next.png
+[ts]: /Users/yihyun/Desktop/typescript.svg
+[react]: /Users/yihyun/Desktop/react.svg
+[tailwind]: /Users/yihyun/Desktop/tailwind.jpg
