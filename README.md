@@ -59,7 +59,7 @@ MIT &copy; [NoHack](mailto:lbjp114@gmail.com)
 
 <!-- Stack Icon Refernces -->
 
-[next]: /Users/yihyun/Desktop/next.png
-[ts]: /Users/yihyun/Desktop/typescript.svg
-[react]: /Users/yihyun/Desktop/react.svg
-[tailwind]: /Users/yihyun/Desktop/tailwind.jpg
+[next]: ./sources/next.png
+[ts]: ./sources/typescript.svg
+[react]: ./sources/react.svg
+[tailwind]: ./sources/tailwind.jpg
