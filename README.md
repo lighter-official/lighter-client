@@ -62,4 +62,4 @@ MIT &copy; [NoHack](mailto:lbjp114@gmail.com)
 [next]: ./sources/next.png
 [ts]: ./sources/typescript.svg
 [react]: ./sources/react.svg
-[tailwind]: ./sources/tailwind.jpg
+[tailwind]: ./sources/tailwind.png
