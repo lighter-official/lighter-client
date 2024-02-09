@@ -45,7 +45,7 @@
 
 <a href="https://lavender-seal-56e.notion.site/e15fe534f65b4c0c934917d8f87e4196">→ Gloo 소개 페이지(노션)</a>
 
-<a href="https://drive.google.com/file/d/1a8LdmUTysVW7r2axOhe1NpKMdsfFgT3-/view">→ Gloo 보고서</a>
+<a href="./sources/[Lighter!] Gloo 서비스 소개.pdf">→ Gloo 보고서</a>
 
 </p>
 
