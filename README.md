@@ -38,6 +38,15 @@
 **Gloo"는 이런 실제 직장인들의 목소리를 듣고 서비스를 제작했어요.**
 
 갓생(God+生)을 꿈꾸며 글쓰는 사람들을 위해, 포텐데이를 시작으로 꾸준히 사람들의 글쓰기를 도울 기능들을 업데이트할 예정입니다!
+
+<a href="https://gloo-writing.vercel.app">→ Gloo 홈페이지</a>
+
+<a href="https://drive.google.com/file/d/1a8LdmUTysVW7r2axOhe1NpKMdsfFgT3-/view">→ Gloo 시연 영상</a>
+
+<a href="https://lavender-seal-56e.notion.site/e15fe534f65b4c0c934917d8f87e4196">→ Gloo 소개 페이지(노션)</a>
+
+<a href="https://drive.google.com/file/d/1a8LdmUTysVW7r2axOhe1NpKMdsfFgT3-/view">→ Gloo 보고서</a>
+
 </p>
 
 <p align="center">
