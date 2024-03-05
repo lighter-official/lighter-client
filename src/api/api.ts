@@ -1,12 +1,12 @@
 import axios from 'axios';
 
-const apiUrl = process.env.API_URL || 'http://localhost:8000';
+const apiUrl = process.env.API_URL || 'https://core.gloo-lighter.com';
 const WS_BASE_URL = "ws://localhost:8000/ws/timer/main";  // WebSocket 서버 주소
 
 
 export const getLoginInfo = async (code:any) => {
   try {
-    const response = await axios.get(`${apiUrl}/api/login/kakao?code=${code}`);
+    const response = await axios.get(`${apiUrl}/account/users/sign-in/kakao?code=${code}`);
     console.log(response.data,'============')
     return response.data;
   } catch (error) {

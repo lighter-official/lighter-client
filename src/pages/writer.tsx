@@ -1,3 +1,4 @@
+// @ts-nocheck 
 'use client'
 import { getGlooingInfo, getUserInfo, getWritingInfo, initWebSocket, postWriting, putWriting } from '@/api/api';
 import router, { useRouter } from 'next/router';
