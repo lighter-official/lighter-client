@@ -74,8 +74,8 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }:any) => {
       const data = await response.json();
       console.log(data,'=======');
 
-      if (data.access_token) {
-        const accessToken = data.access_token;
+      if (data.accessToken) {
+        const accessToken = data.accessToken;
         nookies.set(null, 'access_token', accessToken, {
           path: '/',
           secure: true,
@@ -85,8 +85,8 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }:any) => {
         setLoggedIn(true);
         router.push({
           pathname: '/text-setting',
-          query: { access_token: accessToken },
-        })
+          query: { access_token: accessToken},
+        } as any); // 'as any'를 사용하여 타입 명시
       }
       
     } catch (error) {
@@ -110,7 +110,7 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }:any) => {
   
 
   return (
-    <button type='button' onClick={isLoggedIn ? setLoggedIn(false) : (code)=>handleLoginClick(code)}>
+    <button type='button' onClick={isLoggedIn ? setLoggedIn(false) : handleLoginClick}>
       {isLoggedIn ? `로그아웃` : '로그인'}
     </button>
   );
@@ -125,9 +125,9 @@ export default function Home() {
   // const navigate = useNavigate();
   const router = useRouter()
   // const accessToken = getCookie('access_token');
-  const [isLoggedIn, setLoggedIn] = useState(false);
+  const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
   const [nickname, setNickname] = useState<string | null>(null);
-  const [accessToken, setAccessToken] = useState<any | null>('')
+  const [accessToken, setAccessToken] = useState<string | null>('');
   const APP_KEY = '67511eea297fb0f856f791b369c67355';
   const REDIRECT_URI = 'http://localhost:8000';
   const link = `https://kauth.kakao.com/oauth/authorize?client_id=${APP_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
@@ -170,20 +170,41 @@ export default function Home() {
       const data = await response.json();
       console.log(data,'=======');
 
-      if (data.access_token) {
-        const accessToken = data.access_token;
+      if (data?.data?.accessToken) {
+        const accessToken = data?.data?.accessToken;
         nookies.set(null, 'access_token', accessToken, {
           path: '/',
           secure: true,
           maxAge: 3600,
           sameSite: 'Strict',
         });
+        setAccessToken(accessToken)
+        console.log(data?.data?.accessToken,'getToken-token?')
         setLoggedIn(true);
+        console.log(isLoggedIn,'로그인 ???')
         // accessToken을 설정한 후에 router.push 호출
+        if (data?.data?.isSignUp === true) { // 신규 회원가입
         router.push({
-          pathname: '/text-setting',
-          query: { access_token: accessToken as string },
-        })
+            pathname: '/text-setting',
+            query: { access_token: accessToken},
+          } as any); 
+        }
+        else if (data?.data?.isSignUp === false) {
+          if (data?.data?.hasOnProcessedWritingSession === true)
+          {
+            router.push({
+            pathname: '/writer',
+            query: { access_token: accessToken},
+          } as any); 
+          }
+          else 
+          {
+            router.push({
+            pathname: '/text-setting',
+            query: { access_token: accessToken},
+          } as any); 
+          }
+        }
       }
       
     } catch (error) {
@@ -220,7 +241,7 @@ export default function Home() {
       // 로그인된 경우
       router.push({
         pathname: '/text-setting',
-        query: { access_token: accessToken as string },
+        query: { access_token: accessToken},
       } as any); // 'as any'를 사용하여 타입 명시
     }
   };

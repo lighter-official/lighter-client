@@ -8,7 +8,7 @@ import axios from 'axios';
 
 const Login = () => {
   const REST_API_KEY = '042aae38695b074b539c155e83aa75a5';
-  const REDIRECT_URI = 'http://localhost:3000';
+  const REDIRECT_URI = 'http://localhost:8000';
   const link = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
   const [isLoggedIn, setLoggedIn] = useState(false);
   const handleLoginClick = () => {
