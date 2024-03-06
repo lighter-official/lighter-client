@@ -20,7 +20,7 @@ export const getLoginInfo = async (code:any) => {
 export const postSetUp = async (data: any, accessToken: string) => {
   try {
     console.log(accessToken, 'APIAPIAPI')
-    const response = await axios.post(`${apiUrl}/api/glooing/set-up`, data, {
+    const response = await axios.post(`${apiUrl}/writing-session`, data, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
