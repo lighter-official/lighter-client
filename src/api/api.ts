@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { ResponseCookies } from 'next/dist/compiled/@edge-runtime/cookies';
 
 const apiUrl = process.env.API_URL || 'https://core.gloo-lighter.com';
 const WS_BASE_URL = "ws://localhost:8000/ws/timer/main";  // WebSocket 서버 주소
@@ -58,8 +59,25 @@ export const getUserInfo = async (accessToken: string) => {
         Authorization: `Bearer ${accessToken}`,
       },
     }
-    const response = await axios.get(`${apiUrl}/api/my`, config);
+    const response = await axios.get(`${apiUrl}/account/users/me`, config);
     console.log('유저 정보----------------', response.data)
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    throw error;
+  }
+};
+
+// 진행중인 글쓰기 세션만 보여주도록 하는 API
+export const getCurrentSessions = async (accessToken: string) => {
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+    const response = await axios.get(`${apiUrl}/writing-session/on-process`, config);
+    console.log('진행중인 세션 정보 ----------------', response.data)
     return response.data;
   } catch (error) {
     console.error('Error fetching data:', error);
@@ -71,7 +89,7 @@ export const getUserInfo = async (accessToken: string) => {
 export const postWriting = async (data: any, accessToken: string) => {
   try {
     console.log(accessToken, 'APIAPIAPI')
-    const response = await axios.post(`${apiUrl}/api/glooing/writings`, data, {
+    const response = await axios.post(`${apiUrl}/writings`, data, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },

@@ -1,6 +1,6 @@
 // @ts-nocheck 
 'use client'
-import { getGlooingInfo, getUserInfo, getWritingInfo, initWebSocket, postWriting, putWriting } from '@/api/api';
+import { getGlooingInfo, getUserInfo, getCurrentSessions, getWritingInfo, initWebSocket, postWriting, putWriting } from '@/api/api';
 import router, { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import nookies from 'nookies';
@@ -350,22 +350,29 @@ export default function Writer({isLoggedIn, setLoggedIn}) {
     const [remainingSecond, setRemainingSecond] = useState<number>();
     const [remainingSecond2, setRemainingSecond2] = useState<number>();
     const [intervalId, setIntervalId] = useState<number | null>(null);
+    const [currentWritingsData, setCurrentWritingsData] = useState<any>({})
 
        
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const glooingData = await getGlooingInfo(accessToken);
-                setGlooingInfo(glooingData);
 
                 const userData = await getUserInfo(accessToken);
                 setUserInfo(userData);
+                console.log('유저 데이터 정보: ', userData);
 
-                const startHour = parseInt(glooingData.setting.start_time[0], 10);
-                const startMinute = parseInt(glooingData.setting.start_time[1], 10);
+                const currentWritings = await getCurrentSessions(accessToken);
+                setCurrentWritingsData(currentWritings)
+                console.log('현재 글쓰기 데이터 정보: ', currentWritings);
 
-                const startHour2 = parseInt(glooingData.setting.for_hours[0], 10);
-                const startMinute2 = parseInt(glooingData.setting.for_hours[1], 10);
+                const glooingData = await getGlooingInfo(accessToken);
+                setGlooingInfo(glooingData);
+
+                const startHour = parseInt(currentWritingsData?.data?.startAt?.hour, 10);
+                const startMinute = parseInt(currentWritingsData?.data?.startAt?.minute, 10);
+
+                const startHour2 = parseInt(currentWritingsData?.data?.startAt?.hour, 10);
+                const startMinute2 = parseInt(currentWritingsData?.data?.startAt?.minute, 10);
 
                 const currentTime = new Date();
                 let startTime = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), startHour, startMinute);
@@ -547,7 +554,7 @@ export default function Writer({isLoggedIn, setLoggedIn}) {
         return nookies.get(null)[name];
       }
 
-    const completion_percentage = (glooingInfo?.writings?.length / glooingInfo?.setting?.page) * 100;
+    const completion_percentage = currentWritingsData?.data?.progressPercentage;
     const accessToken = getCookie('access_token');
 
     useEffect(() => {
@@ -563,6 +570,22 @@ export default function Writer({isLoggedIn, setLoggedIn}) {
     }, [glooingInfo, userInfo]);
 
     console.log(remainingTime,'????????????')
+
+    function formatDate(dateString) {
+        const dateObject = new Date(dateString);
+        const year = dateObject.getFullYear();
+        const month = (dateObject.getMonth() + 1).toString().padStart(2, '0'); // 월은 0부터 시작하므로 +1, 두 자리로 맞춤
+        const day = dateObject.getDate().toString().padStart(2, '0'); // 두 자리 맞춤
+        return `${year}년 ${month}월 ${day}일`;
+    }
+    
+    const startDateString = currentWritingsData?.data?.startDate;
+    const finishDateString = currentWritingsData?.data?.finishDate;
+    
+    const formattedStartDate = formatDate(startDateString);
+    const formattedFinishDate = formatDate(finishDateString);
+    
+    const formattedDateRange = `${formattedStartDate} - ${formattedFinishDate}`;
     
     return (
         <div className="flex flex-col my-[50px] w-full overflow-hidden">
@@ -587,9 +610,17 @@ export default function Writer({isLoggedIn, setLoggedIn}) {
                     <div className='flex mt-[20px] justify-between flex-row my-[30px]'>
                         <div className='bg-black rounded-sm  flex flex-col w-[400px] h-[600px]'>
                             <div className='flex flex-col mx-[20px]'>
-                                <div className='text-white mt-[34px] w-full h-[120px] text-[36px]'><a>{userInfo?.nickname}</a>님의<br />글쓰기 시간</div>
+                                <div className='text-white mt-[34px] w-full h-[120px] text-[36px]'><a>{userInfo?.data?.nickname}</a>님의<br />글쓰기 시간</div>
                                 <div className='flex flex-row gap-x-[8px] mt-[8px]'>
-                                    <div className='flex text-[26px]' style={{ color: '#CEB292' }}><a>{glooingInfo?.setting?.start_time[0]}:{glooingInfo?.setting?.start_time[1]}</a></div>ㄴ
+                                <div className='flex text-[26px]' style={{ color: '#CEB292' }}>
+                                <a>
+                                    {currentWritingsData?.data?.startAt?.hour}:
+                                    {currentWritingsData?.data?.startAt?.minute === 0
+                                    ? '00'
+                                    : currentWritingsData?.data?.startAt?.minute}
+                                </a>
+                                </div>
+
                                     {/* <button className='flex text-white w-[106px] rounded-lg' style={{ backgroundColor: '#3F3F3F' }}><a className="w-full text-[14px] my-auto" style={{ color: '#8E887B' }}>변경하기 <a>{glooingInfo?.setting?.change_num}</a>/<a>{glooingInfo?.max_change_num}</a></a></button> */}
                                 </div>
                             </div>
@@ -620,35 +651,35 @@ export default function Writer({isLoggedIn, setLoggedIn}) {
                                 <div className='bg-black text-white w-[60px] text-center'><a>{glooingInfo?.d_day}</a></div>
                                 <div className='flex flex-row items-center justify-between w-full'>
                                     <div className='flex flex-col'>
-                                        <div className='w-full text-black mt-[8px] text-[36px]'><a>{glooingInfo?.setting?.subject}</a></div>
-                                        <div className='w-[300px] text-[16px]' style={{ color: '#706B61' }}>{glooingInfo?.start_date} - {glooingInfo?.end_date}</div>
+                                        <div className='w-full text-black mt-[8px] text-[36px]'><a>{currentWritingsData?.data?.subject}</a></div>
+                                        <div className='w-[300px] text-[16px]' style={{ color: '#706B61' }}>{formattedDateRange}</div>
                                     </div>
                                     <div className='w-[83px] h-[49px] text-[36px] justify-end'>
-                                        <a className='text-black'>{glooingInfo?.total_writing}</a>
+                                        <a className='text-black'>{currentWritingsData?.data?.writings.length}</a>
                                          / 
-                                        <a style={{color: '#706B61'}}>{glooingInfo?.setting?.page}</a></div></div>
+                                        <a style={{color: '#706B61'}}>{currentWritingsData?.data?.page}</a></div></div>
                                 <hr className='w-full bg-[#7C766C] h-[1px] my-[17px]' style={{color: '#7C766C', borderColor:'#7C766C'}} />
-                                {glooingInfo?.total_writing === 0 && <div className="flex items-center justify-center text-center my-auto h-[580px] text-[20px]" style={{color: '#706B61'}}>나만의 기록으로 채워보아요!</div>}
-                                {glooingInfo?.total_writing !== 0 && 
+                                {currentWritingsData?.data?.writings.length === 0 && <div className="flex items-center justify-center text-center my-auto h-[580px] text-[20px]" style={{color: '#706B61'}}>나만의 기록으로 채워보아요!</div>}
+                                {currentWritingsData?.data?.writings.length !== 0 && 
                                 <div className='w-full h-[29px] flex items-center' style={{ backgroundColor: '#F2EBDD', border: '1px solid black', borderColor: 'black' }}>
                                     <div
                                         className='w-full mx-[5px] h-[17px]'
                                         style={{
                                             width: `${(completion_percentage || 0)}%`,
                                             backgroundColor: '#FF8126',
-                                            transition: 'width 0.5s ease',  // Add smooth transition for better visual effect
+                                            transition: 'width 0.5s ease', 
                                         }}
                                     ></div>
                                 </div>
                                 }
-                                {glooingInfo?.writings !== null && (
+                                {currentWritingsData?.writings !== null && (
                                 <div className='flex flex-col max-h-[580px] mb-[21px] overflow-y-auto'>
-                                {glooingInfo?.writings?.map((writing, index) => (
+                                {currentWritingsData?.data?.writings?.map((writing, index) => (
                                     <div key={index} className='flex cursor-pointer flex-row w-full h-[197px] mt-[22px] rounded-xl' style={{ backgroundColor: '#F4EDE0' }} onClick={() => handleEditClick(writing.id)}>
                                         <div className='my-[30px] mx-[47px]'>
-                                            <div className=' w-full text-[16px]' style={{ color: '#8A8170' }}>{writing?.created_at[0] + '년 '}{writing?.created_at[1] + '월 '}{writing?.created_at[2] + '일'} {writing.created_at[3]}요일</div>
-                                            <div className='w-full h-[39px] text-[26px]'>{writing.title}</div>
-                                            <div className='mt-[18px] max-w-[685px] truncate text-[16px]' style={{ color: '#C5BCAB' }}>{writing?.desc}</div>
+                                            {/* <div className=' w-full text-[16px]' style={{ color: '#8A8170' }}>{writings?.createdAt + '년 '}{writing?.created_at[1] + '월 '}{writing?.created_at[2] + '일'} {writing.created_at[3]}요일</div> */}
+                                            <div className='w-full h-[39px] text-[26px]'>{writing?.title}</div>
+                                            <div className='mt-[18px] max-w-[685px] truncate text-[16px]' style={{ color: '#C5BCAB' }}>{writing?.content}</div>
                                         </div>
                                     </div>
                                 ))}
@@ -663,9 +694,9 @@ export default function Writer({isLoggedIn, setLoggedIn}) {
                     <div className="absolute w-full h-full bg-gray-800 opacity-50" onClick={handleCloseMiniModal}></div>
                     <div className="flex flex-col bg-white w-[328px] h-[171px] text-center justify-center items-center rounded-lg z-50">
                         <div className='text-center items-center flex flex-col'>
-                            <div className='text-[15px] font-bold mb-[2px]'>{glooingInfo?.total_writing + 1}번째</div>
+                            <div className='text-[15px] font-bold mb-[2px]'>{currentWritingsData?.data?.writings.length + 1}번째</div>
                             <div className='text-[15px] mb-[6px]'>글 등록을 완료했어요!</div>
-                            <div className='text-[13px] mb-[10px]' style={{ color: '#7F7F7F' }}>다음 <a>{glooingInfo?.setting?.start_time[0]}:{glooingInfo?.setting?.start_time[1]}</a>에 꼭 다시 만나요!</div>
+                            <div className='text-[13px] mb-[10px]' style={{ color: '#7F7F7F' }}>다음 <a>{currentWritingsData?.data?.startAt?.hour}:{currentWritingsData?.data?.startAt?.minute}</a>에 꼭 다시 만나요!</div>
                                 <div className='flex justify-center'>
                                     <button
                                         className='w-[120px] text-[15px] font-bold cursor-pointer h-[40px] rounded-md'
