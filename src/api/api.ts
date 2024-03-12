@@ -1,35 +1,36 @@
-import axios from 'axios';
-import { ResponseCookies } from 'next/dist/compiled/@edge-runtime/cookies';
+import axios from "axios";
+import { ResponseCookies } from "next/dist/compiled/@edge-runtime/cookies";
+import { GetUserInfoResponse } from "./api.response";
 
-const apiUrl = process.env.API_URL || 'https://core.gloo-lighter.com';
-const WS_BASE_URL = "ws://localhost:8000/ws/timer/main";  // WebSocket 서버 주소
+const apiUrl = process.env.API_URL || "https://core.gloo-lighter.com";
+const WS_BASE_URL = "ws://localhost:8000/ws/timer/main"; // WebSocket 서버 주소
 
-
-export const getLoginInfo = async (code:any) => {
+export const getLoginInfo = async (code: any) => {
   try {
-    const response = await axios.get(`${apiUrl}/account/users/sign-in/kakao?code=${code}`);
-    console.log(response.data,'============')
+    const response = await axios.get(
+      `${apiUrl}/account/users/sign-in/kakao?code=${code}`
+    );
+    console.log(response.data, "============");
     return response.data;
   } catch (error) {
-    console.error('Error fetching data:', error);
+    console.error("Error fetching data:", error);
     throw error;
   }
 };
 
-
-// 글쓰기 설정하는 API 
+// 글쓰기 설정하는 API
 export const postSetUp = async (data: any, accessToken: string) => {
   try {
-    console.log(accessToken, 'APIAPIAPI')
+    console.log(accessToken, "APIAPIAPI");
     const response = await axios.post(`${apiUrl}/writing-session`, data, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    console.log(response.data, '============');
+    console.log(response.data, "============");
     return response.data;
   } catch (error) {
-    console.error('Error fetching data:', error);
+    console.error("Error fetching data:", error);
     throw error;
   }
 };
@@ -41,12 +42,12 @@ export const getGlooingInfo = async (accessToken: string) => {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
-    }
+    };
     const response = await axios.get(`${apiUrl}/api/glooing/writings`, config);
-    console.log('설정 정보 ============', response.data)
+    console.log("설정 정보 ============", response.data);
     return response.data;
   } catch (error) {
-    console.error('Error fetching data:', error);
+    console.error("Error fetching data:", error);
     throw error;
   }
 };
@@ -58,12 +59,15 @@ export const getUserInfo = async (accessToken: string) => {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
-    }
-    const response = await axios.get(`${apiUrl}/account/users/me`, config);
-    console.log('유저 정보----------------', response.data)
+    };
+    const response = await axios.get<GetUserInfoResponse>(
+      `${apiUrl}/account/users/me`,
+      config
+    );
+    console.log("유저 정보----------------", response.data);
     return response.data;
   } catch (error) {
-    console.error('Error fetching data:', error);
+    console.error("Error fetching data:", error);
     throw error;
   }
 };
@@ -75,73 +79,86 @@ export const getCurrentSessions = async (accessToken: string) => {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
-    }
-    const response = await axios.get(`${apiUrl}/writing-session/on-process`, config);
-    console.log('진행중인 세션 정보 ----------------', response.data)
+    };
+    const response = await axios.get(
+      `${apiUrl}/writing-session/on-process`,
+      config
+    );
+    console.log("진행중인 세션 정보 ----------------", response.data);
     return response.data;
   } catch (error) {
-    console.error('Error fetching data:', error);
+    console.error("Error fetching data:", error);
     throw error;
   }
 };
 
-// 글쓰기 포스팅 API 
+// 글쓰기 포스팅 API
 export const postWriting = async (data: any, accessToken: string) => {
   try {
-    console.log(accessToken, 'APIAPIAPI')
+    console.log(accessToken, "APIAPIAPI");
     const response = await axios.post(`${apiUrl}/writings`, data, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    console.log(response.data, '============');
+    console.log(response.data, "============");
     return response.data;
   } catch (error) {
-    console.error('Error fetching data:', error);
+    console.error("Error fetching data:", error);
     throw error;
   }
 };
 
 // 글 목록 & 정보 가져오는 API
-export const getWritingInfo = async (id:string, accessToken: string) => {
+export const getWritingInfo = async (id: string, accessToken: string) => {
   try {
     const config = {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
-    }
-    const response = await axios.get(`${apiUrl}/api/glooing/writings/${id}`, config);
-    console.log('글 정보----------------', response.data)
+    };
+    const response = await axios.get(
+      `${apiUrl}/api/glooing/writings/${id}`,
+      config
+    );
+    console.log("글 정보----------------", response.data);
     return response.data;
   } catch (error) {
-    console.error('Error fetching data:', error);
+    console.error("Error fetching data:", error);
     throw error;
   }
 };
 
 // 각 글 수정하는 API
-export const putWriting = async (id:string, data: any, accessToken:string) => {
+export const putWriting = async (
+  id: string,
+  data: any,
+  accessToken: string
+) => {
   try {
-    console.log(accessToken, 'APIAPIAPI')
-    const response = await axios.put(`${apiUrl}/api/glooing/writings/${id}`, data, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    console.log(response.data, '============');
+    console.log(accessToken, "APIAPIAPI");
+    const response = await axios.put(
+      `${apiUrl}/api/glooing/writings/${id}`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    console.log(response.data, "============");
     return response.data;
   } catch (error) {
-    console.error('Error fetching data:', error);
+    console.error("Error fetching data:", error);
     throw error;
   }
-}
+};
 
 // WebSocket 연결 초기화 함수
 export const initWebSocket = (): WebSocket => {
-    const ws = new WebSocket(`${WS_BASE_URL}`);
-    return ws;
+  const ws = new WebSocket(`${WS_BASE_URL}`);
+  return ws;
 };
-
 
 // 뱃지 API
 export const getMyBadge = async (accessToken: string) => {
@@ -150,12 +167,12 @@ export const getMyBadge = async (accessToken: string) => {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
-    }
+    };
     const response = await axios.get(`${apiUrl}/api/my/badge`, config);
-    console.log('뱃지 정보----------------', response.data)
+    console.log("뱃지 정보----------------", response.data);
     return response.data;
   } catch (error) {
-    console.error('Error fetching data:', error);
+    console.error("Error fetching data:", error);
     throw error;
   }
 };
