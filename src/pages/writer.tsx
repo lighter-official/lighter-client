@@ -430,6 +430,7 @@ export default function Writer({ isLoggedIn, setLoggedIn }) {
   const [remainingSecond2, setRemainingSecond2] = useState<number>();
   const [intervalId, setIntervalId] = useState<number | null>(null);
   const [currentWritingsData, setCurrentWritingsData] = useState<any>({});
+  const [isEndTime, setIsEndTime] = useState(false)
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -442,13 +443,11 @@ export default function Writer({ isLoggedIn, setLoggedIn }) {
         setCurrentWritingsData(currentWritings);
         console.log('현재 글쓰기 데이터 정보: ', currentWritings);
 
-        const glooingData = await getGlooingInfo(accessToken);
-        setGlooingInfo(glooingData);
-
         const startHour = parseInt(
           currentWritingsData?.data?.startAt?.hour,
           10
         );
+    
         const startMinute = parseInt(
           currentWritingsData?.data?.startAt?.minute,
           10
@@ -527,7 +526,7 @@ export default function Writer({ isLoggedIn, setLoggedIn }) {
             }`;
 
             setRemainingTime(updatedTime);
-            console.log(updatedTime, 'updatedTime', remainingTime);
+            console.log(updatedTime, 'updatedTime');
           } else {
             const updatedTime2 = `${
               updatedHours2 < 10
@@ -550,6 +549,7 @@ export default function Writer({ isLoggedIn, setLoggedIn }) {
             }`;
 
             setRemainingTime(updatedTime2);
+            console.log(updatedTime2, 'updatedTime2222');
           }
 
           if (seconds <= 0 && !buttonActivated) {
@@ -646,19 +646,23 @@ export default function Writer({ isLoggedIn, setLoggedIn }) {
     const updateTimer = () => {
       setTimer((prevTimer) => Math.max(prevTimer - 1, 0));
     };
-
-    setTimeout(updateTimer, 1000);
-  }, [timer]);
+    const intervalId = setInterval(updateTimer, 1000);
+    return () => {
+      clearInterval(intervalId);
+    };
+    // setInterval(updateTimer, 1000);
+  }, []);
 
   const displayHours = Math.floor(timer / (60 * 60));
   const displayMinutes = Math.floor((timer % (60 * 60)) / 60);
   const displaySeconds = timer % 60;
 
-  const formattedTime = `${isActivated ? '남은 시간' : '글쓰기 시간까지'}\n${
+  const formattedTime = `${isActivated ? '남은 시간' : ''}${
     displayHours < 10 ? '0' : ''
   }${displayHours} : ${displayMinutes < 10 ? '0' : ''}${displayMinutes} : ${
     displaySeconds < 10 ? '0' : ''
   }${displaySeconds}`;
+  
 
   /**
    * 예시 종료
@@ -730,7 +734,7 @@ export default function Writer({ isLoggedIn, setLoggedIn }) {
     }
   }, [glooingInfo, userInfo]);
 
-  console.log(remainingTime, '????????????');
+  console.log(formattedTime, 'formatted Time')
 
   function formatDate(dateString) {
     const dateObject = new Date(dateString);
@@ -825,7 +829,7 @@ export default function Writer({ isLoggedIn, setLoggedIn }) {
                 </div>
                 {/* <div className='' style={{ color: '#BAB1A0' }}>글쓰기 시간까지</div> */}
                 <div
-                  className='flex w-full justify-start text-[72px]'
+                  className='flex w-full justify-start text-[66px]'
                   style={{ color: '#F2EBDD' }}
                 >
                   {remainingTime}
