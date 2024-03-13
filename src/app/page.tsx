@@ -166,7 +166,7 @@ export default function Home() {
         body: JSON.stringify({ code, redirectUri: REDIRECT_URI })
        
       });
-      console.log(response);
+      console.log(response,'????????');
       const data = await response.json();
       console.log(data,'=======');
 
@@ -192,8 +192,9 @@ export default function Home() {
         else if (data?.data?.isSignUp === false) {
           if (data?.data?.hasOnProcessedWritingSession === true)
           {
+            console.log('>?????????')
             router.push({
-            pathname: '/writer',
+            pathname: '/glooing/writer',
             query: { access_token: accessToken},
           } as any); 
           }
@@ -243,6 +244,7 @@ export default function Home() {
         pathname: '/text-setting',
         query: { access_token: accessToken},
       } as any); // 'as any'를 사용하여 타입 명시
+      console.log('djfhljhadjhgj')
     }
   };
 

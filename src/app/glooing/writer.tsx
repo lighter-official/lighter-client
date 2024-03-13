@@ -12,7 +12,7 @@ import {
 import router, { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import nookies from 'nookies';
-import { Redirection, getCookie } from '.';
+import { Redirection, getCookie } from '../page';
 import { access } from 'fs';
 import './globals.css';
 import { day } from '@/lib/dayjs';
