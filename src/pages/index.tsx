@@ -31,11 +31,11 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }:any) => {
   }, []);
   
   const handleLoginClick = (code:any) => {
+    console.log('redirection login', isLoggedIn)
     window.location.href = link
     console.log(link,'--------------')
     // handleClick(code)
     if (isLoggedIn) {
-      setLoggedIn(false);
       // 로그인된 경우
       router.push({
         pathname: '/',
@@ -166,7 +166,7 @@ export default function Home() {
         body: JSON.stringify({ code, redirectUri: REDIRECT_URI })
        
       });
-      console.log(response);
+      console.log(response,'????????');
       const data = await response.json();
       console.log(data,'=======');
 
@@ -192,6 +192,7 @@ export default function Home() {
         else if (data?.data?.isSignUp === false) {
           if (data?.data?.hasOnProcessedWritingSession === true)
           {
+            console.log('>?????????')
             router.push({
             pathname: '/writer',
             query: { access_token: accessToken},
@@ -237,12 +238,14 @@ export default function Home() {
     // handleClick(code)
     getToken(code)
     setLoggedIn(true)
-    if (accessToken) {
+    if (isLoggedIn) {
       // 로그인된 경우
+      console.log(isLoggedIn,'logloglog')
       router.push({
         pathname: '/text-setting',
         query: { access_token: accessToken},
       } as any); // 'as any'를 사용하여 타입 명시
+      console.log('djfhljhadjhgj')
     }
   };
 

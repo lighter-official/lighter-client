@@ -42,16 +42,17 @@ const Modal: React.FC<ModalProps> = ({
   writingData,
   remainingTime,
   textColor,
+  glooingInfo,
   mini,
   remainingSecond,
   remainingTime2,
 }) => {
   const router = useRouter();
   const [title, setTitle] = useState('');
-  const [desc, setDesc] = useState('');
-  const accessToken = router.query.access_token as string;
+  const [content, setContent] = useState('');
+  const accessToken = getCookie('access_token')
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
-  const disabled = !title || !desc;
+  const disabled = !title || !content;
   const [writingDetails, setWritingDetails] = useState<any>(null);
 
   const handleCancelPost = () => {
@@ -82,7 +83,7 @@ const Modal: React.FC<ModalProps> = ({
     // 작성한 글을 서버에 저장
     const writingData = {
       title: title || null, // 만약 title이 빈 문자열이면 null로 설정
-      desc: desc || null, // 만약 desc가 빈 문자열이면 null로 설정
+      content: content || null, // 만약 desc가 빈 문자열이면 null로 설정
     };
     try {
       // 새로운 글 작성
@@ -112,12 +113,12 @@ const Modal: React.FC<ModalProps> = ({
       ></div>
       <div className='relative flex flex-col bg-white w-[800px] h-[550px] rounded-lg z-50'>
         <div className='p-8'>
-          <div className='text-[16px]'>{data?.total_writing + 1}번째 글</div>
+          <div className='text-[16px]'>{writingData?.data?.writings?.length + 1}번째 글</div>
           <div
             className='mb-[10px] font-bold text-[22px]'
             style={{ color: '#646464' }}
           >
-            {data?.setting?.subject}
+            {writingData?.data?.subject}
           </div>
           <textarea
             className='text-[40px] w-full mb-[10px] h-[50px]'
@@ -134,16 +135,16 @@ const Modal: React.FC<ModalProps> = ({
           <textarea
             className='mt-[20px] w-full h-[220px] overflow-y-auto'
             placeholder='내용을 입력해주세요.'
-            value={desc}
+            value={content}
             onChange={(e) => {
               const inputValue = e.target.value;
               // 최대 입력 글자수 - 4000자로 제한
               if (inputValue.length <= 4000) {
-                setDesc(inputValue);
+                setContent(inputValue);
               }
             }}
           />
-          <div className='text-[14px] text-gray-500 items-end justify-end flex'>{`${desc.length}/4000`}</div>
+          <div className='text-[14px] text-gray-500 items-end justify-end flex'>{`${content.length}/4000`}</div>
         </div>
         <div className='flex flex-col w-full rounded-md'>
           <div
@@ -155,7 +156,7 @@ const Modal: React.FC<ModalProps> = ({
                 textColor ? 'text-orange-500' : 'text-black'
               }`}
             >
-              남은 시간 {remainingTime}
+              남은 시간 {remainingTime2}
             </a>
             <button
               className={`w-[152px] h-[53px] cursor-pointer rounded-md ${
@@ -410,7 +411,7 @@ const EditModal: React.FC<ModalProps> = ({
   );
 };
 
-export default function Writer({ isLoggedIn, setLoggedIn }) {
+export default function Writer() {
   // 미니 모달이 오픈됨과 동시에 타이머 바꾸기
   const router = useRouter();
   const [isWriterModalOpen, setIsWriterModalOpen] = useState(false);
@@ -420,7 +421,7 @@ export default function Writer({ isLoggedIn, setLoggedIn }) {
   const [userInfo, setUserInfo] = useState<any>({});
   const [selectedWritingId, setSelectedWritingId] = useState('');
   const [writingData, setWritingData] = useState<any>({});
-  // const [isLoggedIn, setLoggedIn] = useState(false);
+  const [isLoggedIn, setLoggedIn] = useState(true);
   const [writingCount, setWritingCount] = useState(0);
   const [remainingTime, setRemainingTime] = useState<string>();
   const [remainingTime2, setRemainingTime2] = useState<string>();
@@ -440,70 +441,50 @@ export default function Writer({ isLoggedIn, setLoggedIn }) {
         console.log('유저 데이터 정보: ', userData);
 
         const currentWritings = await getCurrentSessions(accessToken);
-        setCurrentWritingsData(currentWritings);
         console.log('현재 글쓰기 데이터 정보: ', currentWritings);
+        setCurrentWritingsData(currentWritings);
 
-        const startHour = parseInt(
-          currentWritingsData?.data?.startAt?.hour,
-          10
-        );
-    
-        const startMinute = parseInt(
-          currentWritingsData?.data?.startAt?.minute,
-          10
-        );
-
-        const startHour2 = parseInt(
-          currentWritingsData?.data?.startAt?.hour,
-          10
-        );
-        const startMinute2 = parseInt(
-          currentWritingsData?.data?.startAt?.minute,
-          10
-        );
+        const startHour = parseInt(currentWritings?.data?.startAt?.hour);
+        const startMinute = parseInt(currentWritings?.data?.startAt?.minute);
+        const startHour2 = !isNaN(startHour) ? startHour : 0;
+        const startMinute2 = !isNaN(startMinute) ? startMinute : 0;
 
         const currentTime = new Date();
+
+        const finishedString = currentWritings?.data?.nearestFinishDate
+        const finishTime = new Date(finishedString)
+        const newStartString = currentWritings?.data?.nearestStartDate
+        const newStartTime = new Date(newStartString)
+
         let startTime = new Date(
-          currentTime.getFullYear(),
-          currentTime.getMonth(),
-          currentTime.getDate(),
+          currentTime?.getFullYear(),
+          currentTime?.getMonth(),
+          currentTime?.getDate(),
           startHour,
           startMinute
         );
         let startTime2 = new Date(
-          currentTime.getFullYear(),
-          currentTime.getMonth(),
-          currentTime.getDate(),
+          currentTime?.getFullYear(),
+          currentTime?.getMonth(),
+          currentTime?.getDate(),
           startHour + startHour2,
           startMinute + startMinute2
         );
-
-        // 첫 번째 타이머
+        // 타이머
         const newIntervalId = setInterval(() => {
           const currentTime = new Date();
-          const timeDiff = startTime.getTime() - currentTime.getTime();
+          const timeDiff = newStartTime?.getTime() - currentTime?.getTime();
           const seconds = Math.floor(timeDiff / 1000);
           const updatedHours = Math.floor(seconds / 3600);
           const updatedMinutes = Math.floor((seconds % 3600) / 60);
           const updatedRemainingSeconds = seconds % 60;
 
-          const timeDiff2 = startTime2.getTime() - currentTime.getTime();
+          const timeDiff2 = finishTime?.getTime() - currentTime?.getTime();
           const seconds2 = Math.floor(timeDiff2 / 1000);
           const updatedHours2 = Math.floor(seconds2 / 3600);
           const updatedMinutes2 = Math.floor((seconds2 % 3600) / 60);
           const updatedRemainingSeconds2 = seconds2 % 60;
 
-          // if (timeDiff < 0) {
-          //     timeDiff = startTime.getTime() + (24 * 60 * 60 * 1000) - currentTime.getTime();
-          // }
-          // if (!buttonActivated) {
-          //     const updatedTime = `${updatedHours < 10 ? updatedHours + 24 * 60 * 60 : ''}${updatedHours}:${updatedMinutes < 10 ? '0' : ''}${updatedMinutes}:${updatedRemainingSeconds < 0 ? '0' : updatedRemainingSeconds}`;
-          //     setRemainingTime(updatedTime);
-          //     console.log(updatedTime, 'updatedTime', remainingTime);
-          // } else {
-          //     const updatedTime2 = `${updatedHours2 < 10 ? updatedHours2 + 24 * 60 * 60 : ''}${updatedHours2}:${updatedMinutes2 < 10 ? '0' : ''}${updatedMinutes2}:${updatedRemainingSeconds2 < 0 ? '0' : updatedRemainingSeconds2}`;
-          //     setRemainingTime(updatedTime2);
-          // }
           if (!buttonActivated) {
             const updatedTime = `${
               updatedHours < 10
@@ -526,7 +507,6 @@ export default function Writer({ isLoggedIn, setLoggedIn }) {
             }`;
 
             setRemainingTime(updatedTime);
-            console.log(updatedTime, 'updatedTime');
           } else {
             const updatedTime2 = `${
               updatedHours2 < 10
@@ -548,8 +528,7 @@ export default function Writer({ isLoggedIn, setLoggedIn }) {
                 : updatedRemainingSeconds2
             }`;
 
-            setRemainingTime(updatedTime2);
-            console.log(updatedTime2, 'updatedTime2222');
+            setRemainingTime2(updatedTime2);
           }
 
           if (seconds <= 0 && !buttonActivated) {
@@ -557,59 +536,6 @@ export default function Writer({ isLoggedIn, setLoggedIn }) {
             clearInterval(newIntervalId);
           }
         }, 1000);
-
-        // 두 번째 타이머
-        const intervalId2 = setInterval(() => {
-          const currentTime = new Date();
-          const timeDiff2 = startTime2.getTime() - currentTime.getTime();
-          const seconds2 = Math.floor(timeDiff2 / 1000);
-          const updatedHours2 = Math.floor(seconds2 / 3600);
-          const updatedMinutes2 = Math.floor((seconds2 % 3600) / 60);
-          const updatedRemainingSeconds2 = seconds2 % 60;
-
-          if (seconds2 <= 0) {
-            setButtonActivated(false);
-            setIsWriterModalOpen(false);
-
-            startTime = new Date(
-              currentTime.getFullYear(),
-              currentTime.getMonth(),
-              currentTime.getDate(),
-              startHour,
-              startMinute
-            );
-            startTime2 = new Date(
-              currentTime.getFullYear(),
-              currentTime.getMonth(),
-              currentTime.getDate(),
-              startHour + startHour2,
-              startMinute + startMinute2
-            );
-
-            clearInterval(intervalId2);
-          }
-          if (seconds2 <= 600) {
-            setTextColor(true);
-          }
-        }, 1000);
-
-        // const intervalId3 = setInterval(() => {
-        //     const currentTime = new Date();
-        //     const startTime = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), 18, 0);
-        //     const nextDayStartTime = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate() + 1, 18, 0);
-        //     const timeDiff3 = nextDayStartTime.getTime() - currentTime.getTime();
-        //     const seconds3 = Math.floor(timeDiff3 / 1000);
-        //     const updatedHours2 = Math.floor(seconds3 / 3600);
-        //     const updatedMinutes2 = Math.floor((seconds3 % 3600) / 60);
-        //     const updatedRemainingSeconds2 = seconds3 % 60;
-
-        //     if (seconds3 <= 0) {
-        //         setButtonActivated(true);
-        //         setIsWriterModalOpen(false)
-
-        //         clearInterval(intervalId3);
-        //     }
-        // }, 1000);
 
         setIntervalId(newIntervalId);
       } catch (error) {
@@ -626,10 +552,18 @@ export default function Writer({ isLoggedIn, setLoggedIn }) {
     };
   }, [buttonActivated]);
 
-  /**
-   * 타이머 예시
-   */
+  useEffect(() => {
+    // currentWritings?.data?.isActivated 값이 true이면 버튼 활성화, false이면 비활성화
+    if (currentWritingsData?.data?.isActivated === true) {
+      setButtonActivated(true);
+    } else {
+      setButtonActivated(false);
+    }
+  }, [currentWritingsData?.data?.isActivated]); 
+  
+
   const { isActivated, nearestStartDate, nearestFinishDate } = glooingInfo; //useQuery로 받아온 데이터
+
 
   const now = day();
   const seconds = day(isActivated ? nearestFinishDate : nearestStartDate).diff(
@@ -663,11 +597,6 @@ export default function Writer({ isLoggedIn, setLoggedIn }) {
     displaySeconds < 10 ? '0' : ''
   }${displaySeconds}`;
   
-
-  /**
-   * 예시 종료
-   */
-
   const handleOpenWriterModal = () => {
     setIsWriterModalOpen(true);
   };
@@ -714,6 +643,16 @@ export default function Writer({ isLoggedIn, setLoggedIn }) {
     }
   };
 
+  const handleLogIn = () => {
+    setLoggedIn(prevLoggedIn => !prevLoggedIn);
+    if (isLoggedIn === true) {
+      setLoggedIn(false)
+      nookies.destroy(null, 'access_token'); 
+      router.push('/');
+    }
+  };
+
+  
   function getCookie(name: any) {
     console.log(nookies.get(null)[name], '쿠키?');
     return nookies.get(null)[name];
@@ -757,7 +696,6 @@ export default function Writer({ isLoggedIn, setLoggedIn }) {
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
       <div className='flex flex-row mx-auto w-full'>
         <div className='flex flex-col w-full mx-[120px]'>
-          {/* <Redirection /> */}
           <div className='flex flex-row justify-between'>
             <img
               className='w-[105px] h-[35px] mb-[20px]'
@@ -787,11 +725,8 @@ export default function Writer({ isLoggedIn, setLoggedIn }) {
               >
                 나의 보관함
               </a>
-              <a className='cursor-pointer' onClick={() => setLoggedIn(false)}>
-                <Redirection
-                  isLoggedIn={isLoggedIn}
-                  setLoggedIn={setLoggedIn}
-                />
+              <a className='cursor-pointer' onClick={handleLogIn}>
+                {isLoggedIn === false ? '로그인' : '로그아웃'}
               </a>
             </div>
           </div>
@@ -829,10 +764,10 @@ export default function Writer({ isLoggedIn, setLoggedIn }) {
                 </div>
                 {/* <div className='' style={{ color: '#BAB1A0' }}>글쓰기 시간까지</div> */}
                 <div
-                  className='flex w-full justify-start text-[66px]'
+                  className='flex w-full justify-start text-[72px]'
                   style={{ color: '#F2EBDD' }}
                 >
-                  {remainingTime}
+                  {buttonActivated === true ? remainingTime2 : remainingTime}
                 </div>
                 {/* <div className='flex w-full justify-start text-[66px]' style={{ color: '#F2EBDD' }}>12 : 30 : 00</div> */}
               </div>
@@ -929,7 +864,7 @@ export default function Writer({ isLoggedIn, setLoggedIn }) {
                     ></div>
                   </div>
                 )}
-                {currentWritingsData?.writings !== null && (
+                {currentWritingsData?.data?.writings !== null && (
                   <div className='flex flex-col max-h-[580px] mb-[21px] overflow-y-auto'>
                     {currentWritingsData?.data?.writings?.map(
                       (writing, index) => (
@@ -987,7 +922,7 @@ export default function Writer({ isLoggedIn, setLoggedIn }) {
                   <div className='flex justify-center'>
                     <button
                       className='w-[120px] text-[15px] font-bold cursor-pointer h-[40px] rounded-md'
-                      style={{ backgroundColor: '#FF5A26' }}
+                      style={{ backgroundColor: '#FF8126' }}
                       onClick={handleCloseMiniModal}
                     >
                       확인
@@ -1003,7 +938,7 @@ export default function Writer({ isLoggedIn, setLoggedIn }) {
         isOpen={isWriterModalOpen}
         onClose={handleCloseWriterModal}
         data={glooingInfo}
-        writingData={writingData}
+        writingData={currentWritingsData}
         mini={setIsMiniModalOpen}
         remainingTime={remainingTime}
         textColor={textColor}
