@@ -9,31 +9,33 @@ import { getLoginInfo } from '@/api/api';
 import Cookies from 'js-cookie';
 import { access } from 'fs';
 import nookies from 'nookies';
+import Head from 'next/head';
 
 
-export const Redirection = ({ isLoggedIn, setLoggedIn }) => {
+export const Redirection = ({ isLoggedIn, setLoggedIn }:any) => {
   const router = useRouter();  // 수정된 부분
   const REST_API_KEY = '042aae38695b074b539c155e83aa75a5';
-  const REDIRECT_URI = 'http://localhost:3000';
+  const REDIRECT_URI = 'http://localhost:8000';
   const link = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
   const [nickname, setNickname] = useState<string | null>(null);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null)
   
 
-  const getCode = () => {
-    // 현재 URL에서 쿼리 매개변수 'code'를 추출
+  useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const code = searchParams.get('code');
-    
-    return code;
-  };
+
+    if (code) {
+      getToken(code);
+    }
+  }, []);
   
   const handleLoginClick = (code:any) => {
+    console.log('redirection login', isLoggedIn)
     window.location.href = link
     console.log(link,'--------------')
     // handleClick(code)
     if (isLoggedIn) {
-      setLoggedIn(false);
       // 로그인된 경우
       router.push({
         pathname: '/',
@@ -59,46 +61,38 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }) => {
   const getToken = async (code: any) => {
     // const KAKAO_REST_API_KEY = '042aae38695b074b539c155e83aa75a5';
     // const KAKAO_REDIRECT_URI = 'http://localhost.3000';
-
     try {
-      const response = await fetch(`http://localhost:8000/api/login/kakao?code=${code}`, {
-        method: "GET",
+      const response = await fetch(`https://core.gloo-lighter.com/account/users/sign-in/kakao?code=${code}`, {
+        method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/json',
         },
-       
+        body: JSON.stringify({ code, redirectUri: REDIRECT_URI }),
       });
 
       console.log(response);
       const data = await response.json();
       console.log(data,'=======');
 
-      if (code) {
-        console.log(code, 'code!!!');
-        localStorage.setItem('name', data.profile.nickname); 
-        const cookies = nookies.get();
-        nookies.set({}, 'access_token', data.access_token, {
+      if (data.accessToken) {
+        const accessToken = data.accessToken;
+        nookies.set(null, 'access_token', accessToken, {
           path: '/',
           secure: true,
-          maxAge: 3600, 
+          maxAge: 3600,
           sameSite: 'Strict',
         });
         setLoggedIn(true);
-        setNickname(data.profile.nickname);
-        setAccessToken(data.access_token) // 이용하기, code 재사용 불가
-        console.log('ACCESS-TOKEN', data.access_token)
-
         router.push({
           pathname: '/text-setting',
-          query: { access_token: data.access_token },
-        } as any);
+          query: { access_token: accessToken},
+        } as any); // 'as any'를 사용하여 타입 명시
       }
+      
     } catch (error) {
       console.error('Error during token request:', error);
-      throw error;
     }
   };
-
 
   useEffect(() => {
     const code = new URL(document.location.toString()).searchParams.get('code');
@@ -116,7 +110,7 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }) => {
   
 
   return (
-    <button type='button' onClick={isLoggedIn ? setLoggedIn(false) : (code)=>handleLoginClick(code)}>
+    <button type='button' onClick={isLoggedIn ? setLoggedIn(false) : handleLoginClick}>
       {isLoggedIn ? `로그아웃` : '로그인'}
     </button>
   );
@@ -131,50 +125,91 @@ export default function Home() {
   // const navigate = useNavigate();
   const router = useRouter()
   // const accessToken = getCookie('access_token');
-  const [isLoggedIn, setLoggedIn] = useState(false);
+  const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
   const [nickname, setNickname] = useState<string | null>(null);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  const REST_API_KEY = '042aae38695b074b539c155e83aa75a5';
-  const REDIRECT_URI = 'http://localhost:3000';
-  const link = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+  const [accessToken, setAccessToken] = useState<string | null>('');
+  const APP_KEY = '67511eea297fb0f856f791b369c67355';
+  const REDIRECT_URI = 'http://localhost:8000';
+  const link = `https://kauth.kakao.com/oauth/authorize?client_id=${APP_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
 
-  const getToken = async (code: any) => {
+  const initKakao = () => {
+    const Kakao = window.Kakao;
+    if (Kakao && !Kakao.isInitialized()) {
+      Kakao.init(APP_KEY);
+      console.log(Kakao.isInitialized());
+    }
+  };
+
+  useEffect(() => {
+    initKakao();
+  }, []);
+
+    useEffect(() => {
+      const script = document.createElement('script');
+      script.src = "https://developers.kakao.com/sdk/js/kakao.js";
+      script.async = true;
+      document.body.appendChild(script);
+  
+      return () => {
+        document.body.removeChild(script);
+      };
+    }, []);
+
+  // 지금 여기
+  const getToken = async (code: string) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/login/kakao?code=${code}`, {
-        method: "GET",
+      const response = await fetch(`https://core.gloo-lighter.com/account/users/sign-in/kakao`, {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ code, redirectUri: REDIRECT_URI })
        
       });
-
-      console.log(response);
+      console.log(response,'????????');
       const data = await response.json();
       console.log(data,'=======');
 
-      if (code) {
-        console.log(code, 'code!!!');
-        localStorage.setItem('name', data.profile.nickname); 
-        const cookies = nookies.get();
-        nookies.set({}, 'access_token', data.access_token, {
+      if (data?.data?.accessToken) {
+        const accessToken = data?.data?.accessToken;
+        nookies.set(null, 'access_token', accessToken, {
           path: '/',
           secure: true,
-          maxAge: 3600, 
+          maxAge: 3600,
           sameSite: 'Strict',
         });
+        setAccessToken(accessToken)
+        console.log(data?.data?.accessToken,'getToken-token?')
         setLoggedIn(true);
-        setNickname(data.profile.nickname);
-        setAccessToken(data.access_token) // 이용하기, code 재사용 불가
-        console.log('ACCESS-TOKEN', data.access_token)
-
+        console.log(isLoggedIn,'로그인 ???')
+        // accessToken을 설정한 후에 router.push 호출
+        if (data?.data?.isSignUp === true) { // 신규 회원가입
         router.push({
-          pathname: '/text-setting',
-          query: { access_token: data.access_token },
-        } as any);
+            pathname: '/text-setting',
+            query: { access_token: accessToken},
+          } as any); 
+        }
+        else if (data?.data?.isSignUp === false) {
+          if (data?.data?.hasOnProcessedWritingSession === true)
+          {
+            console.log('>?????????')
+            router.push({
+            pathname: '/writer',
+            query: { access_token: accessToken},
+          } as any); 
+          }
+          else 
+          {
+            router.push({
+            pathname: '/text-setting',
+            query: { access_token: accessToken},
+          } as any); 
+          }
+        }
       }
+      
     } catch (error) {
       console.error('Error during token request:', error);
-      throw error;
     }
   };
 
@@ -182,6 +217,7 @@ export default function Home() {
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const code = searchParams.get('code');
+
 
     const bodyData: {
       code: any;
@@ -202,17 +238,23 @@ export default function Home() {
     // handleClick(code)
     getToken(code)
     setLoggedIn(true)
-    if (accessToken) {
+    if (isLoggedIn) {
       // 로그인된 경우
+      console.log(isLoggedIn,'logloglog')
       router.push({
         pathname: '/text-setting',
-        query: { access_token: accessToken },
+        query: { access_token: accessToken},
       } as any); // 'as any'를 사용하여 타입 명시
+      console.log('djfhljhadjhgj')
     }
   };
 
   
   return (
+    <>
+    <Head>
+        <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+    </Head>
     <div className="flex flex-col my-[50px] w-full">
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
       <div className='flex flex-row mx-auto w-full'>
@@ -237,5 +279,6 @@ export default function Home() {
         </div>
       </div>
     </div>
+    </>
   );
 }

@@ -76,9 +76,9 @@ export default function Settings() {
     const [subject, setSubject] = useState('');
     const [period, setPeriod] = useState(0);
     const [page, setPage] = useState(0);
-    const [start_time, setStartTime] = useState<[string, number|undefined, number|undefined]>(['', undefined, undefined]);
-    const [for_hours, setForHours] = useState(0);
-    const disabled = !subject || !period || !page || !start_time[0] || start_time[1] == undefined || start_time[2] == undefined || !for_hours;
+    const [startAt, setStartAt] = useState<[string, number|undefined, number|undefined]>(['', undefined, undefined]);
+    const [writingHours, setWritingHours] = useState(0);
+    const disabled = !subject || !period || !page || !startAt[0] || startAt[1] == undefined || startAt[2] == undefined || !writingHours;
     const accessToken = router.query.access_token as string
 
 
@@ -86,21 +86,26 @@ export default function Settings() {
     console.log('subject updated:', subject)
     console.log('period updated:', period);
     console.log('page updated:', page);
-    console.log('start_time updated:', start_time);
-    console.log('for_hours updated:', for_hours);
-  }, [subject, period, page, start_time, for_hours]);
+    console.log('start_time updated:', startAt);
+    console.log('for_hours updated:', writingHours);
+  }, [subject, period, page, startAt, writingHours]);
 
   // 시작하기 버튼 클릭 시 서버로 설정된 값들을 전송
   const isPageValid = page < 10;  // 10 미만이면 필수 필드 채워지지 않은 것으로 간주
   const handleStart = async () => {
+    let adjustedHour = startAt[1] || 0; // 초기값은 그대로 
+
+    if (startAt[0] === 'PM') {
+        adjustedHour += 12; // PM 선택 시 시간 + 12
+    }
 
     try {
         const response = await postSetUp({
             subject,
             period,
             page,
-            start_time,
-            for_hours,
+            startAt: { hour: adjustedHour, minute: startAt[2] }, 
+            writingHours,
           }, accessToken);
 
       console.log(response.data, '============');
@@ -212,19 +217,19 @@ export default function Settings() {
                                         <a className='font-bold'>3. 글쓰기 시간</a>
                                         <div className='flex flex-row gap-x-[20px]'>
                                         <button
-                                            className={`w-[82px] h-[40px] border-1 rounded-md ${start_time[0] === 'AM' ? 'bg-black text-white' : ' bg-white'}`}
+                                            className={`w-[82px] h-[40px] border-1 rounded-md ${startAt[0] === 'AM' ? 'bg-black text-white' : ' bg-white'}`}
                                             onClick={() => {
-                                            setStartTime(['AM', start_time[1], start_time[2]]);
-                                            console.log(start_time, 'start_time');
+                                            setStartAt(['AM', startAt[1], startAt[2]]);
+                                            console.log(startAt, 'start_time');
                                             }}
                                         >
                                             AM
                                         </button>
                                         <button
-                                            className={`w-[82px] h-[40px] border-1 rounded-md ${start_time[0] === 'PM' ? 'bg-black text-white' : ' bg-white'}`}
+                                            className={`w-[82px] h-[40px] border-1 rounded-md ${startAt[0] === 'PM' ? 'bg-black text-white' : ' bg-white'}`}
                                             onClick={() => {
-                                            setStartTime(['PM', start_time[1], start_time[2]]);
-                                            console.log(start_time, 'start_time');
+                                            setStartAt(['PM', startAt[1], startAt[2]]);
+                                            console.log(startAt, 'start_time');
                                             }}
                                         >
                                             PM
@@ -245,7 +250,7 @@ export default function Settings() {
                                                 { name: '12시', value: 12 },
                                                 ]}
                                                 onSelect={(selectedHour) => {
-                                                    setStartTime([start_time[0], selectedHour.value, start_time[2]]);
+                                                    setStartAt([startAt[0], selectedHour.value, startAt[2]]);
 
                                                   }}
                                             />
@@ -257,7 +262,7 @@ export default function Settings() {
                                                 { name: '45분', value: 45 },
                                                 ]}
                                                 onSelect={(selectedMinute) => {
-                                                    setStartTime([start_time[0], start_time[1], selectedMinute.value]);
+                                                    setStartAt([startAt[0], startAt[1], selectedMinute.value]);
                                                   }}
                                             /><a className='my-auto'>부터</a>
                                             <button className='w-[82px] h-[40px] border-1 border-black rounded-md bg-white'>
@@ -270,7 +275,7 @@ export default function Settings() {
                                                 { name: '5시간', value: 5 },
                                                 ]}
                                             onSelect={(selectedForHours) => {
-                                                setForHours(selectedForHours.value)
+                                                setWritingHours(selectedForHours.value)
                                             }}
                                             />
                                               
