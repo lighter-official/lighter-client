@@ -1,16 +1,14 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { NavigateOptions, useNavigate } from 'react-router-dom';
 import "./globals.css";
 import axios from 'axios';
 import Settings from './text-setting';
 import { getLoginInfo } from '@/api/api';
-import Cookies from 'js-cookie';
-import { access } from 'fs';
 import nookies from 'nookies';
 import Head from 'next/head';
-
+import Image from 'next/image';
+import Script from 'next/script';
 
 export const Redirection = ({ isLoggedIn, setLoggedIn }:any) => {
   const router = useRouter();  // 수정된 부분
@@ -19,8 +17,6 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }:any) => {
   const link = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
   const [nickname, setNickname] = useState<string | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null)
-  
-
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const code = searchParams.get('code');
@@ -55,9 +51,7 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }:any) => {
     }
 
     
-  };
-  
-
+  };   
   const getToken = async (code: any) => {
     // const KAKAO_REST_API_KEY = '042aae38695b074b539c155e83aa75a5';
     // const KAKAO_REDIRECT_URI = 'http://localhost.3000';
@@ -94,6 +88,9 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }:any) => {
     }
   };
 
+
+
+
   useEffect(() => {
     const code = new URL(document.location.toString()).searchParams.get('code');
     const bodyData: {
@@ -117,7 +114,6 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }:any) => {
 };
 
 export function getCookie(name: any) {
-  console.log(nookies.get(null)[name], '쿠키?');
   return nookies.get(null)[name];
 }
 
@@ -166,7 +162,6 @@ export default function Home() {
         body: JSON.stringify({ code, redirectUri: REDIRECT_URI })
        
       });
-      console.log(response,'????????');
       const data = await response.json();
       console.log(data,'=======');
 
@@ -252,14 +247,12 @@ export default function Home() {
   
   return (
     <>
-    <Head>
-        <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
-    </Head>
+    <Script src="https://developers.kakao.com/sdk/js/kakao.js"/>
     <div className="flex flex-col my-[50px] w-full">
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
       <div className='flex flex-row mx-auto w-full'>
         <div className='flex flex-col w-full mx-[120px]'>
-          <div className='flex flex-row justify-between'><img className="w-[105px] h-[35px] mb-[20px]" src="image/logo.svg" alt="Logo" />
+          <div className='flex flex-row justify-between'><Image className="mb-[20px]" src="image/logo.svg" width="105" height="35" alt="Logo" />
           </div>
           <hr className='w-full bg-[#7C766C] h-[1px] my-[17px]' style={{color: '#7C766C', borderColor:'#7C766C'}} />
           <div className='flex my-[90px] flex-row justify-between'>
@@ -273,7 +266,7 @@ export default function Home() {
               <button className='rounded-xl w-[200px] h-[42px] text-black' style={{backgroundColor: '#FFE000'}} onClick={(code)=>handleLoginClick(code)}>카카오 로그인</button>
             </div>
             <div className='flex items-end w-[876px] h-[657px] border-1'>
-              <img className="w-[875px] h-[657px]" src="image/badges.svg" alt="Badges" />
+              <Image src="image/badges.svg"  width="875" height="657" alt="Badges" />
             </div>
           </div>
         </div>

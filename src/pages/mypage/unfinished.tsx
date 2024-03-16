@@ -2,6 +2,7 @@
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import "../globals.css";
+import Image from 'next/image';
 
 export default function Writer() {
     // const router = useRouter()
@@ -27,7 +28,7 @@ export default function Writer() {
             <div className='flex flex-row mx-auto w-full'>
                 <div className='flex flex-col w-full mx-[120px]'>
                     {/* <Redirection /> */}
-                    <div className='flex flex-row justify-between'><img className="w-[105px] h-[35px] mb-[20px]" src="/image/logo.svg" alt="Logo" />
+                    <div className='flex flex-row justify-between'><Image className="mb-[20px]" src="/image/logo.svg"  width="105" height="35" alt="Logo" />
             <div className='flex gap-x-[70px]'>
             <a className='cursor-pointer'  style={{color:'#A49E90'}} onClick={()=>router.push('/')}>글루ING</a>
             <a className='cursor-pointer font-bold' style={{color:'#191919'}}onClick={()=>router.push('/mypage/badge')}>나의 보관함</a>
@@ -62,7 +63,7 @@ export default function Writer() {
                                     <div className=' mt-[53px] flex flex-row gap-x-[46px]'>
                                         <div>
                                             <div className='w-[266px] h-[367px]' style={{backgroundColor: '#D5C8AE', border: '1px solid gray'}}>
-                                            <img className="z-50" src="/image/book_yet.png" alt="book_yet" />
+                                            <Image className="z-50" src="/image/book_yet.png" alt="book_yet" />
                                             </div>
                                             <div className='mt-[10px] text-[32px]'>영화 평론</div>
                                             <div className='mt-[10px] text-[16px]' style={{color:'#8A8170'}}>2023년 11월 7일 발행</div>
@@ -85,7 +86,7 @@ export default function Writer() {
                             </div>
                         </div>
                         <div style={{ position: 'absolute', top: '50%', left: '55%'}}>
-                            <img className="w-[184px] h-[53px] z-9999" src="/image/soon.png" alt="soon" />
+                            <Image className="w-[184px] h-[53px] z-9999" src="/image/soon.png" alt="soon" />
                         </div>
 
                     </div>

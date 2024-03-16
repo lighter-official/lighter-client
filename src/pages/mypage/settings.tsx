@@ -2,6 +2,7 @@
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import "../globals.css";
+import Image from 'next/image';
 
 interface ModalProps {
     isOpen: boolean;
@@ -66,7 +67,7 @@ export default function Writer() {
             <div className='flex flex-row mx-auto w-full'>
                 <div className='flex flex-col w-full mx-[120px]'>
                     {/* <Redirection /> */}
-                    <div className='flex flex-row justify-between'><img className="w-[105px] h-[35px] mb-[20px]" src="/image/logo.svg" alt="Logo" />
+                    <div className='flex flex-row justify-between'><Image className="mb-[20px]" src="/image/logo.svg"  width="105" height="35" alt="Logo" />
             <div className='flex gap-x-[70px]'>
             <a className='cursor-pointer'  style={{color:'#A49E90'}} onClick={()=>router.push('/')}>글루ING</a>
             <a className='cursor-pointer font-bold' style={{color:'#191919'}}onClick={()=>router.push('/mypage/badge')}>나의 보관함</a>
@@ -89,7 +90,6 @@ export default function Writer() {
                                 </div>
                             </div>
                         </div>
-                        {/* <img className="w-[184px] h-[53px] mb-[20px] z-50" src="/image/soon.png" alt="soon" /> */}
                         <div className='w-[1120px]  bg-gray-800 opacity-20 rounded-sm border-black  border-1 flex flex-row h-[759px]' style={{ backgroundColor: '#E0D5BF', border: '1px solid black' }}>
                             <div className='w-full  my-[30px] ml-[53px] '>
                                 <div className='flex flex-row items-center '>
@@ -116,7 +116,7 @@ export default function Writer() {
                             </div>
                         </div>
                         <div style={{ position: 'absolute', top: '50%', left: '55%'}}>
-                            <img className="w-[184px] h-[53px] z-9999" src="/image/soon.png" alt="soon" />
+                            <Image className="w-[184px] h-[53px] z-9999" src="/image/soon.png" alt="soon" />
                         </div>
 
                     </div>

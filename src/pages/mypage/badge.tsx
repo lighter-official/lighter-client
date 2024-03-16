@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { Redirection, getCookie } from '..';
 import { getGlooingInfo, getMyBadge, getUserInfo } from '@/api/api';
 import "../globals.css";
+import Image from 'next/image';
 
 interface ModalProps {
     isOpen: boolean;
@@ -78,11 +79,7 @@ export default function Writer() {
             const userData = await getUserInfo(accessToken);
             setUserInfo(userData);
             console.log(userInfo,'유저 정보-------------------')
-    
-            // const id = glooingInfo?.writings[i]
-            // const writingData = await getWritingInfo(id, accessToken);
-            // setWritingData(writingData)
-            // console.log('각 글의 정보 ----------------:', writingData)
+
             const badgeData = await getMyBadge(accessToken);
             setBadgeInfo(badgeData)
             console.log(badgeInfo,'뱃지 정보-------------------')
@@ -97,7 +94,7 @@ export default function Writer() {
     
         // 페이지 로드 시 데이터 호출
         fetchUserData();
-      }, []); // 빈 배열을 전달하여 페이지가 로드될 때 한 번만 실행되도록 설정
+      }, [accessToken, badgeInfo, glooingInfo, userInfo]); // 빈 배열을 전달하여 페이지가 로드될 때 한 번만 실행되도록 설정
     
 
     return (
@@ -106,7 +103,7 @@ export default function Writer() {
             <div className='flex flex-row mx-auto w-full'>
                 <div className='flex flex-col w-full mx-[120px]'>
                     {/* <Redirection /> */}
-                    <div className='flex flex-row justify-between'><img className="w-[105px] h-[35px] mb-[20px]" src="/image/logo.svg" alt="Logo" />
+                    <div className='flex flex-row justify-between'><Image className="mb-[20px]" src="/image/logo.svg"  width="105" height="35" alt="Logo" />
                         <div className='flex gap-x-[70px]'>
                         <a className='cursor-pointer' onClick={()=>router.push({
                             pathname: '/writer',
@@ -152,7 +149,7 @@ export default function Writer() {
                                         <div>
                                             {/* <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}></div> */}
                                             <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}>
-                                                <img className="w-[152px] h-[153px] z-50" src="/image/butterfly_1.jpg" alt="egg" />
+                                                <Image className="w-[152px] h-[153px] z-50" src="/image/butterfly_1.jpg" alt="egg" />
                                             </div>
                                             
                                             <div className='mt-[10px] text-[36px]'>{badgeInfo?.name}알</div>
@@ -161,7 +158,7 @@ export default function Writer() {
                                         <div>
                                             {/* <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}></div> */}
                                             <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}>
-                                                <img className="w-[152px] h-[153px] z-50" src="/image/butterfly_2.png" alt="bug" />
+                                                <Image className="w-[152px] h-[153px] z-50" src="/image/butterfly_2.png" alt="bug" />
                                             </div>
                                             
                                             <div className='mt-[10px] text-[36px]'>{badgeInfo?.name}애벌레</div>
@@ -169,7 +166,7 @@ export default function Writer() {
                                         </div>     
                                         <div>
                                             <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}>
-                                                <img className="w-[152px] h-[153px] z-50" src="/image/butterfly_3.png" alt="beondaegi" />
+                                                <Image className="w-[152px] h-[153px] z-50" src="/image/butterfly_3.png" alt="beondaegi" />
                                             </div>
                                             
                                             <div className='mt-[10px] text-[36px]'>{badgeInfo?.name}번데기</div>
@@ -180,7 +177,7 @@ export default function Writer() {
                                         <div>
                                             {/* <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}></div> */}
                                             <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}>
-                                                <img className="w-[152px] h-[153px] z-50" src="/image/butterfly_4.png" alt="gochi" />
+                                                <Image className="w-[152px] h-[153px] z-50" src="/image/butterfly_4.png" alt="gochi" />
                                             </div>
                                             
                                             <div className='mt-[10px] text-[36px]'>{badgeInfo?.name}고치</div>
@@ -189,7 +186,7 @@ export default function Writer() {
                                         <div>
                                             {/* <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}></div> */}
                                             <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}>
-                                                <img className="w-[152px] h-[153px] z-50" src="/image/butterfly_5.png" alt="nabi" />
+                                                <Image className="w-[152px] h-[153px] z-50" src="/image/butterfly_5.png" alt="nabi" />
                                             </div>
                                             
                                             <div className='mt-[10px] text-[36px]'>{badgeInfo?.name}나비</div>
@@ -202,7 +199,7 @@ export default function Writer() {
                             </div>
                         </div>
                         <div style={{ position: 'absolute', top: '50%', left: '55%'}}>
-                            <img className="w-[184px] h-[53px] z-9999" src="/image/soon.png" alt="soon" />
+                            <Image className="w-[184px] h-[53px] z-9999" src="/image/soon.png" alt="soon" />
                         </div>
 
                     </div>
