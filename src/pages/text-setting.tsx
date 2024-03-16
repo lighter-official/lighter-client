@@ -6,6 +6,7 @@ import axios from 'axios';
 import { fork } from 'child_process';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 type DropdownItem = {
     name: string;
@@ -128,7 +129,7 @@ export default function Settings() {
                 <div className='flex flex-col w-full mx-[120px]'>
                   
                     {/* <Redirection /> */}
-                    <div className='flex flex-row justify-between'><img className="w-[105px] h-[35px] mb-[20px]" src="image/logo.svg" alt="Logo" />
+                    <div className='flex flex-row justify-between'><Image className="mb-[20px]" src="image/logo.svg" width="105" height="35" alt="Logo" />
             {/* <div className='flex gap-x-[70px]'>
             <a className='cursor-pointer' onClick={()=>router.push('/')}>글루ING</a>
               <a className='cursor-pointer' onClick={()=>router.push('/mypage/badge')}>나의 보관함</a>

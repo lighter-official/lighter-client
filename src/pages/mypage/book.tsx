@@ -2,6 +2,7 @@
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import "../globals.css";
+import Image from 'next/image';
 
 interface ModalProps {
     isOpen: boolean;
@@ -66,7 +67,7 @@ export default function Writer() {
             <div className='flex flex-row mx-auto w-full'>
                 <div className='flex flex-col w-full mx-[120px]'>
                     {/* <Redirection /> */}
-                    <div className='flex flex-row justify-between'><img className="w-[105px] h-[35px] mb-[20px]" src="/image/logo.svg" alt="Logo" />
+                    <div className='flex flex-row justify-between'><Image className="mb-[20px]" src="/image/logo.svg"  width="105" height="35" alt="Logo" />
             <div className='flex gap-x-[70px]'>
             <a className='cursor-pointer'  style={{color:'#A49E90'}} onClick={()=>router.push('/')}>글루ING</a>
             <a className='cursor-pointer font-bold' style={{color:'#191919'}}onClick={()=>router.push('/mypage/badge')}>나의 보관함</a>

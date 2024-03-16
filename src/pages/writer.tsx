@@ -20,6 +20,7 @@ import {
   WritingSession,
   WritingSessionStartAt,
 } from '@/schemas/WritingSession.schema';
+import Image from 'next/image';
 
 interface ModalProps {
   isOpen: boolean;
@@ -83,7 +84,7 @@ const Modal: React.FC<ModalProps> = ({
     // 작성한 글을 서버에 저장
     const writingData = {
       title: title || null, // 만약 title이 빈 문자열이면 null로 설정
-      content: content || null, // 만약 desc가 빈 문자열이면 null로 설정
+      content: content || null, // 만약 content가 빈 문자열이면 null로 설정
     };
     try {
       // 새로운 글 작성
@@ -267,11 +268,11 @@ const EditModal: React.FC<ModalProps> = ({
 }) => {
   const router = useRouter();
   const [title, setTitle] = useState('');
-  const [desc, setDesc] = useState('');
+  const [content, setContent] = useState('');
   const accessToken = router.query.access_token as string;
   const [isConfirmationModal2Open, setIsConfirmationModal2Open] =
     useState(false);
-  const disabled = !title || !desc;
+  const disabled = !title || !content;
   const [writingDetails, setWritingDetails] = useState<any>(null);
 
   const handleTitleChange = (e) => {
@@ -299,7 +300,7 @@ const EditModal: React.FC<ModalProps> = ({
     // 작성한 글을 서버에 저장
     const editData = {
       title: title || writingData?.title || null,
-      desc: desc || writingData?.desc || null,
+      content: content || writingData?.content || null,
     };
 
     try {
@@ -350,16 +351,16 @@ const EditModal: React.FC<ModalProps> = ({
           <textarea
             className='mt-[20px] w-full h-[220px] overflow-y-auto'
             placeholder='내용을 입력해주세요.'
-            value={desc || writingData?.desc}
+            value={content || writingData?.content}
             onChange={(e) => {
               const inputValue = e.target.value;
               // 최대 입력 글자수 - 4000자로 제한
               if (inputValue.length <= 4000) {
-                setDesc(inputValue);
+                setContent(inputValue);
               }
             }}
           />
-          <div className='text-[14px] text-gray-500 items-end justify-end flex'>{`${desc.length}/4000`}</div>
+          <div className='text-[14px] text-gray-500 items-end justify-end flex'>{`${content.length}/4000`}</div>
         </div>
         <div className='flex flex-col w-full rounded-md'>
           <div
@@ -585,7 +586,7 @@ export default function Writer() {
       clearInterval(intervalId);
     };
     // setInterval(updateTimer, 1000);
-  }, []);
+  }, [timer]);
 
   const displayHours = Math.floor(timer / (60 * 60));
   const displayMinutes = Math.floor((timer % (60 * 60)) / 60);
@@ -654,7 +655,6 @@ export default function Writer() {
 
   
   function getCookie(name: any) {
-    console.log(nookies.get(null)[name], '쿠키?');
     return nookies.get(null)[name];
   }
 
@@ -673,7 +673,7 @@ export default function Writer() {
     }
   }, [glooingInfo, userInfo]);
 
-  console.log(formattedTime, 'formatted Time')
+  // console.log(formattedTime, 'formatted Time')
 
   function formatDate(dateString) {
     const dateObject = new Date(dateString);
@@ -697,9 +697,10 @@ export default function Writer() {
       <div className='flex flex-row mx-auto w-full'>
         <div className='flex flex-col w-full mx-[120px]'>
           <div className='flex flex-row justify-between'>
-            <img
-              className='w-[105px] h-[35px] mb-[20px]'
+            <Image
+              className='mb-[20px]'
               src='image/logo.svg'
+              width="105" height="35"
               alt='Logo'
             />
             <div className='flex gap-x-[70px]'>
@@ -794,9 +795,10 @@ export default function Writer() {
                   }}
                 >
                   {buttonActivated === false && (
-                    <img
-                      className='w-[120px] h-[42px]'
+                    <Image
                       src='/image/soon2.png'
+                      width={120}
+                      height={42}
                       alt='soon2'
                     />
                   )}
