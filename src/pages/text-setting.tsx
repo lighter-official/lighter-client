@@ -96,8 +96,11 @@ export default function Settings() {
   const handleStart = async () => {
     let adjustedHour = startAt[1] || 0; // 초기값은 그대로 
 
+    if (startAt[0] === 'AM' && startAt[1] === 12) {
+        adjustedHour = 0; // AM 0시로 설정
+    }
     if (startAt[0] === 'PM') {
-        adjustedHour += 12; // PM 선택 시 시간 + 12
+        adjustedHour = 12; // PM
     }
 
     try {
@@ -153,8 +156,12 @@ export default function Settings() {
                         value={subject}
                         style={{ lineHeight: '60px'}}
                         onChange={(e) => {
-                            setSubject(e.target.value)
-                            console.log(subject)
+                            const inputText = e.target.value;
+
+                            // 30자로 주제 제한
+                            if (inputText.length <= 30) {
+                                setSubject(inputText);
+                            }
                         }}
                         ></textarea>
 
@@ -167,10 +174,7 @@ export default function Settings() {
                                     <div className='flex flex-col gap-y-[20px]'>
                                         <a className='font-bold'>1. 글쓰기 기간</a>
                                         <div className='flex flex-row gap-x-[20px]'>
-                                            <button className={`w-[82px] h-[40px] border-1 rounded-md ${period === 14 ? 'bg-black text-white' : ' bg-white'}`} onClick={() => {
-                                                setPeriod(14)
-                                                console.log(period, 'period 14')
-                                                }}>14일</button>
+                                            <button className={`w-[82px] h-[40px] border-1 rounded-md ${period === 14 ? 'bg-black text-white' : ' bg-white'}`} onClick={() => setPeriod(14)}>14일</button>
                                             <button className={`w-[82px] h-[40px] border-1 rounded-md ${period === 30  ? 'bg-black text-white' : ' bg-white'}`}  onClick={() => setPeriod(30)}>30일</button>
                                             <button className={`w-[82px] h-[40px] border-1 rounded-md ${period === 100  ? 'bg-black text-white' : ' bg-white'}`} onClick={() => setPeriod(100)}>100일</button>
                                         </div>
