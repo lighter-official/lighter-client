@@ -92,11 +92,60 @@ export const getCurrentSessions = async (accessToken: string) => {
   }
 };
 
-// 글쓰기 포스팅 API
+// 글쓰기 포스팅 API - 추후 deprecated 필요
 export const postWriting = async (data: any, accessToken: string) => {
   try {
     console.log(accessToken, "APIAPIAPI");
     const response = await axios.post(`${apiUrl}/writings`, data, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    console.log(response.data, "============");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    throw error;
+  }
+};
+
+// 글쓰기 시작 시에 POST 필요
+export const startWriting = async (id: string, accessToken: string) => {
+  try {
+    const response = await axios.post(`${apiUrl}/writings/start?writingSessionId=${id}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    console.log(response.data, "============");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    throw error;
+  }
+};
+
+// 글 임시저장 API
+export const temporarySaveWriting = async (writingId: string, accessToken: string, data?: any) => {
+  try {
+    const response = await axios.post(`${apiUrl}/writings/${writingId}/temp-save`, data, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    console.log(response.data, "============");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    throw error;
+  }
+};
+
+
+// 최종적으로 글 POST하는 API
+export const submitWriting = async (writingId: string, accessToken: string, data: any) => {
+  try {
+    const response = await axios.post(`${apiUrl}/writings/${writingId}/submit`, data, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -118,10 +167,10 @@ export const getWritingInfo = async (id: string, accessToken: string) => {
       },
     };
     const response = await axios.get(
-      `${apiUrl}/api/glooing/writings/${id}`,
+      `${apiUrl}/writings/${id}`,
       config
     );
-    console.log("글 정보----------------", response.data);
+    console.log("===클릭한 글?===", response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching data:", error);

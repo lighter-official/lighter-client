@@ -633,6 +633,7 @@ export default function Writer() {
     }
   };
 
+  // 수정할 글 클릭했을 때
   const handleEditClick = async (writingId: string) => {
     try {
       const writingData = await getWritingInfo(writingId, accessToken);
