@@ -8,6 +8,7 @@ import {
   initWebSocket,
   postWriting,
   putWriting,
+  startWriting,
 } from '@/api/api';
 import router, { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
@@ -55,6 +56,24 @@ const Modal: React.FC<ModalProps> = ({
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const disabled = !title || !content;
   const [writingDetails, setWritingDetails] = useState<any>(null);
+
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+    if (isOpen) {
+      intervalId = setInterval(async () => {
+        try {
+          await temporarySaveWriting(writingId, accessToken, { title, content });
+          console.log('임시 저장 성공');
+        } catch (error) {
+          console.error('임시 저장 실패:', error);
+        }
+      }, 5000); // 5초마다 호출
+    }
+
+    // 컴포넌트 언마운트 or 모달 닫힐 경우 clear interval하도록 설정
+    return () => clearInterval(intervalId);
+  }, [isOpen, title, content]);
+
 
   const handleCancelPost = () => {
     setIsConfirmationModalOpen(false);
@@ -275,6 +294,24 @@ const EditModal: React.FC<ModalProps> = ({
   const disabled = !title || !content;
   const [writingDetails, setWritingDetails] = useState<any>(null);
 
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+    if (isOpen) {
+      intervalId = setInterval(async () => {
+        try {
+          await temporarySaveWriting(writingId, accessToken, { title, content });
+          console.log('임시 저장 성공');
+        } catch (error) {
+          console.error('임시 저장 실패:', error);
+        }
+      }, 5000); // 5초마다 호출
+    }
+
+    // 컴포넌트 언마운트 or 모달 닫힐 경우 clear interval하도록 설정
+    return () => clearInterval(intervalId);
+  }, [isOpen, title, content]);
+
+  
   const handleTitleChange = (e) => {
     const inputText = e.target.value;
 
@@ -598,7 +635,19 @@ export default function Writer() {
     displaySeconds < 10 ? '0' : ''
   }${displaySeconds}`;
   
-  const handleOpenWriterModal = () => {
+  // const handleOpenWriterModal = () => {
+  //   setIsWriterModalOpen(true);
+
+  // };
+
+  const handleOpenWriterModal = async () => {
+    try {
+      // 새로운 글 작성
+      await startWriting();
+      console.log('시작 ???');
+    } catch (error) {
+      console.error('Error start writing:', error);
+    }
     setIsWriterModalOpen(true);
   };
 
