@@ -46,6 +46,7 @@ const Modal: React.FC<ModalProps> = ({
   textColor,
   glooingInfo,
   mini,
+  id,
   remainingSecond,
   remainingTime2,
 }) => {
@@ -62,7 +63,7 @@ const Modal: React.FC<ModalProps> = ({
     if (isOpen) {
       intervalId = setInterval(async () => {
         try {
-          await temporarySaveWriting(writingId, accessToken, { title, content });
+          await temporarySaveWriting(id, accessToken, { title, content });
           console.log('임시 저장 성공');
         } catch (error) {
           console.error('임시 저장 실패:', error);
@@ -107,7 +108,7 @@ const Modal: React.FC<ModalProps> = ({
     };
     try {
       // 새로운 글 작성
-      await postWriting(writingData, accessToken);
+      await submitWriting(writingData, id, accessToken);
       console.log('들어옴 ???');
 
       const currentURL = window.location.href;
@@ -299,7 +300,7 @@ const EditModal: React.FC<ModalProps> = ({
     if (isOpen) {
       intervalId = setInterval(async () => {
         try {
-          await temporarySaveWriting(writingId, accessToken, { title, content });
+          await temporarySaveWriting(id, accessToken, { title, content });
           console.log('임시 저장 성공');
         } catch (error) {
           console.error('임시 저장 실패:', error);
@@ -311,7 +312,7 @@ const EditModal: React.FC<ModalProps> = ({
     return () => clearInterval(intervalId);
   }, [isOpen, title, content]);
 
-  
+
   const handleTitleChange = (e) => {
     const inputText = e.target.value;
 
@@ -989,6 +990,7 @@ export default function Writer() {
       <Modal
         isOpen={isWriterModalOpen}
         onClose={handleCloseWriterModal}
+        id={selectedWritingId}
         data={glooingInfo}
         writingData={currentWritingsData}
         mini={setIsMiniModalOpen}
