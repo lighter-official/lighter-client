@@ -68,7 +68,7 @@ const Modal: React.FC<ModalProps> = ({
         } catch (error) {
           console.error('임시 저장 실패:', error);
         }
-      }, 5000); // 5초마다 호출
+      }, 30000); // 30초마다 호출
     }
 
     // 컴포넌트 언마운트 or 모달 닫힐 경우 clear interval하도록 설정
@@ -305,7 +305,7 @@ const EditModal: React.FC<ModalProps> = ({
         } catch (error) {
           console.error('임시 저장 실패:', error);
         }
-      }, 5000); // 5초마다 호출
+      }, 30000); // 30초마다 호출
     }
 
     // 컴포넌트 언마운트 or 모달 닫힐 경우 clear interval하도록 설정
