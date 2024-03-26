@@ -44,11 +44,6 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
 
 
 export default function Writer() {
-    // const router = useRouter()
-    // const handleClick = () => {
-    //     // 시작하기 버튼을 누르면 settings.tsx로 이동
-    //     router.push('/writer');
-    // };
     const router = useRouter()
     const [isModalOpen, setIsModalOpen] = useState(false);
 
