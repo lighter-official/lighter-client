@@ -37,7 +37,7 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }:any) => {
       router.push({
         pathname: '/',
         query: { access_token: accessToken },
-      } as any); // 'as any'를 사용하여 타입 명시
+      } as any); 
       return
     }
     getToken(code)
@@ -48,14 +48,12 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }:any) => {
       router.push({
         pathname: '/text-setting',
         query: { access_token: accessToken },
-      } as any); // 'as any'를 사용하여 타입 명시
+      } as any); 
     }
 
     
   };   
-  const getToken = async (code: any) => {
-    // const KAKAO_REST_API_KEY = '042aae38695b074b539c155e83aa75a5';
-    // const KAKAO_REDIRECT_URI = 'http://localhost.3000';
+  const getToken = async (code: string) => {
     try {
       const response = await fetch(`https://core.gloo-lighter.com/account/users/sign-in/kakao?code=${code}`, {
         method: 'POST',
@@ -81,7 +79,7 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }:any) => {
         router.push({
           pathname: '/text-setting',
           query: { access_token: accessToken},
-        } as any); // 'as any'를 사용하여 타입 명시
+        } as any); 
       }
       
     } catch (error) {
@@ -241,8 +239,7 @@ export default function Home() {
       router.push({
         pathname: '/text-setting',
         query: { access_token: accessToken},
-      } as any); // 'as any'를 사용하여 타입 명시
-      console.log('djfhljhadjhgj')
+      } as any); 
     }
   };
 

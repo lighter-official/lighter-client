@@ -47,11 +47,6 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
 
 
 export default function Writer() {
-    // const router = useRouter()
-    // const handleClick = () => {
-    //     // 시작하기 버튼을 누르면 settings.tsx로 이동
-    //     router.push('/writer');
-    // };
     const router = useRouter()
     const accessToken = getCookie('access_token');
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -108,11 +103,11 @@ export default function Writer() {
                         <a className='cursor-pointer' onClick={()=>router.push({
                             pathname: '/writer',
                             query: { access_token: accessToken },
-                        } as any)}>글루ING</a>
+                        })}>글루ING</a>
                         <a className='cursor-pointer  font-bold' onClick={()=>router.push({
                             pathname: '/mypage/badge',
                             query: { access_token: accessToken },
-                        } as any)}>나의 보관함</a>
+                        })}>나의 보관함</a>
                         <a className='cursor-pointer' onClick={()=> setLoggedIn(false)}><Redirection isLoggedIn={isLoggedIn} setLoggedIn={setLoggedIn} /></a>
                         </div>
                     </div>

@@ -1,7 +1,7 @@
 // Settings.tsx
 'use client'
 import "./globals.css";
-import { initWebSocket, postSetUp } from '@/api/api';
+import { postSetUp } from '@/api/api';
 import axios from 'axios';
 import { fork } from 'child_process';
 import { useRouter } from 'next/router';
@@ -121,7 +121,7 @@ export default function Settings() {
             access_token: accessToken,
             isFirst: isFirst
          },
-      } as any);
+      });
       // 서버 응답에 따른 처리 추가
     } catch (error) {
       console.error('Error fetching data:', error);

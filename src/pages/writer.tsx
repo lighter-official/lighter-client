@@ -711,7 +711,7 @@ export default function Writer() {
   };
 
   
-  function getCookie(name: any) {
+  function getCookie(name: string) {
     return nookies.get(null)[name];
   }
 
@@ -767,7 +767,7 @@ export default function Writer() {
                   router.push({
                     pathname: '/writer',
                     query: { access_token: accessToken },
-                  } as any)
+                  })
                 }
               >
                 글루ING
@@ -778,7 +778,7 @@ export default function Writer() {
                   router.push({
                     pathname: '/mypage/badge',
                     query: { access_token: accessToken },
-                  } as any)
+                  })
                 }
               >
                 나의 보관함

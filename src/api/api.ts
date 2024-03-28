@@ -2,10 +2,22 @@ import axios from "axios";
 import { ResponseCookies } from "next/dist/compiled/@edge-runtime/cookies";
 import { GetUserInfoResponse } from "./api.response";
 
-const apiUrl = process.env.API_URL || "https://core.gloo-lighter.com";
-const WS_BASE_URL = "ws://localhost:8000/ws/timer/main"; // WebSocket 서버 주소
+interface WritingData {
+  subject: string
+  period: number
+  page: number
+  startAt: {hour: number, minute:number|undefined}
+  writingHours: number
+}
 
-export const getLoginInfo = async (code: any) => {
+interface currentWritingData {
+  title: string
+  content: string
+}
+
+const apiUrl: string = process.env.API_URL || "https://core.gloo-lighter.com";
+
+export const getLoginInfo = async (code: string) => {
   try {
     const response = await axios.get(
       `${apiUrl}/account/users/sign-in/kakao?code=${code}`
@@ -19,7 +31,7 @@ export const getLoginInfo = async (code: any) => {
 };
 
 // 글쓰기 설정하는 API
-export const postSetUp = async (data: any, accessToken: string) => {
+export const postSetUp = async (data: WritingData, accessToken: string) => {
   try {
     console.log(accessToken, "APIAPIAPI");
     const response = await axios.post(`${apiUrl}/writing-session`, data, {
@@ -109,7 +121,7 @@ export const startWriting = async (id: string, accessToken: string) => {
 };
 
 // 글 임시저장 API
-export const temporarySaveWriting = async (writingId: string, accessToken: string, data?: any) => {
+export const temporarySaveWriting = async (writingId: string, accessToken: string, data?: currentWritingData) => {
   try {
     const response = await axios.put(`${apiUrl}/writings/${writingId}/temp-save`, data, {
       headers: {
@@ -126,7 +138,7 @@ export const temporarySaveWriting = async (writingId: string, accessToken: strin
 
 
 // 최종적으로 글 POST하는 API
-export const submitWriting = async (writingId: string, accessToken: string, data: any) => {
+export const submitWriting = async (writingId: string, accessToken: string, data: currentWritingData) => {
   try {
     const response = await axios.put(`${apiUrl}/writings/${writingId}/submit`, data, {
       headers: {
@@ -164,7 +176,7 @@ export const getWritingInfo = async (id: string, accessToken: string) => {
 // 각 글 수정하는 API
 export const putWriting = async (
   id: string,
-  data: any,
+  data: currentWritingData,
   accessToken: string
 ) => {
   try {
@@ -186,11 +198,6 @@ export const putWriting = async (
   }
 };
 
-// WebSocket 연결 초기화 함수
-export const initWebSocket = (): WebSocket => {
-  const ws = new WebSocket(`${WS_BASE_URL}`);
-  return ws;
-};
 
 // 뱃지 API
 export const getMyBadge = async (accessToken: string) => {
