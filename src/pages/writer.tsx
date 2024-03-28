@@ -756,7 +756,7 @@ export default function Writer() {
           <div className='flex flex-row justify-between'>
             <Image
               className='mb-[20px]'
-              src='image/logo.svg'
+              src="https://gloo-image-bucket.s3.amazonaws.com/archive/logo.svg"
               width="105" height="35"
               alt='Logo'
             />
@@ -853,7 +853,7 @@ export default function Writer() {
                 >
                   {buttonActivated === false && (
                     <Image
-                      src='/image/soon2.png'
+                    src="https://gloo-image-bucket.s3.amazonaws.com/archive/soon2.png"
                       width={120}
                       height={42}
                       alt='soon2'

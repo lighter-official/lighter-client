@@ -268,7 +268,7 @@ export default function Home() {
               <button className='rounded-xl w-[200px] h-[42px] text-black' style={{backgroundColor: '#FFE000'}} onClick={(code)=>handleLoginClick(code)}>카카오 로그인</button>
             </div>
             <div className='flex items-end w-[876px] h-[657px] border-1'>
-              <Image src="image/badges.svg"  width="875" height="657" alt="Badges" />
+              <Image src="https://gloo-image-bucket.s3.amazonaws.com/archive/badges.svg"  width="875" height="657" alt="Badges" />
             </div>
           </div>
         </div>

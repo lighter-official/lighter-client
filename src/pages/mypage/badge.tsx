@@ -103,7 +103,7 @@ export default function Writer() {
             <div className='flex flex-row mx-auto w-full'>
                 <div className='flex flex-col w-full mx-[120px]'>
                     {/* <Redirection /> */}
-                    <div className='flex flex-row justify-between'><Image className="mb-[20px]" src="/image/logo.svg"  width="105" height="35" alt="Logo" />
+                    <div className='flex flex-row justify-between'><Image className="mb-[20px]" src="https://gloo-image-bucket.s3.amazonaws.com/archive/logo.svg"  width="105" height="35" alt="Logo" />
                         <div className='flex gap-x-[70px]'>
                         <a className='cursor-pointer' onClick={()=>router.push({
                             pathname: '/writer',
@@ -149,7 +149,7 @@ export default function Writer() {
                                         <div>
                                             {/* <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}></div> */}
                                             <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}>
-                                                <Image className="w-[152px] h-[153px] z-50" src="/image/butterfly_1.jpg" alt="egg" />
+                                                <Image className="z-50" src="https://gloo-image-bucket.s3.amazonaws.com/archive/butterfly_1.jpg" width={152} height={153} alt="egg" />
                                             </div>
                                             
                                             <div className='mt-[10px] text-[36px]'>{badgeInfo?.name}알</div>
@@ -158,7 +158,7 @@ export default function Writer() {
                                         <div>
                                             {/* <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}></div> */}
                                             <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}>
-                                                <Image className="w-[152px] h-[153px] z-50" src="/image/butterfly_2.png" alt="bug" />
+                                                <Image className="z-50" src="https://gloo-image-bucket.s3.amazonaws.com/archive/butterfly_2.png" width={152} height={153} alt="bug" />
                                             </div>
                                             
                                             <div className='mt-[10px] text-[36px]'>{badgeInfo?.name}애벌레</div>
@@ -166,7 +166,7 @@ export default function Writer() {
                                         </div>     
                                         <div>
                                             <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}>
-                                                <Image className="w-[152px] h-[153px] z-50" src="/image/butterfly_3.png" alt="beondaegi" />
+                                                <Image className="z-50" src="https://gloo-image-bucket.s3.amazonaws.com/archive/butterfly_3.png" width={152} height={153} alt="beondaegi" />
                                             </div>
                                             
                                             <div className='mt-[10px] text-[36px]'>{badgeInfo?.name}번데기</div>
@@ -177,7 +177,7 @@ export default function Writer() {
                                         <div>
                                             {/* <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}></div> */}
                                             <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}>
-                                                <Image className="w-[152px] h-[153px] z-50" src="/image/butterfly_4.png" alt="gochi" />
+                                                <Image className="z-50" src="https://gloo-image-bucket.s3.amazonaws.com/archive/butterfly_4.png" width={152} height={153} alt="gochi" />
                                             </div>
                                             
                                             <div className='mt-[10px] text-[36px]'>{badgeInfo?.name}고치</div>
@@ -186,7 +186,7 @@ export default function Writer() {
                                         <div>
                                             {/* <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}></div> */}
                                             <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}>
-                                                <Image className="w-[152px] h-[153px] z-50" src="/image/butterfly_5.png" alt="nabi" />
+                                                <Image className="z-50" src="https://gloo-image-bucket.s3.amazonaws.com/archive/butterfly_5.png" width={152} height={153} alt="nabi" />
                                             </div>
                                             
                                             <div className='mt-[10px] text-[36px]'>{badgeInfo?.name}나비</div>
@@ -199,7 +199,7 @@ export default function Writer() {
                             </div>
                         </div>
                         <div style={{ position: 'absolute', top: '50%', left: '55%'}}>
-                            <Image className="w-[184px] h-[53px] z-9999" src="/image/soon.png" alt="soon" />
+                            <Image className="z-9999" src="https://gloo-image-bucket.s3.amazonaws.com/archive/soon.png" width={184} height={53} alt="soon" />
                         </div>
 
                     </div>
