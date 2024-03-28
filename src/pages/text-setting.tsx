@@ -74,6 +74,7 @@ function DropDown({ items, onSelect }: DropdownProps) {
 
 export default function Settings() {
     const router = useRouter()
+    const [isFirst, setIsFirst] = useState<boolean>(false)
     const [subject, setSubject] = useState('');
     const [period, setPeriod] = useState(0);
     const [page, setPage] = useState(0);
@@ -113,9 +114,13 @@ export default function Settings() {
           }, accessToken);
 
       console.log(response.data, '============');
+      setIsFirst(true)
       router.push({
         pathname: '/writer',
-        query: { access_token: accessToken },
+        query: { 
+            access_token: accessToken,
+            isFirst: isFirst
+         },
       } as any);
       // 서버 응답에 따른 처리 추가
     } catch (error) {
@@ -159,7 +164,7 @@ export default function Settings() {
                             const inputText = e.target.value;
 
                             // 30자로 주제 제한
-                            if (inputText.length <= 30) {
+                            if (inputText.length <= 10) {
                                 setSubject(inputText);
                             }
                         }}

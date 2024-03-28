@@ -456,6 +456,7 @@ export default function Writer() {
   const [isWriterModalOpen, setIsWriterModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isMiniModalOpen, setIsMiniModalOpen] = useState(false);
+  const [isFirstModalOpen, setIsFirstModalOpen] = useState(false);
   const [glooingInfo, setGlooingInfo] = useState<WritingSession>({});
   const [userInfo, setUserInfo] = useState<any>({});
   const [selectedWritingId, setSelectedWritingId] = useState('');
@@ -471,6 +472,7 @@ export default function Writer() {
   const [intervalId, setIntervalId] = useState<number | null>(null);
   const [currentWritingsData, setCurrentWritingsData] = useState<any>({});
   const [isEndTime, setIsEndTime] = useState(false)
+  const isFirst = router.query.isFirst === 'true';
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -482,6 +484,10 @@ export default function Writer() {
         const currentWritings = await getCurrentSessions(accessToken);
         console.log('현재 글쓰기 데이터 정보: ', currentWritings);
         setCurrentWritingsData(currentWritings);
+
+        if (isFirst == true) {
+          setIsFirstModalOpen(true)
+        }
 
         const startHour = parseInt(currentWritings?.data?.startAt?.hour);
         const startMinute = parseInt(currentWritings?.data?.startAt?.minute);
@@ -635,21 +641,17 @@ export default function Writer() {
   }${displayHours} : ${displayMinutes < 10 ? '0' : ''}${displayMinutes} : ${
     displaySeconds < 10 ? '0' : ''
   }${displaySeconds}`;
-  
-  // const handleOpenWriterModal = () => {
-  //   setIsWriterModalOpen(true);
-
-  // };
 
   const handleOpenWriterModal = async () => {
     try {
       // 새로운 글 작성
       await startWriting();
       console.log('시작 ???');
+      router.push('/newWriting')
     } catch (error) {
       console.error('Error start writing:', error);
     }
-    setIsWriterModalOpen(true);
+    // setIsWriterModalOpen(true);
   };
 
   const handleCloseWriterModal = () => {
@@ -670,6 +672,10 @@ export default function Writer() {
     setButtonActivated(false);
     window.location.reload();
   };
+
+  const handleCloseFirstModal = () => {
+    setIsFirstModalOpen(false);
+  }
 
   const handleWritingClick = async (writingId: string) => {
     try {
@@ -947,6 +953,39 @@ export default function Writer() {
               </div>
             </div>
           </div>
+          {isFirstModalOpen && (
+            <div className='fixed top-0 left-0 w-full h-full flex items-center justify-center z-50'>
+              <div
+                className='absolute w-full h-full bg-gray-800 opacity-50'
+                onClick={handleCloseFirstModal}
+              ></div>
+              <div className='flex flex-col bg-white w-[328px] h-[171px] text-center justify-center items-center rounded-lg z-50'>
+                <div className='text-center items-center flex flex-col'>
+                  <div className='text-[15px] mb-[6px]'>
+                    앞으로 매일 
+                    {currentWritingsData?.data?.startAt?.hour}:
+                    {currentWritingsData?.data?.startAt?.minute}시에 만나요!
+                  </div>
+                  <div
+                    className='text-[13px] mb-[10px]'
+                    style={{ color: '#7F7F7F' }}
+                  >
+                    휴대폰 알림에 글쓰기 시간을 등록하면<br/>
+                    글쓰기를 잊지 않을 수 있어요!
+                  </div>
+                  <div className='flex justify-center'>
+                    <button
+                      className='w-[120px] text-[15px] font-bold cursor-pointer h-[40px] rounded-md'
+                      style={{ backgroundColor: '#FF8126' }}
+                      onClick={handleCloseFirstModal}
+                    >
+                      확인
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
           {isMiniModalOpen && (
             <div className='fixed top-0 left-0 w-full h-full flex items-center justify-center z-50'>
               <div
