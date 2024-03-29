@@ -1,14 +1,12 @@
 // @ts-nocheck
 'use client';
 import {
-  getGlooingInfo,
   getUserInfo,
   getCurrentSessions,
   getWritingInfo,
-  initWebSocket,
-  postWriting,
   putWriting,
   startWriting,
+  submitWriting,
 } from '@/api/api';
 import router, { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
@@ -74,7 +72,6 @@ type RemainingTimeType = string | number;
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  data: any;
   id?: string;
   writingData: WritingData;
   remainingTime?: RemainingTimeType;
@@ -88,11 +85,9 @@ interface ModalProps {
 const Modal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
-  data,
   writingData,
   remainingTime,
   textColor,
-  glooingInfo,
   mini,
   id,
   remainingSecond,
@@ -109,7 +104,7 @@ const Modal: React.FC<ModalProps> = ({
     if (isOpen) {
       intervalId = setInterval(async () => {
         try {
-          await temporarySaveWriting(id, accessToken, { title, content });
+          await temporarySaveWriting(writingData?.data?.id, accessToken, { title, content });
           console.log('임시 저장 성공');
         } catch (error) {
           console.error('임시 저장 실패:', error);
@@ -150,8 +145,8 @@ const Modal: React.FC<ModalProps> = ({
     };
     try {
       // 새로운 글 작성
-      await submitWriting(writingData, id, accessToken);
-      console.log('들어옴 ???');
+      const response = await submitWriting(writingData, writingData?.data?.id, accessToken);
+      console.log(response, '정상 제출???');
 
       const currentURL = window.location.href;
       const newURL = `${currentURL}?access_token=${accessToken}`;
@@ -498,7 +493,6 @@ export default function Writer() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isMiniModalOpen, setIsMiniModalOpen] = useState(false);
   const [isFirstModalOpen, setIsFirstModalOpen] = useState(false);
-  const [glooingInfo, setGlooingInfo] = useState<WritingData>({});
   const [userInfo, setUserInfo] = useState<UserInfo>({});
   const [selectedWritingId, setSelectedWritingId] = useState('');
   const [writingData, setWritingData] = useState<any>({});
@@ -647,8 +641,9 @@ export default function Writer() {
   }, [currentWritingsData?.data?.isActivated]); 
   
 
-  const { isActivated, nearestStartDate, nearestFinishDate } = glooingInfo; //useQuery로 받아온 데이터
-
+  const isActivated = currentWritingsData?.data?.isActivated
+  const nearestStartDate = currentWritingsData?.data?.nearestStartDate
+  const nearestFinishDate = currentWritingsData?.data?.nearestFinishDate
 
   const now = day();
   const seconds = day(isActivated ? nearestFinishDate : nearestStartDate).diff(
@@ -684,12 +679,12 @@ export default function Writer() {
   const handleOpenWriterModal = async () => {
     try {
       // 새로운 글 작성
-      await startWriting();
+      await startWriting(id, accessToken);
       console.log('시작 ???');
     } catch (error) {
       console.error('Error start writing:', error);
     }
-    // setIsWriterModalOpen(true);
+    setIsWriterModalOpen(true);
   };
 
   const handleCloseWriterModal = () => {
@@ -766,7 +761,7 @@ export default function Writer() {
         query: { access_token: accessToken },
       });
     }
-  }, [glooingInfo, userInfo]);
+  }, [userInfo]);
 
 
   function formatDate(dateString) {
@@ -779,9 +774,15 @@ export default function Writer() {
 
   const startDateString = currentWritingsData?.data?.startDate;
   const finishDateString = currentWritingsData?.data?.finishDate;
-
+  
   const formattedStartDate = formatDate(startDateString);
   const formattedFinishDate = formatDate(finishDateString);
+
+  const startDate = new Date(startDateString);
+  const finishDate = new Date(finishDateString);
+  const timeDiff = finishDate - startDate;
+  const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+  const result = `D-${daysDiff}`;
 
   const formattedDateRange = `${formattedStartDate} - ${formattedFinishDate}`;
 
@@ -904,7 +905,7 @@ export default function Writer() {
             >
               <div className='w-full  my-[30px] mx-[40px]'>
                 <div className='bg-black text-white w-[60px] text-center'>
-                  <a>{glooingInfo?.d_day}</a>
+                  <a>{result}</a>
                 </div>
                 <div className='flex flex-row items-center justify-between w-full'>
                   <div className='flex flex-col'>
@@ -1036,6 +1037,13 @@ export default function Writer() {
                   <div className='text-[15px] mb-[6px]'>
                     글 등록을 완료했어요!
                   </div>
+                  <div className='w-[140px] h-[148px] mb-[18px]'>
+                  <Image
+                      src="https://gloo-image-bucket.s3.amazonaws.com/archive/logo.svg"
+                      width={152} height={153}
+                      alt='Logo'
+                    />
+                  </div>
                   <div
                     className='text-[13px] mb-[10px]'
                     style={{ color: '#7F7F7F' }}
@@ -1066,7 +1074,6 @@ export default function Writer() {
         isOpen={isWriterModalOpen}
         onClose={handleCloseWriterModal}
         id={selectedWritingId}
-        data={glooingInfo}
         writingData={currentWritingsData}
         mini={setIsMiniModalOpen}
         remainingTime={remainingTime}
@@ -1077,7 +1084,6 @@ export default function Writer() {
       <EditModal
         isOpen={isEditModalOpen}
         onClose={handleCloseEditModal}
-        data={glooingInfo}
         id={selectedWritingId}
         writingData={writingData}
       />

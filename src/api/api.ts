@@ -112,6 +112,7 @@ export const startWriting = async (id: string, accessToken: string) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
+    console.log(id,'??????????????????????!!!!!!!')
     console.log(response.data, "============");
     return response.data;
   } catch (error) {
