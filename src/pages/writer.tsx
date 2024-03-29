@@ -22,18 +22,66 @@ import {
   WritingSessionStartAt,
 } from '@/schemas/WritingSession.schema';
 import Image from 'next/image';
+import { number, string } from 'yargs';
+
+interface WritingData {
+  code: string;
+  data: {
+    createdAt: string;
+    finishDate: string;
+    id: number;
+    isActivated: boolean;
+    modifyingCount: number;
+    nearestFinishDate: string;
+    nearestStartDate: string;
+    page: number;
+    period: number;
+    progressPercentage: number;
+    progressStep: number;
+    startAt: { hour: number; minute: number };
+    startDate: string;
+    status: string;
+    subject: string;
+    updatedAt: string;
+    userId: string;
+    writingHours: number;
+    writings: any[]; // writings 데이터 형식이 제공되지 않아서 임시로 any[] 사용
+  };
+  statusCode: number;
+  success: boolean;
+}
+
+interface UserInfo {
+  code: string;
+  data: {
+    createdAt: string;
+    encryptedPassword: string | null;
+    id: string;
+    nickname: string;
+    providerType: string;
+    updatedAt: string;
+    userBadges: any[]; // userBadges 데이터 형식이 제공되지 않아서 임시로 any[] 사용
+    writingSessions: WritingData[];
+  };
+  statusCode: number;
+  success: boolean;
+}
+
+type MiniFunctionType = (value: boolean) => void;
+type RemainingTimeType = string | number;
+
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   data: any;
   id?: string;
-  writingData: any;
-  remainingTime?: any;
+  writingData: WritingData;
+  remainingTime?: RemainingTimeType;
   textColor?: boolean;
-  mini?: any;
-  remainingSecond?: any;
-  remainingTime2?: any;
+  mini?: MiniFunctionType;
+  remainingSecond?: RemainingTimeType;
+  remainingTime2?: RemainingTimeType;
 }
 
 // 새로 등록하는 모달로 사용
@@ -50,13 +98,11 @@ const Modal: React.FC<ModalProps> = ({
   remainingSecond,
   remainingTime2,
 }) => {
-  const router = useRouter();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const accessToken = getCookie('access_token')
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const disabled = !title || !content;
-  const [writingDetails, setWritingDetails] = useState<any>(null);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
@@ -94,10 +140,6 @@ const Modal: React.FC<ModalProps> = ({
   const handlePost = async () => {
     // 모달 열기 전에 확인 모달을 띄우도록 수정
     setIsConfirmationModalOpen(true);
-  };
-
-  const handleClose = () => {
-    mini(false);
   };
 
   const handleConfirmPost = async () => {
@@ -293,7 +335,6 @@ const EditModal: React.FC<ModalProps> = ({
   const [isConfirmationModal2Open, setIsConfirmationModal2Open] =
     useState(false);
   const disabled = !title || !content;
-  const [writingDetails, setWritingDetails] = useState<any>(null);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
@@ -457,23 +498,22 @@ export default function Writer() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isMiniModalOpen, setIsMiniModalOpen] = useState(false);
   const [isFirstModalOpen, setIsFirstModalOpen] = useState(false);
-  const [glooingInfo, setGlooingInfo] = useState<WritingSession>({});
-  const [userInfo, setUserInfo] = useState<any>({});
+  const [glooingInfo, setGlooingInfo] = useState<WritingData>({});
+  const [userInfo, setUserInfo] = useState<UserInfo>({});
   const [selectedWritingId, setSelectedWritingId] = useState('');
   const [writingData, setWritingData] = useState<any>({});
   const [isLoggedIn, setLoggedIn] = useState(true);
-  const [writingCount, setWritingCount] = useState(0);
   const [remainingTime, setRemainingTime] = useState<string>();
   const [remainingTime2, setRemainingTime2] = useState<string>();
   const [buttonActivated, setButtonActivated] = useState<boolean>(false);
   const [textColor, setTextColor] = useState<boolean>(false);
   const [remainingSecond, setRemainingSecond] = useState<number>();
-  const [remainingSecond2, setRemainingSecond2] = useState<number>();
   const [intervalId, setIntervalId] = useState<number | null>(null);
-  const [currentWritingsData, setCurrentWritingsData] = useState<any>({});
+  const [currentWritingsData, setCurrentWritingsData] = useState<WritingData>({});
   const [isEndTime, setIsEndTime] = useState(false)
   const isFirst = router.query.isFirst === 'true';
 
+  console.log(writingData,'writing?')
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -629,7 +669,6 @@ export default function Writer() {
     return () => {
       clearInterval(intervalId);
     };
-    // setInterval(updateTimer, 1000);
   }, [timer]);
 
   const displayHours = Math.floor(timer / (60 * 60));
@@ -647,7 +686,6 @@ export default function Writer() {
       // 새로운 글 작성
       await startWriting();
       console.log('시작 ???');
-      router.push('/newWriting')
     } catch (error) {
       console.error('Error start writing:', error);
     }
@@ -677,17 +715,17 @@ export default function Writer() {
     setIsFirstModalOpen(false);
   }
 
-  const handleWritingClick = async (writingId: string) => {
-    try {
-      const writingData = await getWritingInfo(writingId, accessToken);
-      setWritingData(writingData);
-      console.log('writingDATA', writingData);
-      setSelectedWritingId(writingId);
-      setIsWriterModalOpen(true);
-    } catch (error) {
-      console.error('Error fetching writing data:', error);
-    }
-  };
+  // const handleWritingClick = async (writingId: string) => {
+  //   try {
+  //     const writingData = await getWritingInfo(writingId, accessToken);
+  //     setWritingData(writingData);
+  //     console.log('writingDATA', writingData);
+  //     setSelectedWritingId(writingId);
+  //     setIsWriterModalOpen(true);
+  //   } catch (error) {
+  //     console.error('Error fetching writing data:', error);
+  //   }
+  // };
 
   // 수정할 글 클릭했을 때
   const handleEditClick = async (writingId: string) => {
@@ -730,7 +768,6 @@ export default function Writer() {
     }
   }, [glooingInfo, userInfo]);
 
-  // console.log(formattedTime, 'formatted Time')
 
   function formatDate(dateString) {
     const dateObject = new Date(dateString);
@@ -838,7 +875,6 @@ export default function Writer() {
                   }`}
                   disabled={!buttonActivated}
                   onClick={handleOpenWriterModal}
-                  // style={{ zIndex: 1 }}  // 버튼을 위로 올리기 위해 zIndex를 설정
                 >
                   글 작성하기
                 </button>
