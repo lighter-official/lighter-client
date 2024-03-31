@@ -2,10 +2,12 @@
 'use client'
 import "./globals.css";
 import { postSetUp } from '@/api/api';
+import axios from 'axios';
+import { fork } from 'child_process';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import TimeDropdown from "./TimeDropdown";
+import Dropdown from "./Dropdown";
 
 export default function Settings() {
     const router = useRouter()
@@ -167,7 +169,7 @@ export default function Settings() {
                                         >
                                             PM
                                         </button>
-                                        <TimeDropdown
+                                        <Dropdown
                                             items={[
                                                 { name: '1시', value: 1 },
                                                 { name: '2시', value: 2 },
@@ -186,7 +188,7 @@ export default function Settings() {
                                                 setStartAt([startAt[0], selectedHour.value, startAt[2]]);
                                             }}
                                         />
-                                        <TimeDropdown
+                                        <Dropdown
                                             items={[
                                                 { name: '00분', value: 0 },
                                                 { name: '15분', value: 15 },
@@ -199,7 +201,7 @@ export default function Settings() {
                                         />
                                             <a className='my-auto'>부터</a>
                                             <button className='w-[82px] h-[40px] border-1 border-black rounded-md bg-white'>
-                                        <TimeDropdown
+                                        <Dropdown
                                             items={[
                                                 { name: '1시간', value: 1 },
                                                 { name: '2시간', value: 2 },
