@@ -3,13 +3,9 @@ import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import "../globals.css";
 import Image from 'next/image';
+import BookItem from './BookItem';
 
 export default function Writer() {
-    // const router = useRouter()
-    // const handleClick = () => {
-    //     // 시작하기 버튼을 누르면 settings.tsx로 이동
-    //     router.push('/writer');
-    // };
     const router = useRouter()
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -44,45 +40,20 @@ export default function Writer() {
                                 <div className='flex text-[20px] cursor-pointer' style={{ color: '#CEB292' }} onClick={()=>router.push('/mypage/badge')}>나의 뱃지</div>
                                     <div className='flex text-[20px] cursor-pointer' style={{ color: '#CEB292' }} onClick={()=>router.push('/mypage/book')}>내가 발행한 책</div>
                                     <div className='flex text-[20px] font-bold cursor-pointer' style={{ color: '#CEB292' }} onClick={()=>router.push('/mypage/unfinished')}>못다쓴 책</div>
-            
                                     <div className='flex text-[20px] cursor-pointer' style={{ color: '#CEB292' }}  onClick={()=>router.push('/mypage/settings')}>설정</div>
-
-
                                 </div>
                             </div>
                         </div>
                         <div className='w-[1120px] rounded-sm border-black  bg-gray-800 opacity-25 border-1 flex flex-row max-h-[797px]' style={{ backgroundColor: '#E0D5BF', border: '1px solid black' }}>
                             <div className='w-full  my-[30px] ml-[53px] '>
-
                                 <div className='flex flex-row items-center '>
-                               <div className='w-[205px] text-black mt-[8px] text-[36px] font-bold'>못다쓴 책 (1)</div>
-                     
-                                   </div>
-                               
+                                    <div className='w-[205px] text-black mt-[8px] text-[36px] font-bold'>못다쓴 책 (1)</div>
+                                </div>
                                 <div className='flex flex-col  max-h-[643px] overflow-y-auto mt-[21px] mb-[21px] '>
                                     <div className=' mt-[53px] flex flex-row gap-x-[46px]'>
-                                        <div>
-                                            <div className='w-[266px] h-[367px]' style={{backgroundColor: '#D5C8AE', border: '1px solid gray'}}>
-                                            <Image className="z-50" width={266} height={367} src="https://gloo-image-bucket.s3.amazonaws.com/archive/book_yet.png" alt="book_yet" />
-                                            </div>
-                                            <div className='mt-[10px] text-[32px]'>영화 평론</div>
-                                            <div className='mt-[10px] text-[16px]' style={{color:'#8A8170'}}>2023년 11월 7일 발행</div>
-                                        </div>
-                                        <div>
-                                            <div className='w-[266px] h-[367px]' style={{backgroundColor: '#D5C8AE', border: '1px solid gray'}}></div>
-                                            {/* <div className='mt-[10px] text-[36px]'>반려동물에 대하여</div>
-                                            <div className='mt-[10px] text-[16px]' style={{color:'#8A8170'}}>2023년 11월 7일 발행</div> */}
-                                        </div>
-                                        <div className='w-[266px] h-[370px]' style={{backgroundColor: '#D5C8AE', border: '1px solid gray'}}></div>                                    
+                                        <BookItem imageUrl="https://gloo-image-bucket.s3.amazonaws.com/archive/book_yet.png" title="영화 평론" date="2023년 12월 25일 발행" />
                                     </div>
-                                    <div className=' mt-[43px] flex flex-row gap-x-[46px]'>
-                                        <div className='w-[266px] h-[367px]' style={{backgroundColor: '#D5C8AE', border: '1px solid gray'}}></div>
-                                        <div className='w-[266px] h-[367px]' style={{backgroundColor: '#D5C8AE', border: '1px solid gray'}}></div>
-                                        <div className='w-[266px] h-[367px]' style={{backgroundColor: '#D5C8AE', border: '1px solid gray'}}></div>                                    
-                                    </div>
-                                    
                                 </div>
-                                
                             </div>
                         </div>
                         <div style={{ position: 'absolute', top: '50%', left: '55%'}}>
