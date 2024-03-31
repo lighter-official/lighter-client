@@ -6,6 +6,7 @@ import { Redirection, getCookie } from '..';
 import { getGlooingInfo, getUserInfo } from '@/api/api';
 import "../globals.css";
 import Image from 'next/image';
+import BadgeItem from './BadgeItem';
 
 interface ModalProps {
     isOpen: boolean;
@@ -37,8 +38,6 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
                             저장
                         </button>
                     </div>
-
-
                 </div>
             </div>
         </div>
@@ -114,73 +113,27 @@ export default function Writer() {
                                 <div className='flex text-[20px] font-bold cursor-pointer' style={{ color: '#CEB292' }}  onClick={()=>router.push('/mypage/badge')}>나의 뱃지</div>
                                     <div className='flex text-[20px] cursor-pointer' style={{ color: '#CEB292' }}  onClick={()=>router.push('/mypage/book')}>내가 발행한 책</div>
                                     <div className='flex text-[20px] cursor-pointer' style={{ color: '#CEB292' }} onClick={()=>router.push('/mypage/unfinished')}>못다쓴 책</div>
-            
                                     <div className='flex text-[20px] cursor-pointer' style={{ color: '#CEB292' }} onClick={()=>router.push('/mypage/settings')}>설정</div>
-
-
                                 </div>
                             </div>
                         </div>
                         <div className='w-[1120px] rounded-sm  bg-gray-800 opacity-25 flex flex-row max-h-[797px]' style={{ backgroundColor: '#E0D5BF', border:'1px solid black'}}>
                             <div className='w-full  my-[30px] ml-[53px] '>
-
                                 <div className='flex flex-row items-center '>
-                               <div className='w-[205px] text-black mt-[8px] text-[36px] font-bold'>나의 뱃지</div>
-                               
-                                   </div>
-                                   {/* <div className='w-full mt-[8px] text-[24px]' style={{color: '#8E8070'}}>매일 글을 쓰고 뱃지를 획득해보세요!</div> */}
-                     
+                                    <div className='w-[205px] text-black mt-[8px] text-[36px] font-bold'>나의 뱃지</div>
+                                </div>
                                 <div className='flex flex-col  h-[759px] overflow-y-auto mt-[21px] mb-[21px] '>
                                     <div className='flex text-center items-center jusify-center text-[18px] bg-black w-[80px] h-[40px]' style={{color: '#D5C8AE'}}>
                                         <a className='flex items-center justify-center mx-auto'>나비</a>
-                                        </div>
-                                    <div className=' mt-[33px] flex flex-row gap-x-[46px]'>
-                                        <div>
-                                            <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}>
-                                                <Image className="z-50" src="https://gloo-image-bucket.s3.amazonaws.com/archive/butterfly_1.jpg" width={152} height={153} alt="egg" />
-                                            </div>
-                                            
-                                            <div className='mt-[10px] text-[36px]'>알</div>
-                                            <div className='mt-[10px] text-[16px]' style={{color:'#8A8170'}}>2024년 1월 20일 발행</div>
-                                        </div>
-                                        <div>
-                                            <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}>
-                                                <Image className="z-50" src="https://gloo-image-bucket.s3.amazonaws.com/archive/butterfly_2.png" width={152} height={153} alt="bug" />
-                                            </div>
-                                            
-                                            <div className='mt-[10px] text-[36px]'>애벌레</div>
-                                            <div className='mt-[10px] text-[16px]' style={{color:'#8A8170'}}>2024년 1월 25일 발행</div>
-                                        </div>     
-                                        <div>
-                                            <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}>
-                                                <Image className="z-50" src="https://gloo-image-bucket.s3.amazonaws.com/archive/butterfly_3.png" width={152} height={153} alt="beondaegi" />
-                                            </div>
-                                            
-                                            <div className='mt-[10px] text-[36px]'>번데기</div>
-                                            <div className='mt-[10px] text-[16px]' style={{color:'#8A8170'}}>2024년 1월 31일 발행</div>
-                                        </div>                        
                                     </div>
                                     <div className=' mt-[33px] flex flex-row gap-x-[46px]'>
-                                        <div>
-                                            <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}>
-                                                <Image className="z-50" src="https://gloo-image-bucket.s3.amazonaws.com/archive/butterfly_4.png" width={152} height={153} alt="gochi" />
-                                            </div>
-                                            
-                                            <div className='mt-[10px] text-[36px]'>고치</div>
-                                            <div className='mt-[10px] text-[16px]' style={{color:'#8A8170'}}>2024년 2월 2일 발행</div>
-                                        </div>
-                                        <div>
-                                            <div className='w-[153px] h-[154px]' style={{backgroundColor: '#D5C8AE'}}>
-                                                <Image className="z-50" src="https://gloo-image-bucket.s3.amazonaws.com/archive/butterfly_5.png" width={152} height={153} alt="nabi" />
-                                            </div>
-                                            
-                                            <div className='mt-[10px] text-[36px]'>나비</div>
-                                            <div className='mt-[10px] text-[16px]' style={{color:'#8A8170'}}>2024년 2월 4일 발행</div>
-                                        </div>                    
+                                        <BadgeItem src="https://gloo-image-bucket.s3.amazonaws.com/archive/butterfly_1.jpg" title="알" date="2024년 1월 20일 발행" />
+                                        <BadgeItem src="https://gloo-image-bucket.s3.amazonaws.com/archive/butterfly_2.png" title="애벌레" date="2024년 1월 31일 발행" />
+                                        <BadgeItem src="https://gloo-image-bucket.s3.amazonaws.com/archive/butterfly_3.png" title="번데기" date="2024년 2월 2일 발행" />                    
+                                        <BadgeItem src="https://gloo-image-bucket.s3.amazonaws.com/archive/Group 84.png" title="고치" date="2024년 2월 4일 발행" />
+                                        <BadgeItem src="https://gloo-image-bucket.s3.amazonaws.com/archive/butterfly_5.png" title="나비" date="2024년 2월 14일 발행" />                    
                                     </div>
-                                    
                                 </div>
-                                
                             </div>
                         </div>
                         <div style={{ position: 'absolute', top: '50%', left: '55%'}}>
