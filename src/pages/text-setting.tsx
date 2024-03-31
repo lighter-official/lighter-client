@@ -2,75 +2,10 @@
 'use client'
 import "./globals.css";
 import { postSetUp } from '@/api/api';
-import axios from 'axios';
-import { fork } from 'child_process';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-
-type DropdownItem = {
-    name: string;
-    value: number
-  };
-  type DropdownProps = {
-    items: DropdownItem[];
-    onSelect: (selectedItem: DropdownItem) => void;
-  };
-  
-
-
-function DropDown({ items, onSelect }: DropdownProps) {
-    const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
-    const [selectedItem, setSelectedItem] = useState<DropdownItem | null>(null);
-
-    const handleSelect = (item: DropdownItem) => {
-        setSelectedItem(item);
-        setIsDropdownOpen(false);
-        console.log('Selected Item:', item);
-        onSelect(item);
-    };
-
-    return (
-        <div className="relative inline-block">
-            <button
-                onClick={() => {
-                    setIsDropdownOpen((prev) => !prev);
-                }}
-                className="w-[112px] bg-white h-[40px] rounded-md flex items-center justify-between p-[16px]"
-            >
-                <div className={`${selectedItem?.name === "선택" && "text-[#a0a0a0]"} w-fit`}>
-                    {selectedItem?.name || "선택"}
-                </div>
-                <div className={`${isDropdownOpen && "rotate-180"}`}></div>
-            </button>
-
-            <div
-                className={`${
-                    isDropdownOpen ? "" : "hidden"
-                } absolute bg-white w-[112px] rounded-md max-h-[150px] overflow-y-auto`}
-            >
-                {items.map((item) => (
-                    <div
-                        key={item.value}
-                        className="h-[50px] text-left p-[16px] cursor-pointer"
-                        onMouseDown={() => {
-                            setSelectedItem(item);
-                            setIsDropdownOpen(false);
-                            handleSelect(item);
-                            console.log(selectedItem, typeof(selectedItem));
-                        }}
-                    >
-                        {item.name}
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-}
-
-
-  
-
+import TimeDropdown from "./TimeDropdown";
 
 export default function Settings() {
     const router = useRouter()
@@ -131,20 +66,13 @@ export default function Settings() {
 
 
     return (
-        <div className="flex flex-col my-[50px] w-full">
-            <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
-            <div className='flex flex-row mx-auto w-full'>
-                <div className='flex flex-col w-full mx-[120px]'>
-                  
-                    {/* <Redirection /> */}
-                    <div className='flex flex-row justify-between'><Image className="mb-[20px]" src="image/logo.svg" width="105" height="35" alt="Logo" />
-            {/* <div className='flex gap-x-[70px]'>
-            <a className='cursor-pointer' onClick={()=>router.push('/')}>글루ING</a>
-              <a className='cursor-pointer' onClick={()=>router.push('/mypage/badge')}>나의 보관함</a>
-              <a className='cursor-pointer' onClick={()=>router.push('/')}>로그아웃</a>
-            </div> */}
-          </div>
-          <hr className='w-full bg-[#7C766C] h-[1px] my-[17px]' style={{color: '#7C766C', borderColor:'#7C766C'}} />
+            <div className="flex flex-col my-[50px] w-full">
+                <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
+                <div className='flex flex-row mx-auto w-full'>
+                    <div className='flex flex-col w-full mx-[120px]'>
+                        <div className='flex flex-row justify-between'><Image className="mb-[20px]" src="image/logo.svg" width="105" height="35" alt="Logo" />
+                    </div>
+                    <hr className='w-full bg-[#7C766C] h-[1px] my-[17px]' style={{color: '#7C766C', borderColor:'#7C766C'}} />
                     <div className='flex flex-col mx-auto'>
                         <div className='flex w-full font-bold items-center justify-center mt-[40px] text-[40px] h-[55px]'>
                             글쓰기의 첫걸음
@@ -156,20 +84,18 @@ export default function Settings() {
                             어떤 주제로 글을 써볼까요?
                         </div>
                         <textarea
-                        className='w-[593px] rounded-md h-[60px] mx-auto text-center flex items-center justify-center'
-                        placeholder='ex. 뮤직 비디오, 리뷰, 영화, 맛집 탐방 기록'
-                        value={subject}
-                        style={{ lineHeight: '60px'}}
-                        onChange={(e) => {
-                            const inputText = e.target.value;
-
-                            // 30자로 주제 제한
-                            if (inputText.length <= 10) {
-                                setSubject(inputText);
-                            }
-                        }}
-                        ></textarea>
-
+                            className='w-[593px] rounded-md h-[60px] mx-auto text-center flex items-center justify-center'
+                            placeholder='ex. 뮤직 비디오, 리뷰, 영화, 맛집 탐방 기록'
+                            value={subject}
+                            style={{ lineHeight: '60px'}}
+                            onChange={(e) => {
+                                const inputText = e.target.value;
+                                if (inputText.length <= 10) {
+                                    setSubject(inputText);
+                                }
+                            }}
+                            >
+                        </textarea>
                         <div className='flex w-full items-center justify-center mt-[60px] text-[22px] h-[40px]'>
                             글쓰기 목표를 설정해봐요!
                         </div>
@@ -190,19 +116,19 @@ export default function Settings() {
                                         <button className={`w-[82px] h-[40px] border-1 rounded-md ${page === 10 ? 'bg-black text-white' : ' bg-white'}`} 
                                             onClick={() => {
                                                 setPage(10)
-                                                console.log(page, 'page 10')
-                                                }}>10편</button>
+                                                }}>10편
+                                        </button>
                                         <button className={`w-[82px] h-[40px] border-1 rounded-md ${page === 20 ? 'bg-black text-white' : ' bg-white'}`} 
                                             onClick={() => {
                                                 setPage(20)
-                                                console.log(page, 'page 20')
-                                                }}>20편</button>
+                                                }}>20편
+                                        </button>
                                         <button className={`w-[82px] h-[40px] border-1 rounded-md ${page === 30 ? 'bg-black text-white' : ' bg-white'}`} 
                                             onClick={() => {
                                                 setPage(30)
-                                                console.log(page, 'page 30')
-                                                }}>30편</button>
-                                           <textarea
+                                                }}>30편
+                                        </button>
+                                        <textarea
                                             className={`w-[82px] flex text-center items-center justify-center h-[40px] border-1 border-black rounded-lg`}
                                             placeholder= '직접입력'
                                             style={{ lineHeight: '40px' }}
@@ -210,18 +136,17 @@ export default function Settings() {
                                                 setPage(0)
                                                 const inputValue = e.target.value;
                                                 const numericValue = parseInt(inputValue, 10); // 문자열을 숫자로 변환
-
-                                                // 숫자로 변환 가능한 경우에만 set
-                                                if (!isNaN(numericValue) && numericValue >= 10) {
-                                                    setPage(numericValue);
-                                                    console.log(numericValue, typeof(numericValue));
-                                                }
-                                                
-                                            }}
-                                            >
-                                           </textarea>
-                                           {isPageValid ? <div className='items-center flex text-[10px]' style={{color:'#FF8126'}}>*10편 이상 입력해주세요.</div> : ''}
-                                        </div>
+                                                    // 숫자로 변환 가능한 경우에만 set
+                                                    if (!isNaN(numericValue) && numericValue >= 10) {
+                                                        setPage(numericValue);
+                                                        console.log(numericValue, typeof(numericValue));
+                                                    }
+                                                    
+                                                }}
+                                                >
+                                        </textarea>
+                                            {isPageValid ? <div className='items-center flex text-[10px]' style={{color:'#FF8126'}}>*10편 이상 입력해주세요.</div> : ''}
+                                    </div>
                                     </div>
                                     <div className='flex flex-col gap-y-[20px]'>
                                         <a className='font-bold'>3. 글쓰기 시간</a>
@@ -230,7 +155,6 @@ export default function Settings() {
                                             className={`w-[82px] h-[40px] border-1 rounded-md ${startAt[0] === 'AM' ? 'bg-black text-white' : ' bg-white'}`}
                                             onClick={() => {
                                             setStartAt(['AM', startAt[1], startAt[2]]);
-                                            console.log(startAt, 'start_time');
                                             }}
                                         >
                                             AM
@@ -239,13 +163,12 @@ export default function Settings() {
                                             className={`w-[82px] h-[40px] border-1 rounded-md ${startAt[0] === 'PM' ? 'bg-black text-white' : ' bg-white'}`}
                                             onClick={() => {
                                             setStartAt(['PM', startAt[1], startAt[2]]);
-                                            console.log(startAt, 'start_time');
                                             }}
                                         >
                                             PM
                                         </button>
-                                           <DropDown
-                                                items={[
+                                        <TimeDropdown
+                                            items={[
                                                 { name: '1시', value: 1 },
                                                 { name: '2시', value: 2 },
                                                 { name: '3시', value: 3 },
@@ -258,48 +181,40 @@ export default function Settings() {
                                                 { name: '10시', value: 10 },
                                                 { name: '11시', value: 11 },
                                                 { name: '12시', value: 12 },
-                                                ]}
-                                                onSelect={(selectedHour) => {
-                                                    setStartAt([startAt[0], selectedHour.value, startAt[2]]);
-
-                                                  }}
-                                            />
-                                            <DropDown
-                                                items={[
+                                            ]}
+                                            onSelect={(selectedHour) => {
+                                                setStartAt([startAt[0], selectedHour.value, startAt[2]]);
+                                            }}
+                                        />
+                                        <TimeDropdown
+                                            items={[
                                                 { name: '00분', value: 0 },
                                                 { name: '15분', value: 15 },
                                                 { name: '30분', value: 30 },
                                                 { name: '45분', value: 45 },
-                                                ]}
-                                                onSelect={(selectedMinute) => {
-                                                    setStartAt([startAt[0], startAt[1], selectedMinute.value]);
-                                                  }}
-                                            /><a className='my-auto'>부터</a>
+                                            ]}
+                                            onSelect={(selectedMinute) => {
+                                                setStartAt([startAt[0], startAt[1], selectedMinute.value]);
+                                            }}
+                                        />
+                                            <a className='my-auto'>부터</a>
                                             <button className='w-[82px] h-[40px] border-1 border-black rounded-md bg-white'>
-                                            <DropDown
-                                                items={[
+                                        <TimeDropdown
+                                            items={[
                                                 { name: '1시간', value: 1 },
                                                 { name: '2시간', value: 2 },
                                                 { name: '3시간', value: 3 },
                                                 { name: '4시간', value: 4 },
                                                 { name: '5시간', value: 5 },
-                                                ]}
+                                            ]}
                                             onSelect={(selectedForHours) => {
-                                                setWritingHours(selectedForHours.value)
-                                            }}
-                                            />
-                                              
+                                            setWritingHours(selectedForHours.value)
+                                        }}
+                                        />
                                             </button>
                                             <a className='ml-[20px] my-auto'>동안</a>
                                         </div>
                                     </div>
-                                    {/* <form onSubmit={sendMessage}>
-                                        <input type="text" id="messageText1" />
-                                        <input type="text" id="messageText2" />
-                                        <input type="text" id="messageText3" />
-                                        <input type="text" id="messageText4" />
-                                        <button type="submit">Send Messages</button>
-                                    </form> */}
                                     <button
                                         className={`rounded-md mx-auto mt-[30px] w-[386px] font-bold h-[62px] ${disabled ? 'bg-gray-800 text-gray-600' : 'bg-orange-500 text-black'}`}
                                         onClick={handleStart}
@@ -307,13 +222,11 @@ export default function Settings() {
                                     >
                                         글쓰기 도전 시작
                                     </button>
-
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     );

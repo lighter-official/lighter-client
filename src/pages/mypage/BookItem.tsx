@@ -1,4 +1,3 @@
-// BookItem.tsx
 import React from 'react';
 
 interface BookItemProps {
