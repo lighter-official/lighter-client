@@ -20,6 +20,11 @@ const Dropdown: React.FC<DropdownProps> = ({ items, onSelect }) => {
     onSelect(item);
   };
 
+  if (!items || items.length === 0) {
+    return null;
+  }
+
+
   return (
     <div className="relative inline-block">
       <button
