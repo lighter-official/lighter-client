@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import "../globals.css";
 import Image from 'next/image';
-import BookItem from './BookItem';
+import BookItem from '../../components/BookItem';
 
 interface ModalProps {
     isOpen: boolean;
