@@ -6,7 +6,7 @@ import { Redirection, getCookie } from '..';
 import { getGlooingInfo, getUserInfo } from '@/api/api';
 import "../globals.css";
 import Image from 'next/image';
-import BadgeItem from './BadgeItem';
+import BadgeItem from '../../components/BadgeItem';
 
 interface ModalProps {
     isOpen: boolean;
