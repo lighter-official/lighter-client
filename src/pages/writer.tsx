@@ -820,11 +820,18 @@ export default function Writer() {
         <div className="flex flex-col w-full mx-[120px]">
           <div className="flex flex-row justify-between">
             <Image
-              className="lg:mb-[20px] mb-0 w-[74px] lg:w-[105px] h-[24px] lg:h-[35px]"
+              className="cursor-pointer lg:mb-[20px] mb-0 w-[74px] lg:w-[105px] h-[24px] lg:h-[35px]"
               src="https://gloo-image-bucket.s3.amazonaws.com/archive/logo.svg"
               width="105"
               height="35"
               alt="Logo"
+            />
+            <Image
+              className="lg:hidden block h-[18px] w-[18px]"
+              src="https://gloo-image-bucket.s3.amazonaws.com/archive/Group 57.png"
+              width={18}
+              height={18}
+              alt="menu"
             />
             <div className="hidden lg:block flex-row">
               <a
@@ -895,7 +902,7 @@ export default function Writer() {
                 </div>
                 <div className="flex justify-center items-center mt-[50px] lg:mt-[100px] relative">
                   <button
-                    className={`rounded-lg text-[14px] lg:text-[16px] lg:rounded-xl w-[200px] lg:w-[333px] h-[40px] lg:h-[62px] ${
+                    className={`rounded-lg text-[14px] lg:text-[16px] lg:rounded-xl w-[210px] lg:w-[333px] h-[40px] lg:h-[62px] ${
                       buttonActivated === true
                         ? "bg-orange-500 text-black"
                         : "bg-zinc-700  text-white"
@@ -936,17 +943,17 @@ export default function Writer() {
                 </div>
                 <div className="flex flex-row items-center justify-between w-full">
                   <div className="flex flex-col">
-                    <div className="w-full text-black mt-[8px] text-[36px]">
+                    <div className="w-full text-black mt-[8px]  text-[22px] lg:text-[36px]">
                       <a>{currentWritingsData?.data?.subject}</a>
                     </div>
                     <div
-                      className="w-[300px] text-[16px]"
+                      className="w-[300px] text-[12px] lg:text-[16px]"
                       style={{ color: "#706B61" }}
                     >
                       {formattedDateRange}
                     </div>
                   </div>
-                  <div className="w-[83px] h-[49px] text-[36px] justify-end">
+                  <div className="w-[83px] h-[49px] text-[30px] lg:text-[36px] justify-end">
                     <a className="text-black">
                       {currentWritingsData?.data?.writings.length}
                     </a>
@@ -962,7 +969,7 @@ export default function Writer() {
                 />
                 {currentWritingsData?.data?.writings.length === 0 && (
                   <div
-                    className="flex items-center justify-center text-center my-auto h-[300px] lg:h-[580px] text-[20px]"
+                    className="flex items-center justify-center text-center my-auto h-[300px] lg:h-[580px] text-[16px] lg:text-[20px]"
                     style={{ color: "#706B61" }}
                   >
                     나만의 기록으로 채워보아요!
