@@ -4,9 +4,11 @@ import React, { useState } from "react";
 import "../globals.css";
 import Image from "next/image";
 import BookItem from "../../components/BookItem";
+import { getCookie } from "..";
 
-export default function Writer() {
+export default function UnfinishedBook() {
   const router = useRouter();
+  const accessToken = getCookie("access_token");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleOpenModal = () => {
@@ -35,7 +37,12 @@ export default function Writer() {
               <a
                 className="cursor-pointer"
                 style={{ color: "#A49E90" }}
-                onClick={() => router.push("/")}
+                onClick={() =>
+                  router.push({
+                    pathname: "/glooing",
+                    query: { access_token: accessToken },
+                  })
+                }
               >
                 글루ING
               </a>
@@ -76,7 +83,7 @@ export default function Writer() {
                   <div
                     className="flex text-[20px] cursor-pointer"
                     style={{ color: "#CEB292" }}
-                    onClick={() => router.push("/mypage/book")}
+                    onClick={() => router.push("/mypage/mybook")}
                   >
                     내가 발행한 책
                   </div>

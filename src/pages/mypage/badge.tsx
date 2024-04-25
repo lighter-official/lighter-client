@@ -59,7 +59,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
   );
 };
 
-export default function Writer() {
+export default function BadgeList() {
   const router = useRouter();
   const accessToken = getCookie("access_token");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -115,7 +115,7 @@ export default function Writer() {
                 className="cursor-pointer"
                 onClick={() =>
                   router.push({
-                    pathname: "/writer",
+                    pathname: "/glooing",
                     query: { access_token: accessToken },
                   })
                 }
@@ -162,7 +162,7 @@ export default function Writer() {
                   <div
                     className="flex text-[20px] cursor-pointer"
                     style={{ color: "#CEB292" }}
-                    onClick={() => router.push("/mypage/book")}
+                    onClick={() => router.push("/mypage/mybook")}
                   >
                     내가 발행한 책
                   </div>

@@ -838,7 +838,7 @@ export default function Writer() {
                 className="lg:pr-10 cursor-pointer font-bold"
                 onClick={() =>
                   router.push({
-                    pathname: "/writer",
+                    pathname: "/glooing",
                     query: { access_token: accessToken },
                   })
                 }
@@ -909,6 +909,18 @@ export default function Writer() {
                     }`}
                     disabled={!buttonActivated}
                     onClick={handleOpenWriterModal}
+                    // onClick={() => {
+                    //   // 데이터 객체를 JSON 문자열로 직렬화
+                    //   const dataString = encodeURIComponent(
+                    //     JSON.stringify(currentWritingData.data)
+                    //   );
+
+                    //   // router.push를 사용하여 페이지 이동과 함께 데이터 전달
+                    //   router.push({
+                    //     pathname: "/newPost/posting",
+                    //     query: { access_token: accessToken, data: dataString },
+                    //   });
+                    // }}
                   >
                     글 작성하기
                   </button>

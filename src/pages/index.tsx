@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import "./globals.css";
 import axios from "axios";
-import Settings from "./text-setting";
+import Settings from "./setting";
 import { getLoginInfo } from "@/api/api";
 import nookies from "nookies";
 import Head from "next/head";
@@ -46,7 +46,7 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }: any) => {
 
       // 로그인된 경우
       router.push({
-        pathname: "/text-setting",
+        pathname: "/setting",
         query: { access_token: accessToken },
       } as any);
     }
@@ -78,7 +78,7 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }: any) => {
         });
         setLoggedIn(true);
         router.push({
-          pathname: "/text-setting",
+          pathname: "/setting",
           query: { access_token: accessToken },
         } as any);
       }
@@ -181,19 +181,19 @@ export default function Home() {
         if (data?.data?.isSignUp === true) {
           // 신규 회원가입
           router.push({
-            pathname: "/text-setting",
+            pathname: "/setting",
             query: { access_token: accessToken },
           } as any);
         } else if (data?.data?.isSignUp === false) {
           if (data?.data?.hasOnProcessedWritingSession === true) {
             console.log(">?????????");
             router.push({
-              pathname: "/writer",
+              pathname: "/glooing",
               query: { access_token: accessToken },
             } as any);
           } else {
             router.push({
-              pathname: "/text-setting",
+              pathname: "/setting",
               query: { access_token: accessToken },
             } as any);
           }
@@ -229,7 +229,7 @@ export default function Home() {
       // 로그인된 경우
       console.log(isLoggedIn, "logloglog");
       router.push({
-        pathname: "/text-setting",
+        pathname: "/setting",
         query: { access_token: accessToken },
       } as any);
     }

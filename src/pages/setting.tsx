@@ -7,7 +7,7 @@ import { fork } from "child_process";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import Dropdown from "./Dropdown";
+import Dropdown from "../components/Dropdown";
 
 export default function Settings() {
   const router = useRouter();
@@ -64,7 +64,7 @@ export default function Settings() {
       console.log(response.data, "============");
       setIsFirst(true);
       router.push({
-        pathname: "/writer",
+        pathname: "/glooing",
         query: {
           access_token: accessToken,
           isFirst: isFirst,
@@ -300,7 +300,7 @@ export default function Settings() {
                             }}
                           />
                         </button>
-                        <a className="ml-[20px] my-auto">시간 동안</a>
+                        <a className="ml-[20px] my-auto">동안</a>
                       </div>
                     </div>
                   </div>
