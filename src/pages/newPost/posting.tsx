@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { getCookie } from "..";
 import Image from "next/image";
 
-export default function newWriting() {
+export default function NewWriting() {
   const router = useRouter();
   const accessToken = getCookie("access_token");
   const dataString = Array.isArray(router.query.data)
