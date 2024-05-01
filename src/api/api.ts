@@ -3,16 +3,16 @@ import { ResponseCookies } from "next/dist/compiled/@edge-runtime/cookies";
 import { GetUserInfoResponse } from "./api.response";
 
 interface WritingData {
-  subject: string
-  period: number
-  page: number
-  startAt: {hour: number, minute:number|undefined}
-  writingHours: number
+  subject: string;
+  period: number;
+  page: number;
+  startAt: { hour: number; minute: number | undefined };
+  writingHours: number;
 }
 
 interface currentWritingData {
-  title: string
-  content: string
+  title: string;
+  content: string;
 }
 
 const apiUrl: string = process.env.API_URL || "https://core.gloo-lighter.com";
@@ -22,7 +22,7 @@ export const getLoginInfo = async (code: string) => {
     const response = await axios.get(
       `${apiUrl}/account/users/sign-in/kakao?code=${code}`
     );
-    console.log(response.data, "============");
+    console.log("LoginInfo============", response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -39,7 +39,7 @@ export const postSetUp = async (data: WritingData, accessToken: string) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    console.log(response.data, "============");
+    console.log("설정 정보============", response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -76,7 +76,7 @@ export const getUserInfo = async (accessToken: string) => {
       `${apiUrl}/account/users/me`,
       config
     );
-    console.log("유저 정보----------------", response.data);
+    console.log("유저 정보----", response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -96,7 +96,7 @@ export const getCurrentSessions = async (accessToken: string) => {
       `${apiUrl}/writing-session/on-process`,
       config
     );
-    console.log("진행중인 세션 정보 ----------------", response.data);
+    console.log("진행중인 세션 정보? ", response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -107,13 +107,16 @@ export const getCurrentSessions = async (accessToken: string) => {
 // 글쓰기 시작 시에 POST 필요
 export const startWriting = async (id: string, accessToken: string) => {
   try {
-    const response = await axios.post(`${apiUrl}/writings/start?writingSessionId=${id}`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    console.log(id,'??????????????????????!!!!!!!')
-    console.log(response.data, "============");
+    const response = await axios.post(
+      `${apiUrl}/writings/start?writingSessionId=${id}`,
+      undefined, // axios post 특성을 고려해 수정
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    console.log("글쓰기 시작============", response.data, id);
     return response.data;
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -122,14 +125,22 @@ export const startWriting = async (id: string, accessToken: string) => {
 };
 
 // 글 임시저장 API
-export const temporarySaveWriting = async (writingId: string, accessToken: string, data?: currentWritingData) => {
+export const temporarySaveWriting = async (
+  writingId: string,
+  accessToken: string,
+  data?: currentWritingData
+) => {
   try {
-    const response = await axios.put(`${apiUrl}/writings/${writingId}/temp-save`, data, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    console.log(response.data, "============");
+    const response = await axios.put(
+      `${apiUrl}/writings/${writingId}/temp-save`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    console.log("임시 저장?============", response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -137,16 +148,24 @@ export const temporarySaveWriting = async (writingId: string, accessToken: strin
   }
 };
 
-
 // 최종적으로 글 POST하는 API
-export const submitWriting = async (writingId: string, accessToken: string, data: currentWritingData) => {
+export const submitWriting = async (
+  data: currentWritingData,
+  writingId: string,
+  accessToken: string
+) => {
+  console.log(writingId, "idididid");
   try {
-    const response = await axios.put(`${apiUrl}/writings/${writingId}/submit`, data, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    console.log(response.data, "============");
+    const response = await axios.put(
+      `${apiUrl}/writings/${writingId}/submit`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    console.log("포스팅한 글 내용 ============", response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -162,11 +181,8 @@ export const getWritingInfo = async (id: string, accessToken: string) => {
         Authorization: `Bearer ${accessToken}`,
       },
     };
-    const response = await axios.get(
-      `${apiUrl}/writings/${id}`,
-      config
-    );
-    console.log("===클릭한 글?===", response.data);
+    const response = await axios.get(`${apiUrl}/writings/${id}`, config);
+    console.log("클릭한 글 정보", id, response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -181,17 +197,12 @@ export const putWriting = async (
   accessToken: string
 ) => {
   try {
-    console.log(accessToken, "APIAPIAPI");
-    const response = await axios.put(
-      `${apiUrl}/api/glooing/writings/${id}`,
-      data,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
-    console.log(response.data, "============");
+    const response = await axios.put(`${apiUrl}/writings/${id}`, data, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    console.log(response.data, "수정된 데이터 -----------");
     return response.data;
   } catch (error) {
     console.error("Error fetching data:", error);

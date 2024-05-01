@@ -2,18 +2,25 @@
 import { useRouter } from "next/router";
 import { getCookie } from "..";
 import Image from "next/image";
+import { useSelector } from "react-redux";
 
-export default function NewWriting() {
+interface WritingState {
+  dataArray: {
+    arrayData: any[];
+  };
+}
+
+export const NewWriting = () => {
   const router = useRouter();
   const accessToken = getCookie("access_token");
   const dataString = Array.isArray(router.query.data)
     ? router.query.data[0]
     : router.query.data;
 
-  // dataString이 유효한 경우 JSON.parse를 사용하여 객체로 변환, 그렇지 않은 경우 null 할당
-  const currentWritingsData = dataString
-    ? JSON.parse(decodeURIComponent(dataString))
-    : null;
+  const currentWritings = useSelector(
+    (state: WritingState) => state.dataArray.arrayData
+  );
+  console.log(currentWritings, "current?");
 
   return (
     <div className="w-full max-w-[1199px] rounded-sm flex flex-col mx-auto lg:my-[50px]">
@@ -153,4 +160,6 @@ export default function NewWriting() {
       </div>
     </div>
   );
-}
+};
+
+export default NewWriting;

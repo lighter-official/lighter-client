@@ -7,6 +7,7 @@ import {
   putWriting,
   startWriting,
   submitWriting,
+  temporarySaveWriting,
 } from "@/api/api";
 import router, { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -144,12 +145,7 @@ const Modal: React.FC<ModalProps> = ({
       content: content || null, // 만약 content가 빈 문자열이면 null로 설정
     };
     try {
-      // 새로운 글 작성
-      const response = await submitWriting(
-        writingData,
-        writingData?.data?.id,
-        accessToken
-      );
+      const response = await submitWriting(writingData, id, accessToken);
       console.log(response, "정상 제출?");
 
       const currentURL = window.location.href;
@@ -383,9 +379,9 @@ const EditModal: React.FC<ModalProps> = ({
     };
 
     try {
-      // 새로운 글 작성
+      // 기존 글 수정
       await putWriting(id, editData, accessToken);
-      console.log("글 작성 완료");
+      console.log("글 수정 완료");
 
       // 페이지 새로 고침 없이 현재 URL에 토큰을 포함하여 다시 로드
       const currentURL = window.location.href;
@@ -393,6 +389,7 @@ const EditModal: React.FC<ModalProps> = ({
       window.history.replaceState({}, document.title, newURL);
     } catch (error) {
       console.error("Error saving writing:", error);
+      alert(error);
     }
 
     onClose();
@@ -514,7 +511,6 @@ export default function Writer() {
   const [isEndTime, setIsEndTime] = useState(false);
   const isFirst = router.query.isFirst === "true";
 
-  console.log(writingData, "writing?");
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -684,9 +680,8 @@ export default function Writer() {
 
   const handleOpenWriterModal = async () => {
     try {
-      // 새로운 글 작성
-      await startWriting(id, accessToken);
-      console.log("시작 ???");
+      await startWriting(currentWritingsData?.data?.id, accessToken);
+      console.log(currentWritingsData, "시작 ???");
     } catch (error) {
       console.error("Error start writing:", error);
     }
@@ -910,16 +905,17 @@ export default function Writer() {
                     disabled={!buttonActivated}
                     onClick={handleOpenWriterModal}
                     // onClick={() => {
-                    //   // 데이터 객체를 JSON 문자열로 직렬화
-                    //   const dataString = encodeURIComponent(
-                    //     JSON.stringify(currentWritingData.data)
-                    //   );
+                    // 데이터 객체를 JSON 문자열로 직렬화
+                    // const dataString = encodeURIComponent(
+                    //   JSON.stringify(currentWritingData.data)
+                    // );
 
-                    //   // router.push를 사용하여 페이지 이동과 함께 데이터 전달
-                    //   router.push({
-                    //     pathname: "/newPost/posting",
-                    //     query: { access_token: accessToken, data: dataString },
-                    //   });
+                    // router.push를 사용하여 페이지 이동과 함께 데이터 전달
+                    // router.push({
+                    //   pathname: "/newPost/posting",
+                    //   query: { access_token: accessToken },
+                    //   // , data: dataString
+                    // });
                     // }}
                   >
                     글 작성하기
@@ -1123,7 +1119,7 @@ export default function Writer() {
       <Modal
         isOpen={isWriterModalOpen}
         onClose={handleCloseWriterModal}
-        id={selectedWritingId}
+        id={currentWritingsData?.data?.id}
         writingData={currentWritingsData}
         mini={setIsMiniModalOpen}
         remainingTime={remainingTime}

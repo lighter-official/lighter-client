@@ -78,9 +78,9 @@ export default function BadgeList() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const glooingData = await getGlooingInfo(accessToken);
-        setGlooingInfo(glooingData);
-        console.log(glooingInfo, "glooingInfo-------------------");
+        // const glooingData = await getGlooingInfo(accessToken);
+        // setGlooingInfo(glooingData);
+        // console.log(glooingInfo, "glooingInfo-------------------");
 
         // 유저 정보 가져오기
         const userData = await getUserInfo(accessToken);

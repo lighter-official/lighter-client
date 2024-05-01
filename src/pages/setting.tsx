@@ -46,7 +46,7 @@ export default function Settings() {
       adjustedHour = 0; // AM 0시로 설정
     }
     if (startAt[0] === "PM") {
-      adjustedHour = 12; // PM
+      adjustedHour += 12; // PM
     }
 
     try {
