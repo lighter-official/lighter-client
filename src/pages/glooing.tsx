@@ -9,19 +9,13 @@ import {
   submitWriting,
   temporarySaveWriting,
 } from "@/api/api";
-import router, { useRouter } from "next/router";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import nookies from "nookies";
 import { Redirection, getCookie } from ".";
-import { access } from "fs";
 import "./globals.css";
 import { day } from "@/lib/dayjs";
-import {
-  WritingSession,
-  WritingSessionStartAt,
-} from "@/schemas/WritingSession.schema";
 import Image from "next/image";
-import { number, string } from "yargs";
 
 interface WritingData {
   code: string;
@@ -50,6 +44,13 @@ interface WritingData {
   success: boolean;
 }
 
+interface Badge {
+  badgeId: number;
+  createdAt: string;
+  id: number;
+  userId: string;
+}
+
 interface UserInfo {
   code: string;
   data: {
@@ -59,7 +60,7 @@ interface UserInfo {
     nickname: string;
     providerType: string;
     updatedAt: string;
-    userBadges: any[]; // userBadges 데이터 형식이 제공되지 않아서 임시로 any[] 사용
+    userBadges: Badge[];
     writingSessions: WritingData[];
   };
   statusCode: number;
@@ -115,7 +116,7 @@ const Modal: React.FC<ModalProps> = ({
       }, 30000); // 30초마다 호출
     }
 
-    // 컴포넌트 언마운트 or 모달 닫힐 경우 clear interval하도록 설정
+    // 컴포넌트 언마운트 or 모달이 닫힐 경우 clear interval하도록 설정
     return () => clearInterval(intervalId);
   }, [isOpen, title, content]);
 
@@ -128,10 +129,9 @@ const Modal: React.FC<ModalProps> = ({
 
     // 최대 길이를 40으로 설정
     if (inputText.length <= 40) {
-      // 40자 이내일 때만 setTitle 호출하여 상태 업데이트
+      // 40자 이내일 때만 setTitle 호출하여 상태 업데이트, 초과하면 무시
       setTitle(inputText);
     }
-    // 만약 40자를 초과하면 무시
   };
 
   const handlePost = async () => {
@@ -151,7 +151,7 @@ const Modal: React.FC<ModalProps> = ({
       const currentURL = window.location.href;
       const newURL = `${currentURL}?access_token=${accessToken}`;
       window.history.replaceState({}, document.title, newURL);
-      mini(true);
+      // mini(true);
     } catch (error) {
       console.error("Error saving writing:", error);
     }
@@ -267,55 +267,53 @@ const Modal: React.FC<ModalProps> = ({
   );
 };
 
-// MiniModal 컴포넌트 수정
+// const MiniModal: React.FC<ModalProps> = ({
+//   isOpen,
+//   onClose,
+//   data,
+//   id,
+//   writingData,
+//   mini,
+// }) => {
+//   const handleClose = () => {
+//     console.log("Closing MiniModal");
+//     mini(false);
+//     onClose();
+//   };
 
-const MiniModal: React.FC<ModalProps> = ({
-  isOpen,
-  onClose,
-  data,
-  id,
-  writingData,
-  mini,
-}) => {
-  const handleClose = () => {
-    console.log("Closing MiniModal");
-    mini(false);
-    onClose();
-  };
-
-  return (
-    <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
-      <div
-        className="absolute w-full h-full bg-gray-800 opacity-50"
-        onClick={handleClose}
-      ></div>
-      <div className="flex flex-col bg-white w-[328px] h-[171px] text-center justify-center items-center rounded-lg z-50">
-        <div className="text-center items-center flex flex-col">
-          <div className="text-[15px] font-bold mb-[2px]">
-            {data?.total_writing + 1}번째
-          </div>
-          <div className="text-[15px] mb-[6px]">글 등록을 완료했어요!</div>
-          <div className="text-[13px] mb-[10px]" style={{ color: "#7F7F7F" }}>
-            다음{" "}
-            <a>
-              {data?.setting?.start_time[0]}:{data?.setting?.start_time[1]}
-            </a>
-            시에 꼭 다시 만나요!
-          </div>
-          <div className="flex justify-center">
-            <button
-              className="w-[120px] text-[15px] font-bold cursor-pointer h-[40px] rounded-md"
-              style={{ backgroundColor: "#FF5A26" }}
-              onClick={handleClose}
-            >
-              확인
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+//   return (
+//     <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
+//       <div
+//         className="absolute w-full h-full bg-gray-800 opacity-50"
+//         onClick={handleClose}
+//       ></div>
+//       <div className="flex flex-col bg-white w-[328px] h-[171px] text-center justify-center items-center rounded-lg z-50">
+//         <div className="text-center items-center flex flex-col">
+//           <div className="text-[15px] font-bold mb-[2px]">
+//             {data?.total_writing + 1}번째
+//           </div>
+//           <div className="text-[15px] mb-[6px]">글 등록을 완료했어요!</div>
+//           <div className="text-[13px] mb-[10px]" style={{ color: "#7F7F7F" }}>
+//             다음{" "}
+//             <a>
+//               {data?.setting?.start_time[0]}:{data?.setting?.start_time[1]}
+//             </a>
+//             시에 꼭 다시 만나요!
+//           </div>
+//           <div className="flex justify-center">
+//             <button
+//               className="w-[120px] text-[15px] font-bold cursor-pointer h-[40px] rounded-md"
+//               style={{ backgroundColor: "#FF5A26" }}
+//               onClick={handleClose}
+//             >
+//               확인
+//             </button>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
 
 // 수정용 모달로 사용
 const EditModal: React.FC<ModalProps> = ({
@@ -505,12 +503,23 @@ export default function Writer() {
   const [textColor, setTextColor] = useState<boolean>(false);
   const [remainingSecond, setRemainingSecond] = useState<number>();
   const [intervalId, setIntervalId] = useState<number | null>(null);
+  const [isSubmissionSuccessful, setIsSubmissionSuccessful] = useState(false);
   const [writingId, setWritingId] = useState<number | null>(null);
   const [currentWritingsData, setCurrentWritingsData] = useState<WritingData>(
     {}
   );
   const [isEndTime, setIsEndTime] = useState(false);
   const isFirst = router.query.isFirst === "true";
+  const [showBadge, setShowBadge] = useState(false);
+
+  useEffect(() => {
+    const badgeCount = userInfo?.data?.userBadges.length || 0;
+    if (badgeCount > 0) {
+      setShowBadge(true);
+    } else {
+      setShowBadge(false);
+    }
+  }, [userInfo?.data?.userBadges.length]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -522,38 +531,16 @@ export default function Writer() {
         const currentWritings = await getCurrentSessions(accessToken);
         console.log("현재 글쓰기 데이터 정보: ", currentWritings);
         setCurrentWritingsData(currentWritings);
-        console.log(currentWritingsData, "data 있는지?");
+        console.log(currentWritingsData, "currentWritingsData--------?");
 
         if (isFirst == true) {
           setIsFirstModalOpen(true);
         }
-
-        const startHour = parseInt(currentWritings?.data?.startAt?.hour);
-        const startMinute = parseInt(currentWritings?.data?.startAt?.minute);
-        const startHour2 = !isNaN(startHour) ? startHour : 0;
-        const startMinute2 = !isNaN(startMinute) ? startMinute : 0;
-
-        const currentTime = new Date();
-
         const finishedString = currentWritings?.data?.nearestFinishDate;
         const finishTime = new Date(finishedString);
         const newStartString = currentWritings?.data?.nearestStartDate;
         const newStartTime = new Date(newStartString);
 
-        let startTime = new Date(
-          currentTime?.getFullYear(),
-          currentTime?.getMonth(),
-          currentTime?.getDate(),
-          startHour,
-          startMinute
-        );
-        let startTime2 = new Date(
-          currentTime?.getFullYear(),
-          currentTime?.getMonth(),
-          currentTime?.getDate(),
-          startHour + startHour2,
-          startMinute + startMinute2
-        );
         // 타이머
         const newIntervalId = setInterval(() => {
           const currentTime = new Date();
@@ -670,16 +657,6 @@ export default function Writer() {
     };
   }, [timer]);
 
-  const displayHours = Math.floor(timer / (60 * 60));
-  const displayMinutes = Math.floor((timer % (60 * 60)) / 60);
-  const displaySeconds = timer % 60;
-
-  const formattedTime = `${isActivated ? "남은 시간" : ""}${
-    displayHours < 10 ? "0" : ""
-  }${displayHours} : ${displayMinutes < 10 ? "0" : ""}${displayMinutes} : ${
-    displaySeconds < 10 ? "0" : ""
-  }${displaySeconds}`;
-
   const handleOpenWriterModal = async () => {
     try {
       const response = await startWriting(
@@ -688,15 +665,33 @@ export default function Writer() {
       );
       console.log(response, "시작 ???");
       setWritingId(response?.data?.writing?.id);
+      setIsSubmissionSuccessful(true);
     } catch (error) {
       console.error("Error start writing:", error);
     }
     setIsWriterModalOpen(true);
   };
 
-  const handleCloseWriterModal = () => {
+  //여기부터
+  useEffect(() => {
+    if (isSubmissionSuccessful) {
+      setIsMiniModalOpen(true);
+      setIsSubmissionSuccessful(false);
+    }
+  }, [isSubmissionSuccessful]);
+
+  const handleCloseWriterModal = async () => {
+    try {
+      router.push({
+        pathname: "/glooing",
+        query: { access_token: accessToken },
+      });
+    } catch (error) {
+      console.error("Error redirecting after closing writer modal:", error);
+    }
     setIsWriterModalOpen(false);
   };
+  //여기까지 수정한 거 동작 확인 필요 !
 
   const handleOpenEditModal = () => {
     setIsEditModalOpen(true);
@@ -717,18 +712,6 @@ export default function Writer() {
     setIsFirstModalOpen(false);
   };
 
-  // const handleWritingClick = async (writingId: string) => {
-  //   try {
-  //     const writingData = await getWritingInfo(writingId, accessToken);
-  //     setWritingData(writingData);
-  //     console.log('writingDATA', writingData);
-  //     setSelectedWritingId(writingId);
-  //     setIsWriterModalOpen(true);
-  //   } catch (error) {
-  //     console.error('Error fetching writing data:', error);
-  //   }
-  // };
-
   // 수정할 글 클릭했을 때
   const handleEditClick = async (writingId: string) => {
     try {
@@ -745,7 +728,7 @@ export default function Writer() {
     setLoggedIn((prevLoggedIn) => !prevLoggedIn);
     if (isLoggedIn === true) {
       setLoggedIn(false);
-      nookies.destroy(null, "access_token");
+      // nookies.destroy(null, "access_token");
       router.push("/");
     }
   };
@@ -791,35 +774,12 @@ export default function Writer() {
 
   const formattedDateRange = `${formattedStartDate} - ${formattedFinishDate}`;
 
-  //뱃지 지급 로직
-  const checkAndAwardBadge = async () => {
-    if (currentWritingsData?.data?.progressPercentage === 50) {
-      // API를 통해 서버에 뱃지 지급 요청
-      try {
-        await axios.post("/api/awardBadge", {
-          userId: userInfo.userId,
-          badgeName: "50% Completion Badge",
-          dateAwarded: new Date().toISOString(),
-        });
-        console.log("Badge awarded successfully");
-      } catch (error) {
-        console.error("Error awarding badge:", error);
-      }
-    }
-  };
-
-  useEffect(() => {
-    checkAndAwardBadge();
-  }, [currentWritingsData?.data?.progressPercentage]);
-
-  //끝
-
   return (
     <div className="flex flex-col my-[50px] w-full overflow-hidden">
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
       <div className="flex flex-row mx-auto w-full">
         <div className="flex flex-col w-full mx-[120px]">
-          <div className="flex flex-row justify-between max-w-[682px] lg:w-full">
+          <div class="flex flex-row justify-between sm:max-w-[682px] lg:max-w-none lg:w-full">
             <Image
               className="cursor-pointer lg:mb-[20px] mb-0 w-[74px] lg:w-[105px] h-[24px] lg:h-[35px]"
               src="https://gloo-image-bucket.s3.amazonaws.com/archive/logo.svg"
@@ -850,25 +810,25 @@ export default function Writer() {
                 className="lg:pr-10 cursor-pointer"
                 onClick={() =>
                   router.push({
-                    pathname: "/mypage/badge",
+                    pathname: "/mypage/badgeList",
                     query: { access_token: accessToken },
                   })
                 }
               >
                 나의 보관함
               </a>
-              <a className="lg:pr-10 cursor-pointer" onClick={handleLogIn}>
+              <a className="cursor-pointer" onClick={handleLogIn}>
                 {isLoggedIn === false ? "로그인" : "로그아웃"}
               </a>
             </div>
           </div>
           <hr
-            className="lg:block hidden w-full bg-[#7C766C] h-[1px] my-[17px]"
+            className="lg:block hidden w-full bg-[#7C766C] h-[1px] sm:my-[17px] lg:my-0"
             style={{ color: "#7C766C", borderColor: "#7C766C" }}
           />
-          <div className="w-full flex mt-[20px] justify-between lg:flex-row flex-col">
+          <div className="w-full flex mt-[20px]  lg:flex-row flex-col">
             <div className="w-full bg-black rounded-sm flex flex-row lg:flex-col lg:max-w-[400px] mb-[20px] lg:mb-0 max-w-[682px] lg:h-[600px] h-[272px]">
-              <div className="flex flex-col mx-[20px]">
+              <div className="flex flex-col sm:mx-[30px] lg:mx-[20px]">
                 <div className="text-white mt-[34px] w-full h-[120px] text-[36px]">
                   <a>{userInfo?.data?.nickname}</a>님의
                   <br />
@@ -890,11 +850,10 @@ export default function Writer() {
                   {/* <button className='flex text-white w-[106px] rounded-lg' style={{ backgroundColor: '#3F3F3F' }}><a className="w-full text-[14px] my-auto" style={{ color: '#8E887B' }}>변경하기 <a>{glooingInfo?.setting?.change_num}</a>/<a>{glooingInfo?.max_change_num}</a></a></button> */}
                 </div>
               </div>
-              <div className="flex flex-col ml-[150px] lg:mx-[20px] mt-[40px] lg:mt-[76px]">
+              <div className="flex flex-col ml-[200px] lg:mx-[20px] mt-[40px] lg:mt-[76px]">
                 <div className="ml-2 lg:ml-0" style={{ color: "#BAB1A0" }}>
                   {buttonActivated === true ? "남은 시간" : "글쓰기 시간까지"}
                 </div>
-                {/* <div className='' style={{ color: '#BAB1A0' }}>글쓰기 시간까지</div> */}
                 <div
                   className="flex w-full justify-start lg:text-[72px] text-[48px]"
                   style={{ color: "#F2EBDD" }}
@@ -983,7 +942,7 @@ export default function Writer() {
                 />
                 {currentWritingsData?.data?.writings.length === 0 && (
                   <div
-                    className="flex items-center justify-center text-center my-4 lg:my-8 text-base lg:text-lg"
+                    className="flex items-center justify-center lg:text-lg"
                     style={{ color: "#706B61" }}
                   >
                     나만의 기록으로 채워보아요!
@@ -1096,13 +1055,15 @@ export default function Writer() {
                     </a>
                     에 꼭 다시 만나요!
                   </div>
-                  {currentWritingsData?.data?.progressPercentage == 50 && ( // 임시로 1인데, 여기에 퍼센트
+                  {showBadge && (
                     <div className="w-[140px] h-[148px] mb-[18px]">
                       <Image
-                        src="https://gloo-image-bucket.s3.amazonaws.com/archive/butterfly_1.jpg"
+                        src={
+                          userInfo?.data?.userBadges[badgeCount - 1]?.badge
+                            ?.imageUrl
+                        }
                         width={152}
                         height={153}
-                        alt="gochi"
                       />
                     </div>
                   )}

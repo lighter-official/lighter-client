@@ -7,6 +7,19 @@ import "../globals.css";
 import Image from "next/image";
 import BadgeItem from "../../components/BadgeItem";
 
+interface BadgeItem {
+  badge: {
+    id: number;
+    name: string;
+    description: string;
+    imageUrl: string;
+  };
+  badgeId: number;
+  createdAt: string;
+  id: number;
+  userId: string;
+}
+
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -17,10 +30,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
-      <div
-        className="absolute w-full h-full bg-gray-800 opacity-50"
-        onClick={onClose}
-      ></div>
+      <div className="absolute w-full h-full" onClick={onClose}></div>
       <div className="relative flex flex-col bg-white w-[800px] h-[550px] rounded-lg z-50">
         <div className="p-8">
           <div className="text-[16px]">4번째 글</div>
@@ -63,7 +73,6 @@ export default function BadgeList() {
   const accessToken = getCookie("access_token");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggedIn, setLoggedIn] = useState(false);
-  const [glooingInfo, setGlooingInfo] = useState<any>({});
   const [userInfo, setUserInfo] = useState<any>({});
 
   const handleOpenModal = () => {
@@ -77,11 +86,6 @@ export default function BadgeList() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        // const glooingData = await getGlooingInfo(accessToken);
-        // setGlooingInfo(glooingData);
-        // console.log(glooingInfo, "glooingInfo-------------------");
-
-        // 유저 정보 가져오기
         const userData = await getUserInfo(accessToken);
         setUserInfo(userData);
         console.log(userInfo, "userInfo-------------------");
@@ -92,9 +96,8 @@ export default function BadgeList() {
       }
     };
 
-    // 페이지 로드 시 데이터 호출
     fetchUserData();
-  }, [accessToken, glooingInfo, userInfo]); // 빈 배열을 전달하여 페이지가 로드될 때 한 번만 실행되도록 설정
+  }, [accessToken, userInfo]);
 
   return (
     <div className="flex flex-col my-[50px] w-full">
@@ -125,7 +128,7 @@ export default function BadgeList() {
                 className="cursor-pointer  font-bold"
                 onClick={() =>
                   router.push({
-                    pathname: "/mypage/badge",
+                    pathname: "/mypage/badgeList",
                     query: { access_token: accessToken },
                   })
                 }
@@ -141,7 +144,7 @@ export default function BadgeList() {
             </div>
           </div>
           <hr
-            className="w-full bg-[#7C766C] h-[1px] my-[17px]"
+            className="w-full bg-[#7C766C] h-[1px] lg:my-0 my-[17px]"
             style={{ color: "#7C766C", borderColor: "#7C766C" }}
           />
           <div className="flex mt-[20px] justify-between flex-row my-[30px]">
@@ -154,7 +157,7 @@ export default function BadgeList() {
                   <div
                     className="flex text-[20px] font-bold cursor-pointer"
                     style={{ color: "#CEB292" }}
-                    onClick={() => router.push("/mypage/badge")}
+                    onClick={() => router.push("/mypage/badgeList")}
                   >
                     나의 뱃지
                   </div>
@@ -182,17 +185,14 @@ export default function BadgeList() {
                 </div>
               </div>
             </div>
-            <div
-              className="w-[1120px] rounded-sm  bg-gray-800 opacity-25 flex flex-row max-h-[797px]"
-              style={{ backgroundColor: "#E0D5BF", border: "1px solid black" }}
-            >
-              <div className="w-full  my-[30px] ml-[53px] ">
+            <div className="w-[1120px] rounded-sm flex flex-row max-h-[797px]">
+              <div className="w-full ml-2">
                 <div className="flex flex-row items-center ">
-                  <div className="w-[205px] text-black mt-[8px] text-[36px] font-bold">
+                  <div className="w-full text-black mt-[8px] text-[32px] font-bold">
                     나의 뱃지
                   </div>
                 </div>
-                <div className="flex flex-col  h-[759px] overflow-y-auto mt-[21px] mb-[21px] ">
+                <div className="flex flex-col h-[759px] overflow-y-auto mt-[21px] mb-[21px] ">
                   <div
                     className="flex text-center items-center jusify-center text-[18px] bg-black w-[80px] h-[40px]"
                     style={{ color: "#D5C8AE" }}
@@ -201,28 +201,17 @@ export default function BadgeList() {
                       나비
                     </a>
                   </div>
-                  <div className=" mt-[33px] flex flex-row gap-x-[46px]">
-                    <BadgeItem
-                      src="https://gloo-image-bucket.s3.amazonaws.com/archive/butterfly_1.jpg"
-                      title="알"
-                      date="2024년 1월 20일 발행"
-                    />
-                    {/* <BadgeItem src="https://gloo-image-bucket.s3.amazonaws.com/archive/butterfly_2.png" title="애벌레" date="2024년 1월 31일 발행" />
-                                        <BadgeItem src="https://gloo-image-bucket.s3.amazonaws.com/archive/butterfly_3.png" title="번데기" date="2024년 2월 2일 발행" />                    
-                                        <BadgeItem src="https://gloo-image-bucket.s3.amazonaws.com/archive/Group 84.png" title="고치" date="2024년 2월 4일 발행" />
-                                        <BadgeItem src="https://gloo-image-bucket.s3.amazonaws.com/archive/butterfly_5.png" title="나비" date="2024년 2월 14일 발행" />                     */}
+                  <div className=" mt-[20px] flex flex-row gap-x-[46px]">
+                    {userInfo?.data?.userBadges?.map((item: BadgeItem) => (
+                      <BadgeItem
+                        src={item?.badge?.imageUrl}
+                        title={item?.badge?.name}
+                        date={item?.createdAt}
+                      />
+                    ))}
                   </div>
                 </div>
               </div>
-            </div>
-            <div style={{ position: "absolute", top: "50%", left: "55%" }}>
-              <Image
-                className="z-9999"
-                src="https://gloo-image-bucket.s3.amazonaws.com/archive/soon.png"
-                width={184}
-                height={53}
-                alt="soon"
-              />
             </div>
           </div>
         </div>

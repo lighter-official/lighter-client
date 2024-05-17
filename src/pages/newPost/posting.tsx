@@ -57,7 +57,7 @@ export const NewWriting = () => {
               className="lg:pr-10 cursor-pointer"
               onClick={() =>
                 router.push({
-                  pathname: "/mypage/badge",
+                  pathname: "/mypage/badgeList",
                   query: { access_token: accessToken },
                 })
               }

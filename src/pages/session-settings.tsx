@@ -91,7 +91,7 @@ export default function Settings() {
             />
           </div>
           <hr
-            className="w-full bg-[#7C766C] h-[1px] my-[17px]"
+            className="w-full bg-[#7C766C] h-[1px] lg:my-0 my-[17px]"
             style={{ color: "#7C766C", borderColor: "#7C766C" }}
           />
           <div className="flex flex-col mx-auto">

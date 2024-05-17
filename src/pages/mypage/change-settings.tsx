@@ -154,7 +154,7 @@ export default function ChangeSettings() {
               <a
                 className="cursor-pointer font-bold"
                 style={{ color: "#191919" }}
-                onClick={() => router.push("/mypage/badge")}
+                onClick={() => router.push("/mypage/badgeList")}
               >
                 나의 보관함
               </a>
@@ -181,7 +181,7 @@ export default function ChangeSettings() {
                   <div
                     className="flex text-[20px] cursor-pointer"
                     style={{ color: "#CEB292" }}
-                    onClick={() => router.push("/mypage/badge")}
+                    onClick={() => router.push("/mypage/badgeList")}
                   >
                     나의 뱃지
                   </div>

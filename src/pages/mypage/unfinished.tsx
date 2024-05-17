@@ -49,7 +49,7 @@ export default function UnfinishedBook() {
               <a
                 className="cursor-pointer font-bold"
                 style={{ color: "#191919" }}
-                onClick={() => router.push("/mypage/badge")}
+                onClick={() => router.push("/mypage/badgeList")}
               >
                 나의 보관함
               </a>
@@ -63,7 +63,7 @@ export default function UnfinishedBook() {
             </div>
           </div>
           <hr
-            className="w-full bg-[#7C766C] h-[1px] my-[17px]"
+            className="w-full bg-[#7C766C] h-[1px] lg:my-0 my-[17px]"
             style={{ color: "#7C766C", borderColor: "#7C766C" }}
           />
           <div className="flex mt-[20px] justify-between flex-row my-[30px]">
@@ -76,7 +76,7 @@ export default function UnfinishedBook() {
                   <div
                     className="flex text-[20px] cursor-pointer"
                     style={{ color: "#CEB292" }}
-                    onClick={() => router.push("/mypage/badge")}
+                    onClick={() => router.push("/mypage/badgeList")}
                   >
                     나의 뱃지
                   </div>

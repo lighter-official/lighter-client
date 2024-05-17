@@ -39,7 +39,7 @@ export default function MyBook() {
               <a
                 className="cursor-pointer"
                 style={{ color: "#A49E90" }}
-                onClick={() => router.push("/mypage/badge")}
+                onClick={() => router.push("/mypage/badgeList")}
               >
                 나의 보관함
               </a>

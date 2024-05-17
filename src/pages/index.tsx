@@ -243,7 +243,7 @@ export default function Home() {
               />
             </div>
             <hr
-              className="w-full bg-[#7C766C] h-[1px] my-[17px]"
+              className="w-full bg-[#7C766C] h-[1px] lg:my-0 my-[17px]"
               style={{ color: "#7C766C", borderColor: "#7C766C" }}
             />
             <div className="flex lg:my-[90px] gap-y-[56px] lg:gap-y-[0px] items-start lg:flex-row-reverse flex-col lg:justify-between">
