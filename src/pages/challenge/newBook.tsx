@@ -25,8 +25,8 @@ export default function MyBook() {
             />
             <div className="flex gap-x-[70px]">
               <a
-                className="cursor-pointer"
-                style={{ color: "#A49E90" }}
+                className="cursor-pointer  font-bold"
+                style={{ color: "#191919" }}
                 onClick={() =>
                   router.push({
                     pathname: "/glooing",
@@ -37,8 +37,8 @@ export default function MyBook() {
                 글루ING
               </a>
               <a
-                className="cursor-pointer font-bold"
-                style={{ color: "#191919" }}
+                className="cursor-pointer"
+                style={{ color: "#A49E90" }}
                 onClick={() => router.push("/mypage/badge")}
               >
                 나의 보관함
@@ -53,7 +53,7 @@ export default function MyBook() {
             </div>
           </div>
           <hr
-            className="w-full bg-[#7C766C] h-[1px] my-[17px]"
+            className="w-full bg-[#7C766C] h-[1px] lg:my-0 my-[17px]"
             style={{ color: "#7C766C", borderColor: "#7C766C" }}
           />
           <div className="w-full flex mt-[20px] items-center justify-center flex-row my-[30px]">
@@ -121,7 +121,10 @@ export default function MyBook() {
                     </div>
                   </div>
                   <div className="mt-5">
-                    <button className="bg-black text-[15px] w-[185px] h-[40px] rounded-md text-center text-white">
+                    <button
+                      className="bg-black text-[15px] w-[185px] h-[40px] rounded-md text-center text-white"
+                      onClick={() => router.push("/challenge/completed")}
+                    >
                       발행하기
                     </button>
                   </div>
