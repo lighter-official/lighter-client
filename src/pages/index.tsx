@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import "./globals.css";
 import axios from "axios";
-import Settings from "./setting";
+import Settings from "./session-settings";
 import { getLoginInfo } from "@/api/api";
 import nookies from "nookies";
 import Head from "next/head";
@@ -16,7 +16,7 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }: any) => {
   // const REDIRECT_URI = 'https://lighter-client.vercel.app';
   const REDIRECT_URI = "http://localhost:8000";
   const link = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
-  const [nickname, setNickname] = useState<string | null>(null);
+
   const [accessToken, setAccessToken] = useState<string | null>(null);
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -30,7 +30,6 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }: any) => {
   const handleLoginClick = (code: any) => {
     console.log("redirection login", isLoggedIn);
     window.location.href = link;
-    console.log(link, "--------------");
     // handleClick(code)
     if (isLoggedIn) {
       // 로그인된 경우
@@ -46,11 +45,12 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }: any) => {
 
       // 로그인된 경우
       router.push({
-        pathname: "/setting",
+        pathname: "/session-settings",
         query: { access_token: accessToken },
       } as any);
     }
   };
+
   const getToken = async (code: string) => {
     try {
       const response = await fetch(
@@ -64,7 +64,6 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }: any) => {
         }
       );
 
-      console.log(response);
       const data = await response.json();
       console.log(data, "=======");
 
@@ -78,7 +77,7 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }: any) => {
         });
         setLoggedIn(true);
         router.push({
-          pathname: "/setting",
+          pathname: "/session-settings",
           query: { access_token: accessToken },
         } as any);
       }
@@ -87,18 +86,18 @@ export const Redirection = ({ isLoggedIn, setLoggedIn }: any) => {
     }
   };
 
-  useEffect(() => {
-    const code = new URL(document.location.toString()).searchParams.get("code");
-    const bodyData: {
-      code: any;
-    } = {
-      code: code,
-    };
+  // useEffect(() => {
+  //   const code = new URL(document.location.toString()).searchParams.get("code");
+  //   const bodyData: {
+  //     code: any;
+  //   } = {
+  //     code: code,
+  //   };
 
-    if (code) {
-      getToken(code);
-    }
-  }, []);
+  //   if (code) {
+  //     getToken(code);
+  //   }
+  // }, []);
 
   return (
     <button
@@ -115,7 +114,6 @@ export function getCookie(name: any) {
 }
 
 export default function Home() {
-  // const navigate = useNavigate();
   const router = useRouter();
   // const accessToken = getCookie('access_token');
   const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
@@ -149,9 +147,9 @@ export default function Home() {
     };
   }, []);
 
-  // 지금 여기
   const getToken = async (code: string) => {
     try {
+      console.log("========================");
       const response = await fetch(
         `https://core.gloo-lighter.com/account/users/sign-in/kakao`,
         {
@@ -163,7 +161,7 @@ export default function Home() {
         }
       );
       const data = await response.json();
-      console.log(data, "=======");
+      console.log(data, "========================");
 
       if (data?.data?.accessToken) {
         const accessToken = data?.data?.accessToken;
@@ -178,25 +176,20 @@ export default function Home() {
         setLoggedIn(true);
         console.log(isLoggedIn, "로그인 ???");
         // accessToken을 설정한 후에 router.push 호출
-        if (data?.data?.isSignUp === true) {
-          // 신규 회원가입
+        if (
+          data?.data?.isSignUp === true ||
+          data?.data?.hasOnProcessedWritingSession === false
+        ) {
+          // 신규 회원가입이거나 진행중인 세션이 없을 경우
           router.push({
-            pathname: "/setting",
+            pathname: "/session-settings",
             query: { access_token: accessToken },
           } as any);
-        } else if (data?.data?.isSignUp === false) {
-          if (data?.data?.hasOnProcessedWritingSession === true) {
-            console.log(">?????????");
-            router.push({
-              pathname: "/glooing",
-              query: { access_token: accessToken },
-            } as any);
-          } else {
-            router.push({
-              pathname: "/setting",
-              query: { access_token: accessToken },
-            } as any);
-          }
+        } else if (data?.data?.hasOnProcessedWritingSession === true) {
+          router.push({
+            pathname: "/glooing",
+            query: { access_token: accessToken },
+          } as any);
         }
       }
     } catch (error) {
@@ -221,15 +214,13 @@ export default function Home() {
 
   const handleLoginClick = (code: any) => {
     window.location.href = link;
-    console.log(link, "--------------");
-    // handleClick(code)
     getToken(code);
     setLoggedIn(true);
     if (isLoggedIn) {
       // 로그인된 경우
       console.log(isLoggedIn, "logloglog");
       router.push({
-        pathname: "/setting",
+        pathname: "/session-settings",
         query: { access_token: accessToken },
       } as any);
     }
@@ -238,9 +229,9 @@ export default function Home() {
   return (
     <>
       <Script src="https://developers.kakao.com/sdk/js/kakao.js" />
-      <div className="flex flex-col my-[50px] w-full">
+      <div className="flex flex-col my-[50px]">
         <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
-        <div className="flex flex-row mx-auto w-full">
+        <div className="flex flex-row mx-auto">
           <div className="flex flex-col mx-[110px] lg:mx-[120px]">
             <div className="flex flex-row justify-between">
               <Image

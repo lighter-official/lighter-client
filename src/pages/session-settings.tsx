@@ -1,4 +1,3 @@
-// Settings.tsx
 "use client";
 import "./globals.css";
 import { postSetUp } from "@/api/api";

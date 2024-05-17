@@ -69,7 +69,7 @@ export default function UnfinishedBook() {
           <div className="flex mt-[20px] justify-between flex-row my-[30px]">
             <div className="bg-black rounded-sm  flex flex-col w-[400px] h-[471px]">
               <div className="flex flex-col mx-[20px]">
-                <div className="text-white mt-[34px] w-full h-[51px] text-[36px]">
+                <div className="text-white mt-[34px] w-full h-[51px] text-[32px]">
                   나의 보관함
                 </div>
                 <div className="flex flex-col gap-y-[26px] mt-[24px]">
@@ -97,25 +97,22 @@ export default function UnfinishedBook() {
                   <div
                     className="flex text-[20px] cursor-pointer"
                     style={{ color: "#CEB292" }}
-                    onClick={() => router.push("/mypage/settings")}
+                    onClick={() => router.push("/mypage/change-settings")}
                   >
                     설정
                   </div>
                 </div>
               </div>
             </div>
-            <div
-              className="w-[1120px] rounded-sm border-black  bg-gray-800 opacity-25 border-1 flex flex-row max-h-[797px]"
-              style={{ backgroundColor: "#E0D5BF", border: "1px solid black" }}
-            >
-              <div className="w-full  my-[30px] ml-[53px] ">
+            <div className="w-[1120px] rounded-sm flex flex-row max-h-[797px]">
+              <div className="w-full ml-2 ">
                 <div className="flex flex-row items-center ">
-                  <div className="w-[205px] text-black mt-[8px] text-[36px] font-bold">
+                  <div className="w-[205px] text-black mt-[8px] text-[32px] font-bold">
                     못다쓴 책 (1)
                   </div>
                 </div>
-                <div className="flex flex-col  max-h-[643px] overflow-y-auto mt-[21px] mb-[21px] ">
-                  <div className=" mt-[53px] flex flex-row gap-x-[46px]">
+                <div className="flex flex-col max-h-[643px] overflow-y-auto mt-[21px] mb-[21px] ">
+                  <div className=" mt-2 flex flex-row gap-x-[46px]">
                     <BookItem
                       imageUrl="https://gloo-image-bucket.s3.amazonaws.com/archive/book_yet.png"
                       title="영화 평론"
@@ -124,15 +121,6 @@ export default function UnfinishedBook() {
                   </div>
                 </div>
               </div>
-            </div>
-            <div style={{ position: "absolute", top: "50%", left: "55%" }}>
-              <Image
-                className="z-9999"
-                src="https://gloo-image-bucket.s3.amazonaws.com/archive/soon.png"
-                width={184}
-                height={53}
-                alt="soon"
-              />
             </div>
           </div>
         </div>

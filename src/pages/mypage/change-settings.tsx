@@ -1,13 +1,25 @@
 "use client";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../globals.css";
 import Image from "next/image";
 import { getCookie } from "..";
+import { getCurrentSessions, updateWritingSession } from "@/api/api";
+import Dropdown from "@/components/Dropdown";
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
+}
+
+// changedData 형식을 위한 interface 정의 추가
+
+interface WritingData {
+  subject: string;
+  period: number;
+  page: number;
+  startAt: { hour: number; minute: number | undefined };
+  writingHours: number;
 }
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
@@ -56,10 +68,41 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
   );
 };
 
-export default function Settings() {
+export default function ChangeSettings() {
   const router = useRouter();
   const accessToken = getCookie("access_token");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentSessionInfo, setCurrentSessionInfo] = useState<any>({});
+  const [writingTime, setWritingTime] = useState(
+    parseInt(currentSessionInfo?.data?.startAt?.hour) < 12 ? "AM" : "PM"
+  );
+  const [startAt, setStartAt] = useState<
+    [string, number | undefined, number | undefined]
+  >(["", undefined, undefined]);
+  const [writingHours, setWritingHours] = useState(0);
+
+  const [changedData, setChangedData] = useState<WritingData>({
+    //현재 임시로 초기화한 상태
+    subject: "",
+    period: 0,
+    page: 0,
+    startAt: { hour: 0, minute: 0 },
+    writingHours: 0,
+  });
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const currentSessionInfo = await getCurrentSessions(accessToken);
+        console.log("현재 글쓰기 데이터 정보: ", currentSessionInfo);
+        setCurrentSessionInfo(currentSessionInfo);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -69,12 +112,24 @@ export default function Settings() {
     setIsModalOpen(false);
   };
 
+  const changeSessionSettings = async () => {
+    try {
+      const changeOptions = await updateWritingSession(
+        currentSessionInfo?.data?.id,
+        changedData,
+        accessToken
+      );
+      console.log("바꿀 설정 정보: ", changeOptions);
+    } catch (error) {
+      console.error("Error - change session setting :", error);
+    }
+  };
+
   return (
     <div className="flex flex-col my-[50px] w-full">
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
       <div className="flex flex-row mx-auto w-full">
         <div className="flex flex-col w-full mx-[120px]">
-          {/* <Redirection /> */}
           <div className="flex flex-row justify-between">
             <Image
               className="lg:mb-[20px] mb-0 w-[74px] lg:w-[105px] h-[24px] lg:h-[35px]"
@@ -148,7 +203,7 @@ export default function Settings() {
                   <div
                     className="flex text-[20px] font-bold cursor-pointer"
                     style={{ color: "#CEB292" }}
-                    onClick={() => router.push("/mypage/settings")}
+                    onClick={() => router.push("/mypage/change-settings")}
                   >
                     설정
                   </div>
@@ -156,7 +211,7 @@ export default function Settings() {
               </div>
             </div>
             <div
-              className="w-[1120px]  bg-gray-800 opacity-20 rounded-sm border-black  border-1 flex flex-row h-[759px]"
+              className="w-[1120px]  bg-gray-800 rounded-sm border-black  border-1 flex flex-row h-[759px]"
               style={{ backgroundColor: "#E0D5BF", border: "1px solid black" }}
             >
               <div className="w-full  my-[30px] ml-[53px] ">
@@ -174,52 +229,94 @@ export default function Settings() {
                 >
                   *주 최대 2회 변경 가능합니다. 0/2
                 </div>
-                <div className="w-[130px] flex flex-row gap-x-[4px]">
+                <div className="w-[250px] mt-[10px] flex flex-row gap-x-[4px]">
                   <button
-                    className="rounded-md mx-auto mt-[30px] w-[64px] h-[30px] bg-white"
+                    className={`w-[80px] h-[30px] border-1 rounded-md ${
+                      writingTime === "AM" ? "bg-black text-white" : " bg-white"
+                    }`}
                     style={{ border: "1px solid gray" }}
+                    onClick={() => setWritingTime("AM")}
                   >
                     AM
                   </button>
-                  <button className="rounded-md mx-auto mt-[30px] w-[64px] h-[30px] bg-black text-white">
+                  <button
+                    className={`w-[80px] h-[30px] border-1 rounded-md ${
+                      writingTime === "PM" ? "bg-black text-white" : " bg-white"
+                    }`}
+                    style={{ border: "1px solid gray" }}
+                    onClick={() => setWritingTime("PM")}
+                  >
                     PM
                   </button>
                 </div>
-                <div className="w-full mt-[30px] items-center flex flex-row gap-x-[13px]">
-                  <button
-                    className="rounded-md  w-[93px] h-[45px] bg-white"
-                    style={{ border: "1px solid gray" }}
-                  >
-                    9시
-                  </button>
-                  <button
-                    className="rounded-md w-[148px] h-[45px] bg-white"
-                    style={{ border: "1px solid gray" }}
-                  >
-                    00분
-                  </button>
-                  <a className="my-auto">부터</a>
-                  <button
-                    className="rounded-md w-[105px] h-[45px] bg-white"
-                    style={{ border: "1px solid gray" }}
-                  >
-                    1시간
-                  </button>
-                  <a className="my-auto">동안</a>
+                <div className="flex flex-col mt-[20px] lg:flex-row gap-y-4 lg:gap-x-4">
+                  <div className="flex flex-row gap-x-[20px]">
+                    <Dropdown
+                      items={[
+                        { name: "1시", value: 1 },
+                        { name: "2시", value: 2 },
+                        { name: "3시", value: 3 },
+                        { name: "4시", value: 4 },
+                        { name: "5시", value: 5 },
+                        { name: "6시", value: 6 },
+                        { name: "7시", value: 7 },
+                        { name: "8시", value: 8 },
+                        { name: "9시", value: 9 },
+                        { name: "10시", value: 10 },
+                        { name: "11시", value: 11 },
+                        { name: "12시", value: 12 },
+                      ]}
+                      onSelect={(selectedHour) => {
+                        setStartAt([
+                          startAt[0],
+                          selectedHour.value,
+                          startAt[2],
+                        ]);
+                      }}
+                    />
+
+                    <Dropdown
+                      items={[
+                        { name: "00분", value: 0 },
+                        { name: "15분", value: 15 },
+                        { name: "30분", value: 30 },
+                        { name: "45분", value: 45 },
+                      ]}
+                      onSelect={(selectedMinute) => {
+                        setStartAt([
+                          startAt[0],
+                          startAt[1],
+                          selectedMinute.value,
+                        ]);
+                      }}
+                    />
+                    <a className="my-auto">부터</a>
+                  </div>
+                  <div className="flex flex-row gap-x-4">
+                    <button className="w-[82px] h-[40px] border-1 border-black rounded-md bg-white">
+                      <Dropdown
+                        items={[
+                          { name: "1시간", value: 1 },
+                          { name: "2시간", value: 2 },
+                          { name: "3시간", value: 3 },
+                          { name: "4시간", value: 4 },
+                          { name: "5시간", value: 5 },
+                        ]}
+                        onSelect={(selectedForHours) => {
+                          setWritingHours(selectedForHours.value);
+                        }}
+                      />
+                    </button>
+                    <a className="ml-[20px] my-auto">동안</a>
+                  </div>
                 </div>
-                <button className="rounded-md mx-auto mt-[30px] w-[148px] h-[45px] bg-black text-white">
+                <button
+                  className="rounded-md mx-auto mt-[30px] w-[148px] h-[45px] bg-black text-white"
+                  onClick={changeSessionSettings}
+                >
                   변경하기
                 </button>
               </div>
-            </div>
-            <div style={{ position: "absolute", top: "50%", left: "55%" }}>
-              <Image
-                className="z-9999"
-                src="https://gloo-image-bucket.s3.amazonaws.com/archive/soon.png"
-                width={184}
-                height={53}
-                alt="soon"
-              />
             </div>
           </div>
         </div>

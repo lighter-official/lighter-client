@@ -1,6 +1,7 @@
 import axios from "axios";
 import { ResponseCookies } from "next/dist/compiled/@edge-runtime/cookies";
 import { GetUserInfoResponse } from "./api.response";
+import { WritingSessionStartAt } from "@/schemas/WritingSession.schema";
 
 interface WritingData {
   subject: string;
@@ -198,6 +199,26 @@ export const putWriting = async (
 ) => {
   try {
     const response = await axios.put(`${apiUrl}/writings/${id}`, data, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    console.log(response.data, "수정된 데이터 -----------");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    throw error;
+  }
+};
+
+// 각 글 수정하는 API
+export const updateWritingSession = async (
+  id: string,
+  data: WritingData,
+  accessToken: string
+) => {
+  try {
+    const response = await axios.put(`${apiUrl}/writing-session/${id}`, data, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },

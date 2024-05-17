@@ -505,6 +505,7 @@ export default function Writer() {
   const [textColor, setTextColor] = useState<boolean>(false);
   const [remainingSecond, setRemainingSecond] = useState<number>();
   const [intervalId, setIntervalId] = useState<number | null>(null);
+  const [writingId, setWritingId] = useState<number | null>(null);
   const [currentWritingsData, setCurrentWritingsData] = useState<WritingData>(
     {}
   );
@@ -521,6 +522,7 @@ export default function Writer() {
         const currentWritings = await getCurrentSessions(accessToken);
         console.log("현재 글쓰기 데이터 정보: ", currentWritings);
         setCurrentWritingsData(currentWritings);
+        console.log(currentWritingsData, "data 있는지?");
 
         if (isFirst == true) {
           setIsFirstModalOpen(true);
@@ -680,8 +682,12 @@ export default function Writer() {
 
   const handleOpenWriterModal = async () => {
     try {
-      await startWriting(currentWritingsData?.data?.id, accessToken);
-      console.log(currentWritingsData, "시작 ???");
+      const response = await startWriting(
+        currentWritingsData?.data?.id,
+        accessToken
+      );
+      console.log(response, "시작 ???");
+      setWritingId(response?.data?.writing?.id);
     } catch (error) {
       console.error("Error start writing:", error);
     }
@@ -813,7 +819,7 @@ export default function Writer() {
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
       <div className="flex flex-row mx-auto w-full">
         <div className="flex flex-col w-full mx-[120px]">
-          <div className="flex flex-row justify-between">
+          <div className="flex flex-row justify-between max-w-[682px] lg:w-full">
             <Image
               className="cursor-pointer lg:mb-[20px] mb-0 w-[74px] lg:w-[105px] h-[24px] lg:h-[35px]"
               src="https://gloo-image-bucket.s3.amazonaws.com/archive/logo.svg"
@@ -860,8 +866,8 @@ export default function Writer() {
             className="lg:block hidden w-full bg-[#7C766C] h-[1px] my-[17px]"
             style={{ color: "#7C766C", borderColor: "#7C766C" }}
           />
-          <div className="flex mt-[20px] justify-between lg:flex-row flex-col my-[30px]">
-            <div className="bg-black rounded-sm flex flex-row lg:flex-col lg:w-[400px] mb-[20px] lg:mb-0 w-[682px] lg:h-[600px] h-[272px]">
+          <div className="w-full flex mt-[20px] justify-between lg:flex-row flex-col">
+            <div className="w-full bg-black rounded-sm flex flex-row lg:flex-col lg:max-w-[400px] mb-[20px] lg:mb-0 max-w-[682px] lg:h-[600px] h-[272px]">
               <div className="flex flex-col mx-[20px]">
                 <div className="text-white mt-[34px] w-full h-[120px] text-[36px]">
                   <a>{userInfo?.data?.nickname}</a>님의
@@ -942,26 +948,26 @@ export default function Writer() {
               </div>
             </div>
             <div
-              className="w-[682px] lg:w-[1120px] rounded-sm flex flex-row h-[550px] lg:h-[817px]"
+              className="w-[682px] h-[550px] lg:h-[817px] lg:w-full rounded-sm flex flex-row px-2 py-2 lg:px-5 lg:py-5 lg:ml-10"
               style={{ border: "1px solid black", backgroundColor: "#E0D5BF" }}
             >
-              <div className="w-full  my-[30px] mx-[40px]">
-                <div className="bg-black text-white w-[60px] text-center">
+              <div className="w-full my-3 mx-3 sm:mx-5">
+                <div className="bg-black text-white w-12 text-center">
                   <a>{result}</a>
                 </div>
-                <div className="flex flex-row items-center justify-between w-full">
+                <div className="w-full flex flex-row items-center justify-between">
                   <div className="flex flex-col">
-                    <div className="w-full text-black mt-[8px]  text-[22px] lg:text-[36px]">
+                    <div className="text-black mt-2 text-3xl lg:text-4xl">
                       <a>{currentWritingsData?.data?.subject}</a>
                     </div>
                     <div
-                      className="w-[300px] text-[12px] lg:text-[16px]"
+                      className="text-sm lg:text-base"
                       style={{ color: "#706B61" }}
                     >
                       {formattedDateRange}
                     </div>
                   </div>
-                  <div className="w-[83px] h-[49px] text-[30px] lg:text-[36px] justify-end">
+                  <div className="flex items-center text-3xl lg:text-4xl justify-end">
                     <a className="text-black">
                       {currentWritingsData?.data?.writings.length}
                     </a>
@@ -977,7 +983,7 @@ export default function Writer() {
                 />
                 {currentWritingsData?.data?.writings.length === 0 && (
                   <div
-                    className="flex items-center justify-center text-center my-auto h-[300px] lg:h-[580px] text-[16px] lg:text-[20px]"
+                    className="flex items-center justify-center text-center my-4 lg:my-8 text-base lg:text-lg"
                     style={{ color: "#706B61" }}
                   >
                     나만의 기록으로 채워보아요!
@@ -985,7 +991,7 @@ export default function Writer() {
                 )}
                 {currentWritingsData?.data?.writings.length !== 0 && (
                   <div
-                    className="w-full h-[29px] flex items-center"
+                    className="w-full h-5 flex items-center"
                     style={{
                       backgroundColor: "#F2EBDD",
                       border: "1px solid black",
@@ -993,7 +999,7 @@ export default function Writer() {
                     }}
                   >
                     <div
-                      className="w-full mx-[5px] h-[17px]"
+                      className="w-full mx-1 h-3"
                       style={{
                         width: `${completion_percentage || 0}%`,
                         backgroundColor: "#FF8126",
@@ -1003,22 +1009,21 @@ export default function Writer() {
                   </div>
                 )}
                 {currentWritingsData?.data?.writings !== null && (
-                  <div className="flex flex-col max-h-[580px] mb-[21px] overflow-y-auto">
+                  <div className="flex flex-col max-h-full mb-5 overflow-y-auto">
                     {currentWritingsData?.data?.writings?.map(
                       (writing, index) => (
                         <div
                           key={index}
-                          className="flex cursor-pointer flex-row w-full h-[197px] mt-[22px] rounded-xl"
+                          className="flex cursor-pointer px-5 py-5 flex-row w-full h-52 mt-5 rounded-xl"
                           style={{ backgroundColor: "#F4EDE0" }}
                           onClick={() => handleEditClick(writing.id)}
                         >
-                          <div className="my-[30px] mx-[47px]">
-                            {/* <div className=' w-full text-[16px]' style={{ color: '#8A8170' }}>{writings?.createdAt + '년 '}{writing?.created_at[1] + '월 '}{writing?.created_at[2] + '일'} {writing.created_at[3]}요일</div> */}
-                            <div className="w-full h-[39px] text-[26px]">
+                          <div className="my-3 mx-3">
+                            <div className="w-full h-10 text-xl">
                               {writing?.title}
                             </div>
                             <div
-                              className="mt-[18px] max-w-[685px] truncate text-[16px]"
+                              className="mt-3 max-w-full truncate text-base"
                               style={{ color: "#C5BCAB" }}
                             >
                               {writing?.content}
@@ -1119,7 +1124,7 @@ export default function Writer() {
       <Modal
         isOpen={isWriterModalOpen}
         onClose={handleCloseWriterModal}
-        id={currentWritingsData?.data?.id}
+        id={writingId}
         writingData={currentWritingsData}
         mini={setIsMiniModalOpen}
         remainingTime={remainingTime}

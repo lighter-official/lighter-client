@@ -1,4 +1,3 @@
-// Settings.tsx
 "use client";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -176,7 +175,7 @@ export default function BadgeList() {
                   <div
                     className="flex text-[20px] cursor-pointer"
                     style={{ color: "#CEB292" }}
-                    onClick={() => router.push("/mypage/settings")}
+                    onClick={() => router.push("/mypage/change-settings")}
                   >
                     설정
                   </div>
