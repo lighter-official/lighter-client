@@ -204,6 +204,7 @@ export default function BadgeList() {
                   <div className=" mt-[20px] flex flex-row gap-x-[46px]">
                     {userInfo?.data?.userBadges?.map((item: BadgeItem) => (
                       <BadgeItem
+                        key={item?.id}
                         src={item?.badge?.imageUrl}
                         title={item?.badge?.name}
                         date={item?.createdAt}
