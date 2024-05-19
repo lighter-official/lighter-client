@@ -1,20 +1,6 @@
 import axios from "axios";
-import { ResponseCookies } from "next/dist/compiled/@edge-runtime/cookies";
 import { GetUserInfoResponse } from "./api.response";
-import { WritingSessionStartAt } from "@/schemas/WritingSession.schema";
-
-interface WritingData {
-  subject: string;
-  period: number;
-  page: number;
-  startAt: { hour: number; minute: number | undefined };
-  writingHours: number;
-}
-
-interface currentWritingData {
-  title: string;
-  content: string;
-}
+import { NewWritingData, EditOrSetData } from "../../interface";
 
 const apiUrl: string = process.env.API_URL || "https://core.gloo-lighter.com";
 
@@ -32,7 +18,7 @@ export const getLoginInfo = async (code: string) => {
 };
 
 // 글쓰기 설정하는 API
-export const postSetUp = async (data: WritingData, accessToken: string) => {
+export const postSetUp = async (data: EditOrSetData, accessToken: string) => {
   try {
     console.log(accessToken, "APIAPIAPI");
     const response = await axios.post(`${apiUrl}/writing-session`, data, {
@@ -129,7 +115,7 @@ export const startWriting = async (id: string, accessToken: string) => {
 export const temporarySaveWriting = async (
   writingId: string,
   accessToken: string,
-  data?: currentWritingData
+  data?: NewWritingData
 ) => {
   try {
     const response = await axios.put(
@@ -151,7 +137,7 @@ export const temporarySaveWriting = async (
 
 // 최종적으로 글 POST하는 API
 export const submitWriting = async (
-  data: currentWritingData,
+  data: NewWritingData,
   writingId: string,
   accessToken: string
 ) => {
@@ -194,7 +180,7 @@ export const getWritingInfo = async (id: string, accessToken: string) => {
 // 각 글 수정하는 API
 export const putWriting = async (
   id: string,
-  data: currentWritingData,
+  data: NewWritingData,
   accessToken: string
 ) => {
   try {
@@ -214,7 +200,7 @@ export const putWriting = async (
 // 각 글 수정하는 API
 export const updateWritingSession = async (
   id: string,
-  data: WritingData,
+  data: EditOrSetData,
   accessToken: string
 ) => {
   try {

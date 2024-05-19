@@ -193,24 +193,37 @@ export default function BadgeList() {
                   </div>
                 </div>
                 <div className="flex flex-col h-[759px] overflow-y-auto mt-[21px] mb-[21px] ">
-                  <div
-                    className="flex text-center items-center jusify-center text-[18px] bg-black w-[80px] h-[40px]"
-                    style={{ color: "#D5C8AE" }}
-                  >
-                    <a className="flex items-center justify-center mx-auto">
-                      나비
-                    </a>
-                  </div>
-                  <div className=" mt-[20px] flex flex-row gap-x-[46px]">
-                    {userInfo?.data?.userBadges?.map((item: BadgeItem) => (
-                      <BadgeItem
-                        key={item?.id}
-                        src={item?.badge?.imageUrl}
-                        title={item?.badge?.name}
-                        date={item?.createdAt}
-                      />
-                    ))}
-                  </div>
+                  {userInfo?.data?.userBadges.length === 0 && (
+                    <div
+                      className="flex t text-[18px] w-[250px] h-[40px] font-bold"
+                      style={{ color: "#D5C8AE" }}
+                    >
+                      아직 받은 뱃지가 없어요.
+                    </div>
+                  )}
+                  {userInfo?.data?.userBadges.length > 1 && (
+                    <div>
+                      <div
+                        className="flex text-center items-center jusify-center text-[18px] bg-black w-[80px] h-[40px]"
+                        style={{ color: "#D5C8AE" }}
+                      >
+                        <a className="flex items-center justify-center mx-auto">
+                          나비
+                        </a>
+                      </div>
+
+                      <div className=" mt-[20px] flex flex-row gap-x-[46px]">
+                        {userInfo?.data?.userBadges?.map((item: BadgeItem) => (
+                          <BadgeItem
+                            key={item?.id}
+                            src={item?.badge?.imageUrl}
+                            title={item?.badge?.name}
+                            date={item?.createdAt}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

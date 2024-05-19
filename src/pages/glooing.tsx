@@ -16,73 +16,14 @@ import { Redirection, getCookie } from ".";
 import "./globals.css";
 import { day } from "@/lib/dayjs";
 import Image from "next/image";
+import {
+  ModalProps,
+  WritingData,
+  UserInfo,
+  PostingInfo,
+} from "../../interface";
 
-interface WritingData {
-  code: string;
-  data: {
-    createdAt: string;
-    finishDate: string;
-    id: number;
-    isActivated: boolean;
-    modifyingCount: number;
-    nearestFinishDate: string;
-    nearestStartDate: string;
-    page: number;
-    period: number;
-    progressPercentage: number;
-    progressStep: number;
-    startAt: { hour: number; minute: number };
-    startDate: string;
-    status: string;
-    subject: string;
-    updatedAt: string;
-    userId: string;
-    writingHours: number;
-    writings: any[]; // writings 데이터 형식이 제공되지 않아서 임시로 any[] 사용
-  };
-  statusCode: number;
-  success: boolean;
-}
-
-interface Badge {
-  badgeId: number;
-  createdAt: string;
-  id: number;
-  userId: string;
-}
-
-interface UserInfo {
-  code: string;
-  data: {
-    createdAt: string;
-    encryptedPassword: string | null;
-    id: string;
-    nickname: string;
-    providerType: string;
-    updatedAt: string;
-    userBadges: Badge[];
-    writingSessions: WritingData[];
-  };
-  statusCode: number;
-  success: boolean;
-}
-
-type MiniFunctionType = (value: boolean) => void;
-type RemainingTimeType = string | number;
-
-interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  id?: string;
-  writingData: WritingData;
-  remainingTime?: RemainingTimeType;
-  textColor?: boolean;
-  mini?: MiniFunctionType;
-  remainingSecond?: RemainingTimeType;
-  remainingTime2?: RemainingTimeType;
-}
-
-// 새로 등록하는 모달로 사용
+// 새로 등록하는 모달
 const Modal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
@@ -93,6 +34,8 @@ const Modal: React.FC<ModalProps> = ({
   id,
   remainingSecond,
   remainingTime2,
+  postedWriting,
+  setPostedWriting,
 }) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -147,18 +90,20 @@ const Modal: React.FC<ModalProps> = ({
     try {
       const response = await submitWriting(writingData, id, accessToken);
       console.log(response, "정상 제출?");
+      console.log(postedWriting.data, "posted?");
+      setPostedWriting(response.data);
 
       const currentURL = window.location.href;
       const newURL = `${currentURL}?access_token=${accessToken}`;
       window.history.replaceState({}, document.title, newURL);
-      // mini(true);
+
+      mini(true);
     } catch (error) {
       console.error("Error saving writing:", error);
     }
 
     onClose();
     setIsConfirmationModalOpen(false);
-    // mini(false)
   };
 
   if (!isOpen) return null;
@@ -487,7 +432,6 @@ const EditModal: React.FC<ModalProps> = ({
 };
 
 export default function Writer() {
-  // 미니 모달이 오픈됨과 동시에 타이머 바꾸기
   const router = useRouter();
   const [isWriterModalOpen, setIsWriterModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -511,15 +455,17 @@ export default function Writer() {
   const [isEndTime, setIsEndTime] = useState(false);
   const isFirst = router.query.isFirst === "true";
   const [showBadge, setShowBadge] = useState(false);
+  const [postedWriting, setPostedWriting] = useState<PostingInfo>({});
+  const badgeCount = postedWriting?.newBadges?.length || 0;
 
   useEffect(() => {
-    const badgeCount = userInfo?.data?.userBadges.length || 0;
     if (badgeCount > 0) {
       setShowBadge(true);
+      console.log(showBadge, "true?");
     } else {
       setShowBadge(false);
     }
-  }, [userInfo?.data?.userBadges.length]);
+  }, [postedWriting?.newBadges?.length]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -665,7 +611,6 @@ export default function Writer() {
       );
       console.log(response, "시작 ???");
       setWritingId(response?.data?.writing?.id);
-      setIsSubmissionSuccessful(true);
     } catch (error) {
       console.error("Error start writing:", error);
     }
@@ -690,6 +635,7 @@ export default function Writer() {
       console.error("Error redirecting after closing writer modal:", error);
     }
     setIsWriterModalOpen(false);
+    if (isMiniModalOpen == true) setIsSubmissionSuccessful(true);
   };
   //여기까지 수정한 거 동작 확인 필요 !
 
@@ -1059,7 +1005,7 @@ export default function Writer() {
                     <div className="w-[140px] h-[148px] mb-[18px]">
                       <Image
                         src={
-                          userInfo?.data?.userBadges[badgeCount - 1]?.badge
+                          postedWriting?.newBadges[badgeCount - 1]?.badge
                             ?.imageUrl
                         }
                         width={152}
@@ -1092,6 +1038,8 @@ export default function Writer() {
         textColor={textColor}
         remainingSecond={remainingSecond}
         remainingTime2={remainingTime2}
+        postedWriting={postedWriting}
+        setPostedWriting={setPostedWriting}
       />
       <EditModal
         isOpen={isEditModalOpen}
