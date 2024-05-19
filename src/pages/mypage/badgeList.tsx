@@ -6,6 +6,7 @@ import { getGlooingInfo, getUserInfo } from "@/api/api";
 import "../globals.css";
 import Image from "next/image";
 import BadgeItem from "../../components/BadgeItem";
+import { BadgeItemProps } from "../../../interface";
 
 interface BadgeItem {
   badge: {
@@ -136,10 +137,10 @@ export default function BadgeList() {
                 나의 보관함
               </a>
               <a className="cursor-pointer" onClick={() => setLoggedIn(false)}>
-                <Redirection
+                {/* <Redirection
                   isLoggedIn={isLoggedIn}
                   setLoggedIn={setLoggedIn}
-                />
+                /> */}
               </a>
             </div>
           </div>
@@ -201,7 +202,7 @@ export default function BadgeList() {
                       아직 받은 뱃지가 없어요.
                     </div>
                   )}
-                  {userInfo?.data?.userBadges.length > 1 && (
+                  {userInfo?.data?.userBadges.length > 0 && (
                     <div>
                       <div
                         className="flex text-center items-center jusify-center text-[18px] bg-black w-[80px] h-[40px]"
@@ -213,14 +214,15 @@ export default function BadgeList() {
                       </div>
 
                       <div className=" mt-[20px] flex flex-row gap-x-[46px]">
-                        {userInfo?.data?.userBadges?.map((item: BadgeItem) => (
-                          <BadgeItem
-                            key={item?.id}
-                            src={item?.badge?.imageUrl}
-                            title={item?.badge?.name}
-                            date={item?.createdAt}
-                          />
-                        ))}
+                        {userInfo?.data?.userBadges?.map(
+                          (item: BadgeItemProps) => (
+                            <BadgeItem
+                              key={item.id}
+                              badge={item.badge}
+                              createdAt={item.createdAt}
+                            />
+                          )
+                        )}
                       </div>
                     </div>
                   )}

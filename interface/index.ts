@@ -32,6 +32,20 @@ export interface Badge {
   userId: string;
 }
 
+export interface BadgeItemProps {
+  badge: {
+    condition: string;
+    description: string;
+    id: number;
+    imageUrl: string;
+    name: string;
+  };
+  badgeId: number;
+  createdAt: string;
+  id: string;
+  userId: string;
+}
+
 export interface UserInfo {
   code: string;
   data: {
