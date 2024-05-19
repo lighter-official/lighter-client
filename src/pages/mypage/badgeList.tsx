@@ -220,6 +220,9 @@ export default function BadgeList() {
                               key={item.id}
                               badge={item.badge}
                               createdAt={item.createdAt}
+                              badgeId={item.badgeId}
+                              id={item.id}
+                              userId={item.userId}
                             />
                           )
                         )}

@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { BadgeItemProps } from "../../interface";
+import { formatDate } from "../../public/utils/utils";
 
 export const BadgeItem: React.FC<BadgeItemProps> = ({ badge, createdAt }) => {
   return (
@@ -19,7 +20,7 @@ export const BadgeItem: React.FC<BadgeItemProps> = ({ badge, createdAt }) => {
       </div>
       <div className="mt-[10px] text-[36px]">{badge.name}</div>
       <div className="mt-[10px] text-[16px]" style={{ color: "#8A8170" }}>
-        {createdAt}
+        {formatDate(createdAt)}
       </div>
     </div>
   );

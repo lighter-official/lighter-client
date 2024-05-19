@@ -22,6 +22,7 @@ import {
   UserInfo,
   PostingInfo,
 } from "../../interface";
+import { formatDate } from "../../public/utils/utils";
 
 // 새로 등록하는 모달
 const Modal: React.FC<ModalProps> = ({
@@ -697,14 +698,6 @@ export default function Writer() {
       });
     }
   }, [userInfo]);
-
-  function formatDate(dateString) {
-    const dateObject = new Date(dateString);
-    const year = dateObject.getFullYear();
-    const month = (dateObject.getMonth() + 1).toString().padStart(2, "0"); // 월은 0부터 시작하므로 +1, 두 자리로 맞춤
-    const day = dateObject.getDate().toString().padStart(2, "0"); // 두 자리 맞춤
-    return `${year}년 ${month}월 ${day}일`;
-  }
 
   const startDateString = currentWritingsData?.data?.startDate;
   const finishDateString = currentWritingsData?.data?.finishDate;
