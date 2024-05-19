@@ -339,7 +339,6 @@ const EditModal: React.FC<ModalProps> = ({
     onClose();
     setIsConfirmationModal2Open(false);
   };
-
   if (!isOpen) return null;
 
   return (
@@ -350,7 +349,9 @@ const EditModal: React.FC<ModalProps> = ({
       ></div>
       <div className="relative flex flex-col bg-white w-[800px] h-[550px] rounded-lg z-50">
         <div className="p-8">
-          <div className="text-[16px]">{writingData?.idx + "번째 글"}</div>
+          <div className="text-[16px]">
+            {writingData?.data?.step + "번째 글"}
+          </div>
           <div
             className="mb-[10px] font-bold text-[22px]"
             style={{ color: "#646464" }}
@@ -360,7 +361,7 @@ const EditModal: React.FC<ModalProps> = ({
           <textarea
             className="text-[40px] w-full mb-[10px] h-[50px]"
             placeholder="제목을 입력해주세요."
-            value={title || writingData?.title}
+            value={title || writingData?.data?.title}
             onChange={handleTitleChange}
           />
 
@@ -371,7 +372,7 @@ const EditModal: React.FC<ModalProps> = ({
           <textarea
             className="mt-[20px] w-full h-[220px] overflow-y-auto"
             placeholder="내용을 입력해주세요."
-            value={content || writingData?.content}
+            value={content || writingData?.data?.content}
             onChange={(e) => {
               const inputValue = e.target.value;
               // 최대 입력 글자수 - 4000자로 제한
@@ -473,12 +474,11 @@ export default function Writer() {
       try {
         const userData = await getUserInfo(accessToken);
         setUserInfo(userData);
-        console.log("유저 데이터 정보: ", userData);
+        console.log("유저 데이터: ", userData);
 
         const currentWritings = await getCurrentSessions(accessToken);
         console.log("현재 글쓰기 데이터 정보: ", currentWritings);
         setCurrentWritingsData(currentWritings);
-        console.log(currentWritingsData, "currentWritingsData--------?");
 
         if (isFirst == true) {
           setIsFirstModalOpen(true);

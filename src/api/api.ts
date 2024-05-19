@@ -63,7 +63,6 @@ export const getUserInfo = async (accessToken: string) => {
       `${apiUrl}/account/users/me`,
       config
     );
-    console.log("유저 정보----", response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -83,7 +82,6 @@ export const getCurrentSessions = async (accessToken: string) => {
       `${apiUrl}/writing-session/on-process`,
       config
     );
-    console.log("진행중인 세션 정보? ", response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching data:", error);
