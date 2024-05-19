@@ -40,7 +40,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
             placeholder="제목을 입력해주세요."
           />
           <hr
-            className="w-full bg-[#7C766C] h-[1px] my-[17px]"
+            className="w-full bg-[#7C766C] h-[1px] lg:my-0 my-[17px]"
             style={{ color: "#7C766C", borderColor: "#7C766C" }}
           />
           <textarea
@@ -168,7 +168,7 @@ export default function ChangeSettings() {
             </div>
           </div>
           <hr
-            className="w-full bg-[#7C766C] h-[1px] my-[17px]"
+            className="w-full bg-[#7C766C] h-[1px] lg:my-0 sm:my-[17px]"
             style={{ color: "#7C766C", borderColor: "#7C766C" }}
           />
           <div className="flex mt-[20px] justify-between flex-row my-[30px]">
@@ -210,28 +210,25 @@ export default function ChangeSettings() {
                 </div>
               </div>
             </div>
-            <div
-              className="w-[1120px]  bg-gray-800 rounded-sm border-black  border-1 flex flex-row h-[759px]"
-              style={{ backgroundColor: "#E0D5BF", border: "1px solid black" }}
-            >
-              <div className="w-full  my-[30px] ml-[53px] ">
+            <div className="w-[1120px] rounded-sm  flex flex-row h-[759px]">
+              <div className="w-full ml-2 ">
                 <div className="flex flex-row items-center ">
-                  <div className="w-[205px] text-black mt-[8px] text-[36px] font-bold">
+                  <div className="w-[205px] text-black mt-[8px] text-[32px] font-bold">
                     설정
                   </div>
                 </div>
                 <div className="flex text-[20px] cursor-pointer mt-[20px]">
-                  글쓰기 시간 변경
+                  글쓰기 시간을 변경할 수 있어요. (0/2)
                 </div>
                 <div
                   className="flex text-[14px] cursor-pointer mt-[8px]"
                   style={{ color: "#918A7C" }}
                 >
-                  *주 최대 2회 변경 가능합니다. 0/2
+                  *주 최대 2회 변경 가능합니다. <br />
                 </div>
-                <div className="w-[250px] mt-[10px] flex flex-row gap-x-[4px]">
+                <div className="w-[250px] mt-[30px] flex flex-row gap-x-[14px]">
                   <button
-                    className={`w-[80px] h-[30px] border-1 rounded-md ${
+                    className={`w-[60px] h-[30px] border-1 rounded-md ${
                       writingTime === "AM" ? "bg-black text-white" : " bg-white"
                     }`}
                     style={{ border: "1px solid gray" }}
@@ -240,7 +237,7 @@ export default function ChangeSettings() {
                     AM
                   </button>
                   <button
-                    className={`w-[80px] h-[30px] border-1 rounded-md ${
+                    className={`w-[60px] h-[30px] border-1 rounded-md ${
                       writingTime === "PM" ? "bg-black text-white" : " bg-white"
                     }`}
                     style={{ border: "1px solid gray" }}
@@ -311,7 +308,7 @@ export default function ChangeSettings() {
                   </div>
                 </div>
                 <button
-                  className="rounded-md mx-auto mt-[30px] w-[148px] h-[45px] bg-black text-white"
+                  className="rounded-md mx-auto mt-[20px] w-[115px] h-[30px] text-[15px] bg-black text-white"
                   onClick={changeSessionSettings}
                 >
                   변경하기

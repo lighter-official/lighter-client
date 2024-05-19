@@ -982,7 +982,7 @@ export default function Writer() {
                 className="absolute w-full h-full bg-gray-800 opacity-50"
                 onClick={handleCloseMiniModal}
               ></div>
-              <div className="flex flex-col bg-white w-[264px] max-w-[328px] min-h-[171px] max-h-[360px] text-center justify-center items-center rounded-lg z-50">
+              <div className="my-4 flex flex-col bg-white w-[264px] max-w-[328px] min-h-[171px] max-h-[360px] text-center justify-center items-center rounded-lg z-50">
                 <div className="text-center items-center flex flex-col">
                   <div className="text-[15px] font-bold mb-[2px]">
                     {currentWritingsData?.data?.writings.length + 1}번째
