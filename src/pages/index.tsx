@@ -13,8 +13,8 @@ import Script from "next/script";
 export const Redirection = ({ isLoggedIn, setLoggedIn }: any) => {
   const router = useRouter(); // 수정된 부분
   const REST_API_KEY = "042aae38695b074b539c155e83aa75a5";
-  // const REDIRECT_URI = 'https://lighter-client.vercel.app';
-  const REDIRECT_URI = "http://localhost:8000";
+  const REDIRECT_URI = "https://lighter-client.vercel.app";
+  // const REDIRECT_URI = "http://localhost:8000";
   const link = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
 
   const [accessToken, setAccessToken] = useState<string | null>(null);
@@ -120,8 +120,8 @@ export default function Home() {
   const [nickname, setNickname] = useState<string | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>("");
   const APP_KEY = "67511eea297fb0f856f791b369c67355";
-  // const REDIRECT_URI = "https://lighter-client.vercel.app";
-  const REDIRECT_URI = "http://localhost:8000";
+  const REDIRECT_URI = "https://lighter-client.vercel.app";
+  // const REDIRECT_URI = "http://localhost:8000";
   const link = `https://kauth.kakao.com/oauth/authorize?client_id=${APP_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
 
   const initKakao = () => {

@@ -89,7 +89,6 @@ export default function BadgeList() {
       try {
         const userData = await getUserInfo(accessToken);
         setUserInfo(userData);
-        console.log(userInfo, "userInfo-------------------");
 
         setLoggedIn(true);
       } catch (error) {

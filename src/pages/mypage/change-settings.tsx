@@ -4,22 +4,13 @@ import React, { useEffect, useState } from "react";
 import "../globals.css";
 import Image from "next/image";
 import { getCookie } from "..";
-import { getCurrentSessions, updateWritingSession } from "@/api/api";
+import { getCurrentSessions, editWritingSetUp } from "@/api/api";
 import Dropdown from "@/components/Dropdown";
+import { SettingData } from "../../../interface";
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-}
-
-// changedData 형식을 위한 interface 정의 추가
-
-interface WritingData {
-  subject: string;
-  period: number;
-  page: number;
-  startAt: { hour: number; minute: number | undefined };
-  writingHours: number;
 }
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
@@ -76,17 +67,13 @@ export default function ChangeSettings() {
   const [writingTime, setWritingTime] = useState(
     parseInt(currentSessionInfo?.data?.startAt?.hour) < 12 ? "AM" : "PM"
   );
-  const [startAt, setStartAt] = useState<
-    [string, number | undefined, number | undefined]
-  >(["", undefined, undefined]);
-  const [writingHours, setWritingHours] = useState(0);
-
-  const [changedData, setChangedData] = useState<WritingData>({
-    //현재 임시로 초기화한 상태
-    subject: "",
-    period: 0,
+  const [editCount, setEditCount] = useState(0);
+  const [changedData, setChangedData] = useState<SettingData>({
+    // 초기 상태 설정
     page: 0,
+    period: 0,
     startAt: { hour: 0, minute: 0 },
+    subject: "",
     writingHours: 0,
   });
 
@@ -96,6 +83,17 @@ export default function ChangeSettings() {
         const currentSessionInfo = await getCurrentSessions(accessToken);
         console.log("현재 글쓰기 데이터 정보: ", currentSessionInfo);
         setCurrentSessionInfo(currentSessionInfo);
+        setChangedData({
+          page: currentSessionInfo?.data?.page,
+          period: currentSessionInfo?.data?.period,
+          startAt: { hour: 0, minute: 0 },
+          subject: currentSessionInfo?.data?.subject,
+          writingHours: 0,
+        });
+
+        setWritingTime(
+          parseInt(currentSessionInfo?.data?.startAt?.hour) < 12 ? "AM" : "PM"
+        );
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
@@ -113,13 +111,15 @@ export default function ChangeSettings() {
   };
 
   const changeSessionSettings = async () => {
+    console.log("바꿀 설정 정보: ", changedData);
     try {
-      const changeOptions = await updateWritingSession(
+      const changeOptions = await editWritingSetUp(
         currentSessionInfo?.data?.id,
         changedData,
         accessToken
       );
-      console.log("바꿀 설정 정보: ", changeOptions);
+      console.log("변경 옵션:", changeOptions);
+      setEditCount(editCount + 1);
     } catch (error) {
       console.error("Error - change session setting :", error);
     }
@@ -264,11 +264,20 @@ export default function ChangeSettings() {
                         { name: "12시", value: 12 },
                       ]}
                       onSelect={(selectedHour) => {
-                        setStartAt([
-                          startAt[0],
-                          selectedHour.value,
-                          startAt[2],
-                        ]);
+                        const newHour =
+                          writingTime === "PM" && selectedHour.value !== 12
+                            ? selectedHour.value + 12
+                            : writingTime === "AM" && selectedHour.value === 12
+                            ? 0
+                            : selectedHour.value;
+
+                        setChangedData((prevData) => ({
+                          ...prevData,
+                          startAt: {
+                            ...prevData.startAt,
+                            hour: newHour,
+                          },
+                        }));
                       }}
                     />
 
@@ -280,11 +289,13 @@ export default function ChangeSettings() {
                         { name: "45분", value: 45 },
                       ]}
                       onSelect={(selectedMinute) => {
-                        setStartAt([
-                          startAt[0],
-                          startAt[1],
-                          selectedMinute.value,
-                        ]);
+                        setChangedData((prevData) => ({
+                          ...prevData,
+                          startAt: {
+                            ...prevData.startAt,
+                            minute: selectedMinute.value,
+                          },
+                        }));
                       }}
                     />
                     <a className="my-auto">부터</a>
@@ -300,7 +311,10 @@ export default function ChangeSettings() {
                           { name: "5시간", value: 5 },
                         ]}
                         onSelect={(selectedForHours) => {
-                          setWritingHours(selectedForHours.value);
+                          setChangedData((prevData) => ({
+                            ...prevData,
+                            writingHours: selectedForHours.value,
+                          }));
                         }}
                       />
                     </button>

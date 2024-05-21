@@ -196,7 +196,7 @@ export const putWriting = async (
 };
 
 // 각 글 수정하는 API
-export const updateWritingSession = async (
+export const editWritingSetUp = async (
   id: string,
   data: EditOrSetData,
   accessToken: string

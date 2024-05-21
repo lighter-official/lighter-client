@@ -25,6 +25,14 @@ export interface WritingData {
   success: boolean;
 }
 
+export interface SettingData {
+  subject: string;
+  period: number;
+  page: number;
+  startAt: { hour: number; minute: number | undefined };
+  writingHours: number;
+}
+
 export interface Badge {
   badgeId: number;
   createdAt: string;
