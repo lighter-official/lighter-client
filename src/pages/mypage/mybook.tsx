@@ -75,19 +75,24 @@ export default function MyBook() {
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
       <div className="flex flex-row mx-auto w-full">
         <div className="flex flex-col w-full mx-[120px]">
-          {/* <Redirection /> */}
-          <div className="flex flex-row justify-between">
+          <div className="flex flex-row justify-between sm:max-w-[682px] lg:max-w-none lg:w-full">
             <Image
-              className="lg:mb-[20px] mb-0 w-[74px] lg:w-[105px] h-[24px] lg:h-[35px]"
+              className="cursor-pointer lg:mb-[20px] mb-0 w-[74px] lg:w-[105px] h-[24px] lg:h-[35px]"
               src="https://gloo-image-bucket.s3.amazonaws.com/archive/logo.svg"
               width="105"
               height="35"
               alt="Logo"
             />
-            <div className="flex gap-x-[70px]">
+            <Image
+              className="lg:hidden block h-[18px] w-[18px]"
+              src="https://gloo-image-bucket.s3.amazonaws.com/archive/Group 57.png"
+              width={18}
+              height={18}
+              alt="menu"
+            />
+            <div className="hidden lg:block flex-row">
               <a
-                className="cursor-pointer"
-                style={{ color: "#A49E90" }}
+                className="lg:pr-10 cursor-pointer font-bold"
                 onClick={() =>
                   router.push({
                     pathname: "/glooing",
@@ -98,23 +103,27 @@ export default function MyBook() {
                 글루ING
               </a>
               <a
-                className="cursor-pointer font-bold"
-                style={{ color: "#191919" }}
-                onClick={() => router.push("/mypage/badgeList")}
+                className="lg:pr-10 cursor-pointer"
+                onClick={() =>
+                  router.push({
+                    pathname: "/mypage/badgeList",
+                    query: { access_token: accessToken },
+                  })
+                }
               >
                 나의 보관함
               </a>
               <a
                 className="cursor-pointer"
-                style={{ color: "#A49E90" }}
-                onClick={() => router.push("/")}
+                // onClick={handleLogIn}
               >
-                로그아웃
+                {/* {isLoggedIn === false ? "로그인" : "로그아웃"} */}
+                로그인
               </a>
             </div>
           </div>
           <hr
-            className="w-full bg-[#7C766C] h-[1px] lg:my-0 my-[17px]"
+            className="lg:block hidden w-full bg-[#7C766C] h-[1px] sm:my-[17px] lg:my-0"
             style={{ color: "#7C766C", borderColor: "#7C766C" }}
           />
           <div className="flex mt-[20px] justify-between flex-row my-[30px]">
@@ -155,11 +164,11 @@ export default function MyBook() {
                 </div>
               </div>
             </div>
-            <div className="w-[1120px] rounded-sm  border-1 flex flex-row max-h-[797px]">
+            <div className="w-[1120px] rounded-sm border-1 flex flex-row max-h-[797px]">
               <div className="w-full ml-2 ">
                 <div className="flex flex-row items-center ">
-                  <div className="w-full text-black mt-[8px] text-[32px] font-bold">
-                    내가 발행한 책 (2){" "}
+                  <div className="w-full text-black mt-[8px] lg:text-[32px] text-[25px] font-bold">
+                    내가 발행한 책
                   </div>
                 </div>
                 <div className="mt-2">

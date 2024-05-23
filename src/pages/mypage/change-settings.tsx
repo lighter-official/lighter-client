@@ -213,7 +213,7 @@ export default function ChangeSettings() {
             <div className="w-[1120px] rounded-sm  flex flex-row h-[759px]">
               <div className="w-full ml-2 ">
                 <div className="flex flex-row items-center ">
-                  <div className="w-[205px] text-black mt-[8px] text-[32px] font-bold">
+                  <div className="w-[205px] text-black mt-[8px] lg:text-[32px] text-[25px] font-bold">
                     설정
                   </div>
                 </div>

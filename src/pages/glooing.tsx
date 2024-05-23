@@ -213,54 +213,6 @@ const Modal: React.FC<ModalProps> = ({
   );
 };
 
-// const MiniModal: React.FC<ModalProps> = ({
-//   isOpen,
-//   onClose,
-//   data,
-//   id,
-//   writingData,
-//   mini,
-// }) => {
-//   const handleClose = () => {
-//     console.log("Closing MiniModal");
-//     mini(false);
-//     onClose();
-//   };
-
-//   return (
-//     <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
-//       <div
-//         className="absolute w-full h-full bg-gray-800 opacity-50"
-//         onClick={handleClose}
-//       ></div>
-//       <div className="flex flex-col bg-white w-[328px] h-[171px] text-center justify-center items-center rounded-lg z-50">
-//         <div className="text-center items-center flex flex-col">
-//           <div className="text-[15px] font-bold mb-[2px]">
-//             {data?.total_writing + 1}번째
-//           </div>
-//           <div className="text-[15px] mb-[6px]">글 등록을 완료했어요!</div>
-//           <div className="text-[13px] mb-[10px]" style={{ color: "#7F7F7F" }}>
-//             다음{" "}
-//             <a>
-//               {data?.setting?.start_time[0]}:{data?.setting?.start_time[1]}
-//             </a>
-//             시에 꼭 다시 만나요!
-//           </div>
-//           <div className="flex justify-center">
-//             <button
-//               className="w-[120px] text-[15px] font-bold cursor-pointer h-[40px] rounded-md"
-//               style={{ backgroundColor: "#FF5A26" }}
-//               onClick={handleClose}
-//             >
-//               확인
-//             </button>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
 // 수정용 모달로 사용
 const EditModal: React.FC<ModalProps> = ({
   isOpen,
@@ -321,11 +273,12 @@ const EditModal: React.FC<ModalProps> = ({
       title: title || writingData?.title || null,
       content: content || writingData?.content || null,
     };
+    console.log(editData, "??");
 
     try {
-      // 기존 글 수정
+      // 기존 글 수정 ff
       await putWriting(id, editData, accessToken);
-      console.log("글 수정 완료");
+      Alert(editData);
 
       // 페이지 새로 고침 없이 현재 URL에 토큰을 포함하여 다시 로드
       const currentURL = window.location.href;
@@ -718,7 +671,7 @@ export default function Writer() {
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
       <div className="flex flex-row mx-auto w-full">
         <div className="flex flex-col w-full mx-[120px]">
-          <div class="flex flex-row justify-between sm:max-w-[682px] lg:max-w-none lg:w-full">
+          <div className="flex flex-row justify-between sm:max-w-[682px] lg:max-w-none lg:w-full">
             <Image
               className="cursor-pointer lg:mb-[20px] mb-0 w-[74px] lg:w-[105px] h-[24px] lg:h-[35px]"
               src="https://gloo-image-bucket.s3.amazonaws.com/archive/logo.svg"
@@ -990,7 +943,9 @@ export default function Writer() {
                     다음{" "}
                     <a>
                       {currentWritingsData?.data?.startAt?.hour}:
-                      {currentWritingsData?.data?.startAt?.minute}
+                      {currentWritingsData?.data?.startAt?.minute === 0
+                        ? "00"
+                        : currentWritingsData?.data?.startAt?.minute}
                     </a>
                     에 꼭 다시 만나요!
                   </div>

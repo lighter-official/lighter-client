@@ -10,7 +10,7 @@ const BookItem: React.FC<BookItemProps> = ({ imageUrl, title, date }) => {
   return (
     <div>
       <div
-        className="w-[217px] h-[320px]"
+        className="w-[217px] h-[298px]"
         style={{ backgroundColor: "#D5C8AE", border: "1px solid gray" }}
       >
         <img className="z-50" src={imageUrl} alt={title} />

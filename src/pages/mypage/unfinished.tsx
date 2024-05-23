@@ -107,8 +107,8 @@ export default function UnfinishedBook() {
             <div className="w-[1120px] rounded-sm flex flex-row max-h-[797px]">
               <div className="w-full ml-2 ">
                 <div className="flex flex-row items-center ">
-                  <div className="w-[205px] text-black mt-[8px] text-[32px] font-bold">
-                    못다쓴 책 (1)
+                  <div className="w-[205px] text-black mt-[8px] lg:text-[32px] text-[25px] font-bold">
+                    못다쓴 책
                   </div>
                 </div>
                 <div className="flex flex-col max-h-[643px] overflow-y-auto mt-[21px] mb-[21px] ">

@@ -105,11 +105,19 @@ export default function Settings() {
                 타이머가 설정되어 설정한 시간에만 글을 쓸 수 있어요!
               </a>
             </div>
-            <div className="flex w-full font-bold items-center justify-center mt-[30px] text-[18px] lg:text-[22px] h-[60px]">
-              어떤 주제로 글을 써볼까요?
+            <div className="flex flex-col items-center justify-center  h-[70px] mt-[40px]">
+              <div className="flex w-full font-bold items-center justify-center text-[18px] lg:text-[22px]">
+                어떤 주제로 글을 써볼까요?
+              </div>
+              <div
+                className="text-[10px] lg:text-[12px] my-2"
+                style={{ color: "#FF8126" }}
+              >
+                *10자 이내로 작성해주세요.
+              </div>
             </div>
             <textarea
-              className="w-[466px] lg:w-[593px] rounded-md h-[48px] lg:h-[60px] mx-auto text-center flex items-center justify-center"
+              className="w-[466px] lg:w-[593px] rounded-md h-[48px] mx-auto text-center flex items-center justify-center"
               placeholder="ex. 뮤직 비디오, 리뷰, 영화, 맛집 탐방 기록"
               value={subject}
               style={{ lineHeight: "45px" }}
@@ -120,7 +128,7 @@ export default function Settings() {
                 }
               }}
             ></textarea>
-            <div className="flex w-full items-center font-bold justify-center mt-[29px] lg:mt-[60px] text-[18px] lg:text-[22px] h-[40px]">
+            <div className="flex w-full items-center font-bold justify-center mt-[50px] lg:mt-[60px] text-[18px] lg:text-[22px] h-[30px]">
               글쓰기 목표를 설정해보아요!
             </div>
             <div>
