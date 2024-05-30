@@ -59,10 +59,7 @@ export const getUserInfo = async (accessToken: string) => {
         Authorization: `Bearer ${accessToken}`,
       },
     };
-    const response = await axios.get<GetUserInfoResponse>(
-      `${apiUrl}/account/users/me`,
-      config
-    );
+    const response = await axios.get(`${apiUrl}/account/users/me`, config);
     return response.data;
   } catch (error) {
     console.error("Error fetching data:", error);

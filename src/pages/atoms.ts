@@ -2,6 +2,7 @@ import { getCurrentSessions, getUserInfo } from "@/api/api";
 import { atom } from "jotai";
 import { atomWithDefault } from "jotai/utils";
 import { getCookie } from ".";
+
 const accessToken = getCookie("access_token");
 
 export const loginAtom = atom({
@@ -10,12 +11,12 @@ export const loginAtom = atom({
   accessToken: null as string | null,
 });
 
-export const userInfoAtom = atomWithDefault(async (get) => {
+export const userInfoAtom = atom(async () => {
   const userData = await getUserInfo(accessToken);
   return userData;
 });
 
-export const writingDataAtom = atomWithDefault(async (get) => {
+export const writingDataAtom = atom(async () => {
   const currentWritings = await getCurrentSessions(accessToken);
   return currentWritings;
 });

@@ -89,7 +89,7 @@ export default function BadgeList() {
   };
 
   return (
-    <div className="flex flex-col my-[50px] w-full overflow-hidden">
+    <div className="flex flex-col my-[50px] w-full">
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
       <div className="flex flex-row mx-auto w-full">
         <div className="flex flex-col w-full mx-[120px] sm:max-w-[682px] lg:max-w-none">
@@ -140,7 +140,7 @@ export default function BadgeList() {
             className="lg:block hidden w-full bg-[#7C766C] h-[1px] sm:my-[17px] lg:my-0"
             style={{ color: "#7C766C", borderColor: "#7C766C" }}
           />
-          <div className="flex mt-[20px] justify-between  lg:flex-row flex-col my-[30px]">
+          <div className="flex mt-[20px] justify-between gap-x-[20px] lg:flex-row flex-col my-[30px]">
             <div className="lg:bg-black rounded-sm flex flex-col w-full lg:w-[400px] h-[130px] lg:h-[471px]">
               <div className="flex flex-col lg:mx-[20px]">
                 <div className="text-black lg:text-white lg:mt-[34px] mt-[20px] w-full lg:h-[51px] h-[40px] text-[25px] lg:text-[36px] font-bold lg:font-normal">
@@ -182,17 +182,17 @@ export default function BadgeList() {
                 </div>
               </div>
             </div>
-            <div className="w-[1120px] rounded-sm flex flex-row max-h-[797px]">
-              <div className="w-full lg:ml-2">
+            <div className="w-full max-w-[1120px] rounded-sm flex flex-row max-h-[797px]">
+              <div className="w-full lg:ml-2 ">
                 <div className="flex flex-row items-center ">
-                  <div className="w-full hidden lg:block text-black mt-[8px] lg:text-[32px] text-[25px] font-bold">
+                  <div className="hidden lg:block text-black mt-[8px] lg:text-[32px] text-[25px] font-bold">
                     나의 뱃지
                   </div>
                 </div>
                 <div className="flex flex-col h-[759px] overflow-y-auto mt-[21px] mb-[21px] ">
                   {userInfo?.data?.userBadges.length === 0 && (
                     <div
-                      className="flex t text-[18px] w-[250px] h-[40px] font-bold"
+                      className="flex text-[18px] w-[250px] h-[40px] font-bold"
                       style={{ color: "#D5C8AE" }}
                     >
                       아직 받은 뱃지가 없어요.

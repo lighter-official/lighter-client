@@ -3,6 +3,10 @@ import { useRouter } from "next/router";
 import { getCookie } from "..";
 import Image from "next/image";
 import { useSelector } from "react-redux";
+import { useAtom } from "jotai";
+import { loginAtom, userInfoAtom, writingDataAtom } from "../atoms";
+import { putWriting, submitWriting } from "@/api/api";
+import { useState } from "react";
 
 interface WritingState {
   dataArray: {
@@ -12,7 +16,14 @@ interface WritingState {
 
 export const NewWriting = () => {
   const router = useRouter();
+  const { writingId } = router.query;
   const accessToken = getCookie("access_token");
+  const [userInfo, setUserInfo] = useAtom(userInfoAtom);
+  const [writingInfo, setWritingInfo] = useAtom(writingDataAtom);
+  const [loginState, setLoginState] = useAtom(loginAtom);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const dataString = Array.isArray(router.query.data)
     ? router.query.data[0]
     : router.query.data;
@@ -20,10 +31,67 @@ export const NewWriting = () => {
   const currentWritings = useSelector(
     (state: WritingState) => state.dataArray.arrayData
   );
-  console.log(currentWritings, "current?");
+  console.log(currentWritings, writingId, "current?");
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const inputText = e.target.value;
+
+    // 최대 길이를 40으로 설정
+    if (inputText.length <= 40) {
+      // 40자 이내일 때만 setTitle 호출하여 상태 업데이트, 초과하면 무시
+      setTitle(inputText);
+    }
+  };
+
+  const handlePost = async () => {
+    // 모달 열기 전에 확인 모달을 띄우도록 수정
+    setIsConfirmationModalOpen(true);
+  };
+
+  const handleCancelPost = () => {
+    setIsConfirmationModalOpen(false);
+  };
+
+  const handleConfirmPost = async () => {
+    const writingData = {
+      title: title || null, // 만약 title이 빈 문자열이면 null로 설정
+      content: content || null, // 만약 content가 빈 문자열이면 null로 설정
+    };
+    const writingIdStr = Array.isArray(writingId) ? writingId[0] : writingId;
+
+    if (typeof writingIdStr !== "string") {
+      console.error("Invalid writing ID");
+      return;
+    }
+
+    try {
+      const response = await submitWriting(
+        writingData,
+        writingIdStr,
+        accessToken
+      );
+      console.log(response, "정상 제출?");
+      // console.log(postedWriting.data, "posted?");
+      // setPostedWriting(response.data);
+
+      const currentURL = window.location.href;
+      const newURL = `${currentURL}?access_token=${accessToken}`;
+      window.history.replaceState({}, document.title, newURL);
+
+      // mini(true);
+      router.push({
+        pathname: "/glooing",
+        query: { access_token: accessToken },
+      });
+    } catch (error) {
+      console.error("Error saving writing:", error);
+    }
+
+    setIsConfirmationModalOpen(false);
+  };
 
   return (
-    <div className="w-full max-w-[1199px] rounded-sm flex flex-col mx-auto lg:my-[50px]">
+    <div className="w-full max-w-[1200px] rounded-sm flex flex-col mx-auto lg:my-[50px]">
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
       <div className="hidden lg:block">
         <div className="flex flex-row justify-between">
@@ -65,35 +133,44 @@ export const NewWriting = () => {
               나의 보관함
             </a>
             <a
-              className="lg:pr-10 cursor-pointer"
+              className="cursor-pointer"
               //   onClick={handleLogIn}
             >
-              {/* {isLoggedIn === false ? "로그인" : "로그아웃"} */}
-              로그인
+              {loginState.isLoggedIn == true ? "로그아웃" : "로그인"}
             </a>
           </div>
         </div>
       </div>
+      <hr
+        className="lg:block hidden w-full bg-[#7C766C] h-[1px] sm:my-[17px] lg:my-0"
+        style={{ color: "#7C766C", borderColor: "#7C766C" }}
+      />
       <div className="w-full rounded-sm flex items-center flex-col">
-        <div
-          className="w-full h-[797px] lg:my-[30px] mx-[30px]"
-          style={{ border: "1px solid black", backgroundColor: "#E0D5BF" }}
-        >
-          <div className="flex flex-col items-between justify-between w-full h-full">
-            <div className="flex w-full px-[64px] pt-[32px] pb-[22px] flex-col">
-              <div className="w-full text-black mt-[8px] text-[22px] lg:text-[36px]">
-                {/* <a>title</a> */}
+        <div className="w-full h-[950px] mt-[30px] lg:h-[747px] lg:border-black lg:bg-[#E0D5BF] lg:my-[30px] mx-[30px]">
+          <div
+            className="lg:hidden block text-center mb-5 justify-center text-[20px]"
+            style={{ color: "#202020" }}
+          >
+            글쓰기
+          </div>
+          <hr
+            className="lg:hidden block w-full mx-5 items-center h-[1px]"
+            style={{ color: "#DFD8CD", borderColor: "#DFD8CD" }}
+          />
+
+          <div className="flex flex-col items-between justify-between w-full h-full lg:bg-none">
+            <div className="flex w-full px-[64px] pt-[32px] lg:pb-[22px] flex-col">
+              <div className="w-full text-black text-[22px] lg:text-[36px]">
                 <textarea
-                  className="text-[40px] resize-none w-full mb-[10px] h-[50px]"
-                  style={{ backgroundColor: "#E0D5BF", color: "#7C766C" }}
+                  className="text-[20px] lg:text-[40px] resize-none w-full lg:mb-[10px] h-[30px] lg:h-[50px] bg-[#F2EBDD] lg:bg-[#E0D5BF]"
                   placeholder="제목을 입력해주세요."
-                  //   value={title}
-                  //   onChange={handleTitleChange}
+                  value={title}
+                  onChange={handleTitleChange}
                   maxLength={40}
                 />
               </div>
               <div
-                className="w-[300px] text-[12px] lg:text-[16px]"
+                className="lg:block hidden w-[300px] text-[12px] lg:text-[16px]"
                 style={{ color: "#706B61" }}
               >
                 날짜
@@ -104,7 +181,7 @@ export const NewWriting = () => {
             </div> */}
             </div>
             <hr
-              className="bg-[#7C766C] mx-[64px] items-center h-[1px]"
+              className="mx-[64px] items-center h-[1px]"
               style={{ color: "#7C766C", borderColor: "#7C766C" }}
             />
             {/* <div className="w-full h-[29px] flex items-center">{50}</div> */}
@@ -113,40 +190,39 @@ export const NewWriting = () => {
               style={{ color: "#706B61" }}
             >
               <textarea
-                className="mt-[20px] resize-none w-full h-full overflow-y-auto flex"
+                className="lg:mt-[20px] resize-none w-full h-full overflow-y-auto flex  bg-[#F2EBDD] lg:bg-[#E0D5BF]"
                 placeholder="내용을 입력해주세요."
-                // value={content}
-                style={{ backgroundColor: "#E0D5BF", color: "#706B61" }}
+                value={content}
+                // style={{ backgroundColor: "#E0D5BF" }}
                 onChange={(e) => {
                   const inputValue = e.target.value;
                   // 최대 입력 글자수 - 4000자로 제한
-                  //   if (inputValue.length <= 4000) {
-                  //     setContent(inputValue);
-                  //   }
+                  if (inputValue.length <= 4000) {
+                    setContent(inputValue);
+                  }
                 }}
               />
             </div>
             <div className="flex flex-col rounded-md mx-[30px]">
-              <div className="h-[100px] lg:flex lg:justify-between p-8 items-center rounded-md w-full">
+              <div className="lg:h-[100px] flex justify-between p-8 items-center rounded-md w-full">
                 <a
-                  className={`items-center lg:items-start justify-center lg:justify-start flex ${
+                  className={`items-start justify-center lg:justify-start flex ${
                     "text-orange-500"
                     // textColor ?
                     // "text-orange-500" : "text-black"
                   }`}
                 >
-                  남은 시간
+                  남은 시간 djhfjldhj
                   {/* {remainingTime2} */}
                 </a>
                 <button
                   className={`w-[152px] items-center justify-center h-[53px] cursor-pointer rounded-md ${
-                    // disabled
-                    //   ? "bg-zinc-400 text-gray-100"
-                    //   : "bg-orange-500 text-black"
-                    "bg-orange-500 text-black"
+                    title && content
+                      ? "bg-orange-500 text-black"
+                      : "bg-[#3F3F3F] text-[#8E887B]"
                   }`}
-                  //   disabled={disabled}
-                  //   onClick={handlePost}
+                  disabled={!title || !content}
+                  onClick={handlePost}
                 >
                   저장
                 </button>
@@ -158,6 +234,37 @@ export const NewWriting = () => {
           </div>
         </div>
       </div>
+      {isConfirmationModalOpen && (
+        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
+          <div
+            className="absolute w-full h-full bg-gray-800 opacity-50"
+            onClick={() => router.push("/glooing")}
+          ></div>
+          <div className="flex flex-col bg-white w-[300px] h-[155px] text-center justify-center items-center rounded-lg z-50">
+            <div className="p-8 ">
+              <div className="text-[16px] mb-[30px]">
+                해당 내용으로 발행하시겠습니까?
+              </div>
+              <div className="flex justify-center gap-x-[10px]">
+                <button
+                  className="w-[120px] text-[14px] cursor-pointer h-[40px] rounded-md"
+                  style={{ backgroundColor: "#D9D9D9" }}
+                  onClick={handleCancelPost}
+                >
+                  취소
+                </button>
+                <button
+                  className="w-[120px] text-[14px] cursor-pointer h-[40px] rounded-md"
+                  style={{ backgroundColor: "#FF8126" }}
+                  onClick={handleConfirmPost}
+                >
+                  확인
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

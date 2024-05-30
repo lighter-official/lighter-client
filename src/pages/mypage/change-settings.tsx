@@ -8,7 +8,7 @@ import { getCurrentSessions, editWritingSetUp } from "@/api/api";
 import Dropdown from "@/components/Dropdown";
 import { SettingData } from "../../../interface";
 import { useAtom } from "jotai";
-import { loginAtom } from "../atoms";
+import { loginAtom, userInfoAtom, writingDataAtom } from "../atoms";
 
 interface ModalProps {
   isOpen: boolean;
@@ -79,12 +79,13 @@ export default function ChangeSettings() {
     subject: "",
     writingHours: 0,
   });
-
+  const writingData = useAtom(writingDataAtom);
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const currentSessionInfo = await getCurrentSessions(accessToken);
         console.log("현재 글쓰기 데이터 정보: ", currentSessionInfo);
+        console.log(writingData[0].data);
         setCurrentSessionInfo(currentSessionInfo);
         setChangedData({
           page: currentSessionInfo?.data?.page,
@@ -180,7 +181,7 @@ export default function ChangeSettings() {
             className="lg:block hidden w-full bg-[#7C766C] h-[1px] lg:my-0 sm:my-[17px]"
             style={{ color: "#7C766C", borderColor: "#7C766C" }}
           />
-          <div className="flex mt-[20px] justify-between  lg:flex-row flex-col my-[30px]">
+          <div className="flex mt-[20px] justify-between gap-x-[20px] lg:flex-row flex-col my-[30px]">
             <div className="lg:bg-black rounded-sm flex flex-col w-full lg:w-[400px] h-[130px] lg:h-[471px]">
               <div className="flex flex-col lg:mx-[20px]">
                 <div className="text-black lg:text-white lg:mt-[34px] mt-[20px] w-full lg:h-[51px] h-[40px] text-[25px] lg:text-[36px] font-bold lg:font-normal">
@@ -223,15 +224,16 @@ export default function ChangeSettings() {
                 </div>
               </div>
             </div>
-            <div className="w-[1120px] rounded-sm  flex flex-row h-[759px]">
-              <div className="w-full lg:ml-2 ">
+            <div className="w-full max-w-[1120px] rounded-sm flex flex-row max-h-[797px]">
+              <div className="w-full lg:ml-2">
                 <div className="flex flex-row items-center ">
                   <div className="hidden lg:block w-[205px] text-black mt-[8px] lg:text-[32px] text-[25px] font-bold">
                     설정
                   </div>
                 </div>
                 <div className="flex text-[15px] lg:text-[20px] cursor-pointer lg:mt-[20px]">
-                  글쓰기 시간을 변경할 수 있어요. (0/2)
+                  글쓰기 시간을 변경할 수 있어요. (
+                  {writingData[0].data.modifyingCount}/3)
                 </div>
                 <div
                   className="flex text-[14px] cursor-pointer mt-[8px]"

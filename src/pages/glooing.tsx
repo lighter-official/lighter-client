@@ -16,12 +16,7 @@ import { Redirection, getCookie } from ".";
 import "./globals.css";
 import { day } from "@/lib/dayjs";
 import Image from "next/image";
-import {
-  ModalProps,
-  WritingData,
-  UserInfo,
-  PostingInfo,
-} from "../../interface";
+import { ModalProps, PostingInfo } from "../../interface";
 import { formatDate } from "../../public/utils/utils";
 import { useAtom } from "jotai";
 import { loginAtom, userInfoAtom, writingDataAtom } from "./atoms";
@@ -394,10 +389,8 @@ export default function Writer() {
   const [isMiniModalOpen, setIsMiniModalOpen] = useState(false);
   const [isFirstModalOpen, setIsFirstModalOpen] = useState(false);
   const [userInfo, setUserInfo] = useAtom(userInfoAtom);
-  const [writingData, setWritingData] = useAtom(writingDataAtom);
-  // const [userInfo, setUserInfo] = useState<UserInfo>({});
+  const [writingInfo, setWritingInfo] = useAtom(writingDataAtom);
   const [selectedWritingId, setSelectedWritingId] = useState("");
-  // const [writingData, setWritingData] = useState<any>({});
   const [remainingTime, setRemainingTime] = useState<string>();
   const [remainingTime2, setRemainingTime2] = useState<string>();
   const [buttonActivated, setButtonActivated] = useState<boolean>(false);
@@ -406,9 +399,6 @@ export default function Writer() {
   const [intervalId, setIntervalId] = useState<number | null>(null);
   const [isSubmissionSuccessful, setIsSubmissionSuccessful] = useState(false);
   const [writingId, setWritingId] = useState<number | null>(null);
-  const [currentWritingsData, setCurrentWritingsData] = useState<WritingData>(
-    {}
-  );
   const [isEndTime, setIsEndTime] = useState(false);
   const isFirst = router.query.isFirst === "true";
   const [showBadge, setShowBadge] = useState(false);
@@ -424,104 +414,101 @@ export default function Writer() {
   }, [postedWriting?.newBadges?.length]);
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchData = async () => {
       try {
-        const userData = await getUserInfo(accessToken);
-        setUserInfo(userData);
-        console.log("유저 데이터: ", userData);
+        const userInfoData = await fetchUserInfo();
+        userInfoAtom.setState(userInfoData);
+        setUserInfo(userInfo);
 
-        const currentWritings = await getCurrentSessions(accessToken);
-        console.log("현재 글쓰기 데이터 정보: ", currentWritings);
-        setCurrentWritingsData(currentWritings);
-
-        setLoginState({
-          username: "",
-          isLoggedIn: true,
-          accessToken: accessToken,
-        });
-
-        if (isFirst == true) {
-          setIsFirstModalOpen(true);
-        }
-        const finishedString = currentWritings?.data?.nearestFinishDate;
-        const finishTime = new Date(finishedString);
-        const newStartString = currentWritings?.data?.nearestStartDate;
-        const newStartTime = new Date(newStartString);
-
-        // 타이머
-        const newIntervalId = setInterval(() => {
-          const currentTime = new Date();
-          const timeDiff = newStartTime?.getTime() - currentTime?.getTime();
-          const seconds = Math.floor(timeDiff / 1000);
-          const updatedHours = Math.floor(seconds / 3600);
-          const updatedMinutes = Math.floor((seconds % 3600) / 60);
-          const updatedRemainingSeconds = seconds % 60;
-
-          const timeDiff2 = finishTime?.getTime() - currentTime?.getTime();
-          const seconds2 = Math.floor(timeDiff2 / 1000);
-          const updatedHours2 = Math.floor(seconds2 / 3600);
-          const updatedMinutes2 = Math.floor((seconds2 % 3600) / 60);
-          const updatedRemainingSeconds2 = seconds2 % 60;
-
-          if (!buttonActivated) {
-            const updatedTime = `${
-              updatedHours < 10
-                ? updatedHours < 0
-                  ? updatedHours + 23
-                  : "0" + updatedHours
-                : updatedHours
-            }:${
-              updatedMinutes < 10
-                ? updatedMinutes < 0
-                  ? updatedMinutes + 59
-                  : "0" + updatedMinutes
-                : updatedMinutes
-            }:${
-              updatedRemainingSeconds < 0
-                ? updatedRemainingSeconds + 59
-                : updatedRemainingSeconds < 10
-                ? "0" + updatedRemainingSeconds
-                : updatedRemainingSeconds
-            }`;
-
-            setRemainingTime(updatedTime);
-          } else {
-            const updatedTime2 = `${
-              updatedHours2 < 10
-                ? updatedHours2 < 0
-                  ? updatedHours2 + 23
-                  : "0" + updatedHours2
-                : updatedHours2
-            }:${
-              updatedMinutes2 < 10
-                ? updatedMinutes2 < 0
-                  ? updatedMinutes2 + 59
-                  : "0" + updatedMinutes2
-                : updatedMinutes2
-            }:${
-              updatedRemainingSeconds2 < 0
-                ? updatedRemainingSeconds2 + 59
-                : updatedRemainingSeconds2 < 10
-                ? "0" + updatedRemainingSeconds2
-                : updatedRemainingSeconds2
-            }`;
-
-            setRemainingTime2(updatedTime2);
-          }
-
-          if (seconds <= 0 && !buttonActivated) {
-            setButtonActivated(true);
-            clearInterval(newIntervalId);
-          }
-        }, 1000);
-
-        setIntervalId(newIntervalId);
+        const writingInfo = await fetchWritingData();
+        writingDataAtom.setState(writingInfoData);
+        setWritingInfo(writingInfo);
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.error("Error refreshing data:", error);
       }
     };
 
-    fetchUserData();
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (isFirst == true) {
+      setIsFirstModalOpen(true);
+    }
+    const finishedString = writingInfo?.data?.nearestFinishDate;
+    const finishTime = new Date(finishedString);
+    const newStartString = writingInfo?.data?.nearestStartDate;
+    const newStartTime = new Date(newStartString);
+
+    // 타이머
+    const newIntervalId = setInterval(() => {
+      const currentTime = new Date();
+      const timeDiff = newStartTime?.getTime() - currentTime?.getTime();
+      const seconds = Math.floor(timeDiff / 1000);
+      const updatedHours = Math.floor(seconds / 3600);
+      const updatedMinutes = Math.floor((seconds % 3600) / 60);
+      const updatedRemainingSeconds = seconds % 60;
+
+      const timeDiff2 = finishTime?.getTime() - currentTime?.getTime();
+      const seconds2 = Math.floor(timeDiff2 / 1000);
+      const updatedHours2 = Math.floor(seconds2 / 3600);
+      const updatedMinutes2 = Math.floor((seconds2 % 3600) / 60);
+      const updatedRemainingSeconds2 = seconds2 % 60;
+
+      if (!buttonActivated) {
+        const updatedTime = `${
+          updatedHours < 10
+            ? updatedHours < 0
+              ? updatedHours + 23
+              : "0" + updatedHours
+            : updatedHours
+        }:${
+          updatedMinutes < 10
+            ? updatedMinutes < 0
+              ? updatedMinutes + 59
+              : "0" + updatedMinutes
+            : updatedMinutes
+        }:${
+          updatedRemainingSeconds < 0
+            ? updatedRemainingSeconds + 59
+            : updatedRemainingSeconds < 10
+            ? "0" + updatedRemainingSeconds
+            : updatedRemainingSeconds
+        }`;
+
+        setRemainingTime(updatedTime);
+      } else {
+        const updatedTime2 = `${
+          updatedHours2 < 10
+            ? updatedHours2 < 0
+              ? updatedHours2 + 23
+              : "0" + updatedHours2
+            : updatedHours2
+        }:${
+          updatedMinutes2 < 10
+            ? updatedMinutes2 < 0
+              ? updatedMinutes2 + 59
+              : "0" + updatedMinutes2
+            : updatedMinutes2
+        }:${
+          updatedRemainingSeconds2 < 0
+            ? updatedRemainingSeconds2 + 59
+            : updatedRemainingSeconds2 < 10
+            ? "0" + updatedRemainingSeconds2
+            : updatedRemainingSeconds2
+        }`;
+
+        setRemainingTime2(updatedTime2);
+      }
+
+      if (seconds <= 0 && !buttonActivated) {
+        setButtonActivated(true);
+        clearInterval(newIntervalId);
+      }
+    }, 1000);
+
+    setIntervalId(newIntervalId);
+
     return () => {
       if (intervalId !== null) {
         clearInterval(intervalId);
@@ -532,16 +519,16 @@ export default function Writer() {
 
   useEffect(() => {
     // currentWritings?.data?.isActivated 값이 true이면 버튼 활성화, false이면 비활성화
-    if (currentWritingsData?.data?.isActivated === true) {
+    if (writingInfo?.data?.isActivated === true) {
       setButtonActivated(true);
     } else {
       setButtonActivated(false);
     }
-  }, [currentWritingsData?.data?.isActivated]);
+  }, [writingInfo?.data?.isActivated]);
 
-  const isActivated = currentWritingsData?.data?.isActivated;
-  const nearestStartDate = currentWritingsData?.data?.nearestStartDate;
-  const nearestFinishDate = currentWritingsData?.data?.nearestFinishDate;
+  const isActivated = writingInfo?.data?.isActivated;
+  const nearestStartDate = writingInfo?.data?.nearestStartDate;
+  const nearestFinishDate = writingInfo?.data?.nearestFinishDate;
 
   const now = day();
   const seconds = day(isActivated ? nearestFinishDate : nearestStartDate).diff(
@@ -564,21 +551,27 @@ export default function Writer() {
     };
   }, [timer]);
 
-  const handleOpenWriterModal = async () => {
+  const handleNewWriting = async () => {
     try {
-      const response = await startWriting(
-        currentWritingsData?.data?.id,
-        accessToken
-      );
+      const response = await startWriting(writingInfo?.data?.id, accessToken);
       console.log(response, "시작 ???");
-      setWritingId(response?.data?.writing?.id);
+      const newWritingId = response?.data?.writing?.id;
+      setWritingId(newWritingId);
+      console.log(writingId, "???????????????");
+      if (newWritingId) {
+        setWritingId(newWritingId);
+        router.push({
+          pathname: "/newPost/posting",
+          query: { access_token: accessToken, writingId: newWritingId },
+        });
+      } else {
+        console.error("Failed to get new writing ID");
+      }
     } catch (error) {
       console.error("Error start writing:", error);
     }
-    setIsWriterModalOpen(true);
   };
 
-  //여기부터
   useEffect(() => {
     if (isSubmissionSuccessful) {
       setIsMiniModalOpen(true);
@@ -598,7 +591,6 @@ export default function Writer() {
     setIsWriterModalOpen(false);
     if (isMiniModalOpen == true) setIsSubmissionSuccessful(true);
   };
-  //여기까지 수정한 거 동작 확인 필요 !
 
   const handleOpenEditModal = () => {
     setIsEditModalOpen(true);
@@ -647,7 +639,7 @@ export default function Writer() {
     return nookies.get(null)[name];
   }
 
-  const completion_percentage = currentWritingsData?.data?.progressPercentage;
+  const completion_percentage = writingInfo?.data?.progressPercentage;
   const accessToken = getCookie("access_token");
 
   useEffect(() => {
@@ -660,10 +652,10 @@ export default function Writer() {
         query: { access_token: accessToken },
       });
     }
-  }, [userInfo]);
+  }, [writingInfo]);
 
-  const startDateString = currentWritingsData?.data?.startDate;
-  const finishDateString = currentWritingsData?.data?.finishDate;
+  const startDateString = writingInfo?.data?.startDate;
+  const finishDateString = writingInfo?.data?.finishDate;
 
   const formattedStartDate = formatDate(startDateString);
   const formattedFinishDate = formatDate(finishDateString);
@@ -728,7 +720,7 @@ export default function Writer() {
             className="lg:block hidden w-full bg-[#7C766C] h-[1px] sm:my-[17px] lg:my-0"
             style={{ color: "#7C766C", borderColor: "#7C766C" }}
           />
-          <div className="w-full flex mt-[20px]  lg:flex-row flex-col">
+          <div className="w-full flex mt-[20px] lg:flex-row flex-col">
             <div className="w-full bg-black rounded-sm flex flex-row lg:flex-col lg:max-w-[400px] mb-[20px] lg:mb-0 max-w-[682px] lg:h-[600px] h-[272px]">
               <div className="flex flex-col sm:mx-[30px] lg:mx-[20px]">
                 <div className="text-white mt-[34px] w-full h-[120px] text-[36px]">
@@ -742,14 +734,15 @@ export default function Writer() {
                     style={{ color: "#CEB292" }}
                   >
                     <a>
-                      {currentWritingsData?.data?.startAt?.hour}:
-                      {currentWritingsData?.data?.startAt?.minute === 0
+                      {writingInfo?.data?.startAt?.hour
+                        .toString()
+                        .padStart(2, "0")}
+                      :
+                      {writingInfo?.data?.startAt?.minute === 0
                         ? "00"
-                        : currentWritingsData?.data?.startAt?.minute}
+                        : writingInfo?.data?.startAt?.minute}
                     </a>
                   </div>
-
-                  {/* <button className='flex text-white w-[106px] rounded-lg' style={{ backgroundColor: '#3F3F3F' }}><a className="w-full text-[14px] my-auto" style={{ color: '#8E887B' }}>변경하기 <a>{glooingInfo?.setting?.change_num}</a>/<a>{glooingInfo?.max_change_num}</a></a></button> */}
                 </div>
               </div>
               <div className="flex flex-col ml-[200px] lg:mx-[20px] mt-[40px] lg:mt-[76px]">
@@ -770,20 +763,7 @@ export default function Writer() {
                         : "bg-zinc-700  text-white"
                     }`}
                     disabled={!buttonActivated}
-                    onClick={handleOpenWriterModal}
-                    // onClick={() => {
-                    // 데이터 객체를 JSON 문자열로 직렬화
-                    // const dataString = encodeURIComponent(
-                    //   JSON.stringify(currentWritingData.data)
-                    // );
-
-                    // router.push를 사용하여 페이지 이동과 함께 데이터 전달
-                    // router.push({
-                    //   pathname: "/newPost/posting",
-                    //   query: { access_token: accessToken },
-                    //   // , data: dataString
-                    // });
-                    // }}
+                    onClick={handleNewWriting}
                   >
                     글 작성하기
                   </button>
@@ -819,10 +799,10 @@ export default function Writer() {
                 <div className="w-full flex flex-row items-center justify-between">
                   <div className="flex flex-col">
                     <div className="text-black mt-2 text-3xl lg:text-4xl">
-                      <a>{currentWritingsData?.data?.subject}</a>
+                      <a>{writingInfo?.data?.subject}</a>
                     </div>
                     <div
-                      className="text-sm lg:text-base"
+                      className="text-sm lg:text-base mt-1"
                       style={{ color: "#706B61" }}
                     >
                       {formattedDateRange}
@@ -830,11 +810,11 @@ export default function Writer() {
                   </div>
                   <div className="flex items-center text-3xl lg:text-4xl justify-end">
                     <a className="text-black">
-                      {currentWritingsData?.data?.writings.length}
+                      {writingInfo?.data?.writings.length}
                     </a>
                     /
                     <a style={{ color: "#706B61" }}>
-                      {currentWritingsData?.data?.page}
+                      {writingInfo?.data?.page}
                     </a>
                   </div>
                 </div>
@@ -842,7 +822,7 @@ export default function Writer() {
                   className="w-full bg-[#7C766C] h-[1px] my-[17px]"
                   style={{ color: "#7C766C", borderColor: "#7C766C" }}
                 />
-                {currentWritingsData?.data?.writings.length === 0 && (
+                {writingInfo?.data?.writings.length === 0 && (
                   <div
                     className="flex items-center justify-center lg:text-lg"
                     style={{ color: "#706B61" }}
@@ -850,7 +830,7 @@ export default function Writer() {
                     나만의 기록으로 채워보아요!
                   </div>
                 )}
-                {currentWritingsData?.data?.writings.length !== 0 && (
+                {writingInfo?.data?.writings.length !== 0 && (
                   <div
                     className="w-full h-5 flex items-center"
                     style={{
@@ -869,30 +849,28 @@ export default function Writer() {
                     ></div>
                   </div>
                 )}
-                {currentWritingsData?.data?.writings !== null && (
+                {writingInfo?.data?.writings !== null && (
                   <div className="flex flex-col lg:max-h-[560px] gap-y-2 lg:gap-y-4 max-h-[340px] my-5 overflow-y-scroll rounded-xl">
-                    {currentWritingsData?.data?.writings?.map(
-                      (writing, index) => (
-                        <div
-                          key={index}
-                          className="flex cursor-pointer px-5 py-5 flex-row w-full h-52 rounded-xl"
-                          style={{ backgroundColor: "#F4EDE0" }}
-                          onClick={() => handleEditClick(writing.id)}
-                        >
-                          <div className="my-3 mx-3">
-                            <div className="w-full h-10 text-xl">
-                              {writing?.title}
-                            </div>
-                            <div
-                              className="mt-3 max-w-full truncate text-base"
-                              style={{ color: "#C5BCAB" }}
-                            >
-                              {writing?.content}
-                            </div>
+                    {writingInfo?.data?.writings?.map((writing, index) => (
+                      <div
+                        key={index}
+                        className="flex cursor-pointer px-5 py-5 flex-row w-full h-52 rounded-xl"
+                        style={{ backgroundColor: "#F4EDE0" }}
+                        onClick={() => handleEditClick(writing.id)}
+                      >
+                        <div className="my-3 mx-3">
+                          <div className="w-full h-10 text-xl">
+                            {writing?.title}
+                          </div>
+                          <div
+                            className="mt-3 max-w-full truncate text-base"
+                            style={{ color: "#C5BCAB" }}
+                          >
+                            {writing?.content}
                           </div>
                         </div>
-                      )
-                    )}
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
@@ -908,8 +886,8 @@ export default function Writer() {
                 <div className="text-center items-center flex flex-col">
                   <div className="text-[15px] mb-[6px]">
                     앞으로 매일
-                    {currentWritingsData?.data?.startAt?.hour}:
-                    {currentWritingsData?.data?.startAt?.minute}시에 만나요!
+                    {writingInfo?.data?.startAt?.hour}:
+                    {writingInfo?.data?.startAt?.minute}시에 만나요!
                   </div>
                   <div
                     className="text-[13px] mb-[10px]"
@@ -941,7 +919,7 @@ export default function Writer() {
               <div className="flex flex-col bg-white w-[264px] max-w-[328px] min-h-[171px] max-h-[400px] text-center justify-center items-center rounded-lg z-50">
                 <div className="text-center items-center flex flex-col">
                   <div className="text-[15px] font-bold mb-[2px]">
-                    {currentWritingsData?.data?.writings.length + 1}번째
+                    {writingInfo?.data?.writings.length + 1}번째
                   </div>
                   <div className="text-[15px] mb-[6px]">
                     글 등록을 완료했어요!
@@ -952,10 +930,10 @@ export default function Writer() {
                   >
                     다음{" "}
                     <a>
-                      {currentWritingsData?.data?.startAt?.hour}:
-                      {currentWritingsData?.data?.startAt?.minute === 0
+                      {writingInfo?.data?.startAt?.hour}:
+                      {writingInfo?.data?.startAt?.minute === 0
                         ? "00"
-                        : currentWritingsData?.data?.startAt?.minute}
+                        : writingInfo?.data?.startAt?.minute}
                     </a>
                     에 꼭 다시 만나요!
                   </div>
@@ -993,7 +971,7 @@ export default function Writer() {
         isOpen={isWriterModalOpen}
         onClose={handleCloseWriterModal}
         id={writingId}
-        writingData={currentWritingsData}
+        writingData={writingInfo}
         mini={setIsMiniModalOpen}
         remainingTime={remainingTime}
         textColor={textColor}
@@ -1006,7 +984,7 @@ export default function Writer() {
         isOpen={isEditModalOpen}
         onClose={handleCloseEditModal}
         id={selectedWritingId}
-        writingData={writingData}
+        writingData={writingInfo}
       />
     </div>
   );

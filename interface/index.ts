@@ -89,8 +89,8 @@ export interface PostingInfo {
 }
 
 export interface NewWritingData {
-  title: string;
-  content: string;
+  title: string | null;
+  content: string | null;
 }
 
 export interface EditOrSetData {

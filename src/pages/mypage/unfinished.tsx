@@ -76,7 +76,7 @@ export default function UnfinishedBook() {
             className="lg:block hidden w-full bg-[#7C766C] h-[1px] sm:my-[17px] lg:my-0"
             style={{ color: "#7C766C", borderColor: "#7C766C" }}
           />
-          <div className="flex mt-[20px] justify-between  lg:flex-row flex-col my-[30px]">
+          <div className="flex mt-[20px] justify-between gap-x-[20px] lg:flex-row flex-col my-[30px]">
             <div className="lg:bg-black rounded-sm flex flex-col w-full lg:w-[400px] h-[130px] lg:h-[471px]">
               <div className="flex flex-col lg:mx-[20px]">
                 <div className="text-black lg:text-white lg:mt-[34px] mt-[20px] w-full lg:h-[51px] h-[40px] text-[25px] lg:text-[36px] font-bold lg:font-normal">
@@ -118,7 +118,7 @@ export default function UnfinishedBook() {
                 </div>
               </div>
             </div>
-            <div className="w-[1120px] rounded-sm flex flex-row max-h-[797px]">
+            <div className="w-full max-w-[1120px] rounded-sm flex flex-row max-h-[797px]">
               <div className="w-full lg:ml-2 ">
                 <div className="flex flex-row items-center ">
                   <div className="lg:block hidden w-[205px] text-black mt-[8px] lg:text-[32px] text-[25px] font-bold">
