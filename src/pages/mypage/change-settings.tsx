@@ -7,6 +7,8 @@ import { getCookie } from "..";
 import { getCurrentSessions, editWritingSetUp } from "@/api/api";
 import Dropdown from "@/components/Dropdown";
 import { SettingData } from "../../../interface";
+import { useAtom } from "jotai";
+import { loginAtom } from "../atoms";
 
 interface ModalProps {
   isOpen: boolean;
@@ -68,6 +70,7 @@ export default function ChangeSettings() {
     parseInt(currentSessionInfo?.data?.startAt?.hour) < 12 ? "AM" : "PM"
   );
   const [editCount, setEditCount] = useState(0);
+  const [loginState, setLoginState] = useAtom(loginAtom);
   const [changedData, setChangedData] = useState<SettingData>({
     // 초기 상태 설정
     page: 0,
@@ -129,8 +132,8 @@ export default function ChangeSettings() {
     <div className="flex flex-col my-[50px] w-full">
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
       <div className="flex flex-row mx-auto w-full">
-        <div className="flex flex-col w-full mx-[120px]">
-          <div className="flex flex-row justify-between">
+        <div className="flex flex-col w-full mx-[120px] sm:max-w-[682px] lg:max-w-none">
+          <div className="flex flex-row justify-between sm:max-w-[682px] lg:max-w-none lg:w-full">
             <Image
               className="lg:mb-[20px] mb-0 w-[74px] lg:w-[105px] h-[24px] lg:h-[35px]"
               src="https://gloo-image-bucket.s3.amazonaws.com/archive/logo.svg"
@@ -138,10 +141,16 @@ export default function ChangeSettings() {
               height="35"
               alt="Logo"
             />
-            <div className="flex gap-x-[70px]">
+            <Image
+              className="lg:hidden block h-[18px] w-[18px]"
+              src="https://gloo-image-bucket.s3.amazonaws.com/archive/Group 57.png"
+              width={18}
+              height={18}
+              alt="menu"
+            />
+            <div className="hidden lg:block flex-row">
               <a
-                className="cursor-pointer"
-                style={{ color: "#A49E90" }}
+                className="lg:pr-10 cursor-pointer"
                 onClick={() =>
                   router.push({
                     pathname: "/glooing",
@@ -152,48 +161,48 @@ export default function ChangeSettings() {
                 글루ING
               </a>
               <a
-                className="cursor-pointer font-bold"
-                style={{ color: "#191919" }}
-                onClick={() => router.push("/mypage/badgeList")}
+                className="lg:pr-10 cursor-pointer font-bold"
+                onClick={() =>
+                  router.push({
+                    pathname: "/mypage/badgeList",
+                    query: { access_token: accessToken },
+                  })
+                }
               >
                 나의 보관함
               </a>
-              <a
-                className="cursor-pointer"
-                style={{ color: "#A49E90" }}
-                onClick={() => router.push("/")}
-              >
-                로그아웃
+              <a className="cursor-pointer" onClick={() => router.push("/")}>
+                {loginState.isLoggedIn == true ? "로그아웃" : "로그인"}
               </a>
             </div>
           </div>
           <hr
-            className="w-full bg-[#7C766C] h-[1px] lg:my-0 sm:my-[17px]"
+            className="lg:block hidden w-full bg-[#7C766C] h-[1px] lg:my-0 sm:my-[17px]"
             style={{ color: "#7C766C", borderColor: "#7C766C" }}
           />
-          <div className="flex mt-[20px] justify-between flex-row my-[30px]">
-            <div className="bg-black rounded-sm  flex flex-col w-[400px] h-[471px]">
-              <div className="flex flex-col mx-[20px]">
-                <div className="text-white mt-[34px] w-full h-[51px] text-[36px]">
+          <div className="flex mt-[20px] justify-between  lg:flex-row flex-col my-[30px]">
+            <div className="lg:bg-black rounded-sm flex flex-col w-full lg:w-[400px] h-[130px] lg:h-[471px]">
+              <div className="flex flex-col lg:mx-[20px]">
+                <div className="text-black lg:text-white lg:mt-[34px] mt-[20px] w-full lg:h-[51px] h-[40px] text-[25px] lg:text-[36px] font-bold lg:font-normal">
                   나의 보관함
                 </div>
-                <div className="flex flex-col gap-y-[26px] mt-[24px]">
+                <div className="flex flex-col lg:gap-y-[26px] mt-[24px]">
                   <div
-                    className="flex text-[20px] cursor-pointer"
+                    className="hidden lg:flex text-[20px] cursor-pointer"
                     style={{ color: "#CEB292" }}
                     onClick={() => router.push("/mypage/badgeList")}
                   >
                     나의 뱃지
                   </div>
                   <div
-                    className="flex text-[20px] cursor-pointer"
+                    className="hidden lg:flex text-[20px] cursor-pointer"
                     style={{ color: "#CEB292" }}
-                    onClick={() => router.push("/mypage/mybook")}
+                    onClick={() => router.push("/mypage/finished")}
                   >
                     내가 발행한 책
                   </div>
                   <div
-                    className="flex text-[20px] cursor-pointer"
+                    className="hidden lg:flex text-[20px] cursor-pointer"
                     style={{ color: "#CEB292" }}
                     onClick={() => router.push("/mypage/unfinished")}
                   >
@@ -201,23 +210,27 @@ export default function ChangeSettings() {
                   </div>
 
                   <div
-                    className="flex text-[20px] font-bold cursor-pointer"
+                    className="flex text-[20px] font-normal lg:font-bold cursor-pointer"
                     style={{ color: "#CEB292" }}
                     onClick={() => router.push("/mypage/change-settings")}
                   >
                     설정
                   </div>
+                  <hr
+                    className="block lg:hidden w-full bg-[#7C766C] h-[1px] mt-2"
+                    style={{ color: "#7C766C", borderColor: "#7C766C" }}
+                  />
                 </div>
               </div>
             </div>
             <div className="w-[1120px] rounded-sm  flex flex-row h-[759px]">
-              <div className="w-full ml-2 ">
+              <div className="w-full lg:ml-2 ">
                 <div className="flex flex-row items-center ">
-                  <div className="w-[205px] text-black mt-[8px] lg:text-[32px] text-[25px] font-bold">
+                  <div className="hidden lg:block w-[205px] text-black mt-[8px] lg:text-[32px] text-[25px] font-bold">
                     설정
                   </div>
                 </div>
-                <div className="flex text-[20px] cursor-pointer mt-[20px]">
+                <div className="flex text-[15px] lg:text-[20px] cursor-pointer lg:mt-[20px]">
                   글쓰기 시간을 변경할 수 있어요. (0/2)
                 </div>
                 <div

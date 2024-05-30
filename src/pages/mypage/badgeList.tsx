@@ -1,12 +1,14 @@
 "use client";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { Redirection, getCookie } from "..";
+import { useAtom } from "jotai";
+import { loginAtom, userInfoAtom, writingDataAtom } from "../atoms";
+import { getCookie } from "..";
 import { getGlooingInfo, getUserInfo } from "@/api/api";
 import "../globals.css";
 import Image from "next/image";
 import BadgeItem from "../../components/BadgeItem";
-import { BadgeItemProps } from "../../../interface";
+import { BadgeItemProps, UserInfo } from "../../../interface";
 
 interface BadgeItem {
   badge: {
@@ -74,7 +76,9 @@ export default function BadgeList() {
   const accessToken = getCookie("access_token");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggedIn, setLoggedIn] = useState(false);
-  const [userInfo, setUserInfo] = useState<any>({});
+  const [userInfo, setUserInfo] = useAtom(userInfoAtom);
+  const [writingData, setWritingData] = useAtom(writingDataAtom);
+  const [loginState, setLoginState] = useAtom(loginAtom);
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -84,26 +88,11 @@ export default function BadgeList() {
     setIsModalOpen(false);
   };
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const userData = await getUserInfo(accessToken);
-        setUserInfo(userData);
-
-        setLoggedIn(true);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
-
-    fetchUserData();
-  }, [accessToken, userInfo]);
-
   return (
     <div className="flex flex-col my-[50px] w-full overflow-hidden">
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
       <div className="flex flex-row mx-auto w-full">
-        <div className="flex flex-col w-full mx-[120px]">
+        <div className="flex flex-col w-full mx-[120px] sm:max-w-[682px] lg:max-w-none">
           <div className="flex flex-row justify-between sm:max-w-[682px] lg:max-w-none lg:w-full">
             <Image
               className="cursor-pointer lg:mb-[20px] mb-0 w-[74px] lg:w-[105px] h-[24px] lg:h-[35px]"
@@ -142,12 +131,8 @@ export default function BadgeList() {
               >
                 나의 보관함
               </a>
-              <a
-                className="cursor-pointer"
-                // onClick={handleLogIn}
-              >
-                {/* {isLoggedIn === false ? "로그인" : "로그아웃"} */}
-                로그인
+              <a className="cursor-pointer" onClick={() => router.push("/")}>
+                {loginState.isLoggedIn == true ? "로그아웃" : "로그인"}
               </a>
             </div>
           </div>
@@ -155,36 +140,40 @@ export default function BadgeList() {
             className="lg:block hidden w-full bg-[#7C766C] h-[1px] sm:my-[17px] lg:my-0"
             style={{ color: "#7C766C", borderColor: "#7C766C" }}
           />
-          <div className="flex mt-[20px] justify-between flex-row my-[30px]">
-            <div className="bg-black rounded-sm  flex flex-col w-[400px] h-[471px]">
-              <div className="flex flex-col mx-[20px]">
-                <div className="text-white mt-[34px] w-full h-[51px] text-[36px]">
+          <div className="flex mt-[20px] justify-between  lg:flex-row flex-col my-[30px]">
+            <div className="lg:bg-black rounded-sm flex flex-col w-full lg:w-[400px] h-[130px] lg:h-[471px]">
+              <div className="flex flex-col lg:mx-[20px]">
+                <div className="text-black lg:text-white lg:mt-[34px] mt-[20px] w-full lg:h-[51px] h-[40px] text-[25px] lg:text-[36px] font-bold lg:font-normal">
                   나의 보관함
                 </div>
-                <div className="flex flex-col gap-y-[26px] mt-[24px]">
+                <div className="flex flex-col lg:gap-y-[26px] mt-[24px]">
                   <div
-                    className="flex text-[20px] font-bold cursor-pointer"
+                    className="flex text-[20px] font-normal lg:font-bold cursor-pointer"
                     style={{ color: "#CEB292" }}
                     onClick={() => router.push("/mypage/badgeList")}
                   >
                     나의 뱃지
                   </div>
+                  <hr
+                    className="block lg:hidden w-full bg-[#7C766C] h-[1px] mt-2"
+                    style={{ color: "#7C766C", borderColor: "#7C766C" }}
+                  />
                   <div
-                    className="flex text-[20px] cursor-pointer"
+                    className="hidden lg:flex text-[20px] cursor-pointer"
                     style={{ color: "#CEB292" }}
-                    onClick={() => router.push("/mypage/mybook")}
+                    onClick={() => router.push("/mypage/finished")}
                   >
                     내가 발행한 책
                   </div>
                   <div
-                    className="flex text-[20px] cursor-pointer"
+                    className="hidden lg:flex text-[20px] cursor-pointer"
                     style={{ color: "#CEB292" }}
                     onClick={() => router.push("/mypage/unfinished")}
                   >
                     못다쓴 책
                   </div>
                   <div
-                    className="flex text-[20px] cursor-pointer"
+                    className="hidden lg:flex text-[20px] cursor-pointer"
                     style={{ color: "#CEB292" }}
                     onClick={() => router.push("/mypage/change-settings")}
                   >
@@ -194,9 +183,9 @@ export default function BadgeList() {
               </div>
             </div>
             <div className="w-[1120px] rounded-sm flex flex-row max-h-[797px]">
-              <div className="w-full ml-2">
+              <div className="w-full lg:ml-2">
                 <div className="flex flex-row items-center ">
-                  <div className="w-full text-black mt-[8px] lg:text-[32px] text-[25px] font-bold">
+                  <div className="w-full hidden lg:block text-black mt-[8px] lg:text-[32px] text-[25px] font-bold">
                     나의 뱃지
                   </div>
                 </div>
@@ -209,7 +198,7 @@ export default function BadgeList() {
                       아직 받은 뱃지가 없어요.
                     </div>
                   )}
-                  {userInfo?.data?.userBadges.length > 0 && (
+                  {userInfo?.data?.userBadges.length !== 0 && (
                     <div>
                       <div
                         className="flex text-center items-center jusify-center text-[18px] bg-black w-[80px] h-[40px]"
@@ -221,18 +210,16 @@ export default function BadgeList() {
                       </div>
 
                       <div className=" mt-[20px] flex flex-row gap-x-[46px]">
-                        {userInfo?.data?.userBadges?.map(
-                          (item: BadgeItemProps) => (
-                            <BadgeItem
-                              key={item.id}
-                              badge={item.badge}
-                              createdAt={item.createdAt}
-                              badgeId={item.badgeId}
-                              id={item.id}
-                              userId={item.userId}
-                            />
-                          )
-                        )}
+                        {userInfo?.data?.userBadges?.map((item: any) => (
+                          <BadgeItem
+                            key={item.id}
+                            badge={item.badge}
+                            createdAt={item.createdAt}
+                            badgeId={item.badgeId}
+                            id={item.id}
+                            userId={item.userId}
+                          />
+                        ))}
                       </div>
                     </div>
                   )}

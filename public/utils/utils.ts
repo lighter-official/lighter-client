@@ -1,3 +1,8 @@
+import { loginAtom } from "@/pages/atoms";
+import { useAtom } from "jotai";
+import { useRouter } from "next/router";
+import nookies from "nookies";
+
 export function formatDate(dateString: string) {
   const dateObject = new Date(dateString);
   const year = dateObject.getFullYear();
@@ -5,3 +10,20 @@ export function formatDate(dateString: string) {
   const day = dateObject.getDate().toString().padStart(2, "0"); // 두 자리 맞춤
   return `${year}년 ${month}월 ${day}일`;
 }
+
+export const Logout = () => {
+  const router = useRouter();
+  const [loginState, setLoginState] = useAtom(loginAtom);
+
+  const handleLogout = () => {
+    setLoginState({
+      username: "",
+      isLoggedIn: false,
+      accessToken: null,
+    });
+    nookies.destroy(null, "access_token");
+    router.push("/");
+  };
+
+  return handleLogout;
+};

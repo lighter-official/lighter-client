@@ -5,17 +5,20 @@ import "../globals.css";
 import Image from "next/image";
 import BookItem from "../../components/BookItem";
 import { getCookie } from "..";
+import { useAtom } from "jotai";
+import { loginAtom } from "../atoms";
 
 export default function MyBook() {
   const router = useRouter();
   const accessToken = getCookie("access_token");
+  const [loginState, setLoginState] = useAtom(loginAtom);
 
   return (
     <div className="flex flex-col my-[50px] w-full">
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
       <div className="flex flex-row mx-auto w-full">
         <div className="flex flex-col w-full mx-[120px]">
-          <div className="flex flex-row justify-between">
+          <div className="flex flex-row justify-between sm:max-w-[682px] lg:max-w-none lg:w-full">
             <Image
               className="lg:mb-[20px] mb-0 w-[74px] lg:w-[105px] h-[24px] lg:h-[35px]"
               src="https://gloo-image-bucket.s3.amazonaws.com/archive/logo.svg"
@@ -25,7 +28,7 @@ export default function MyBook() {
             />
             <div className="flex gap-x-[70px]">
               <a
-                className="cursor-pointer  font-bold"
+                className="cursor-pointer"
                 style={{ color: "#191919" }}
                 onClick={() =>
                   router.push({
@@ -37,7 +40,7 @@ export default function MyBook() {
                 글루ING
               </a>
               <a
-                className="cursor-pointer"
+                className="cursor-pointer font-bold"
                 style={{ color: "#A49E90" }}
                 onClick={() => router.push("/mypage/badgeList")}
               >
@@ -48,7 +51,7 @@ export default function MyBook() {
                 style={{ color: "#A49E90" }}
                 onClick={() => router.push("/")}
               >
-                로그아웃
+                {loginState.isLoggedIn == true ? "로그아웃" : "로그인"}
               </a>
             </div>
           </div>

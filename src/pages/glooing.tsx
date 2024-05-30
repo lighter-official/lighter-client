@@ -23,6 +23,8 @@ import {
   PostingInfo,
 } from "../../interface";
 import { formatDate } from "../../public/utils/utils";
+import { useAtom } from "jotai";
+import { loginAtom, userInfoAtom, writingDataAtom } from "./atoms";
 
 // 새로 등록하는 모달
 const Modal: React.FC<ModalProps> = ({
@@ -273,12 +275,10 @@ const EditModal: React.FC<ModalProps> = ({
       title: title || writingData?.title || null,
       content: content || writingData?.content || null,
     };
-    console.log(editData, "??");
 
     try {
-      // 기존 글 수정 ff
-      await putWriting(id, editData, accessToken);
-      Alert(editData);
+      // 기존 글 수정
+      const editedContent = await putWriting(id, editData, accessToken);
 
       // 페이지 새로 고침 없이 현재 URL에 토큰을 포함하여 다시 로드
       const currentURL = window.location.href;
@@ -388,14 +388,16 @@ const EditModal: React.FC<ModalProps> = ({
 
 export default function Writer() {
   const router = useRouter();
+  const [loginState, setLoginState] = useAtom(loginAtom);
   const [isWriterModalOpen, setIsWriterModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isMiniModalOpen, setIsMiniModalOpen] = useState(false);
   const [isFirstModalOpen, setIsFirstModalOpen] = useState(false);
-  const [userInfo, setUserInfo] = useState<UserInfo>({});
+  const [userInfo, setUserInfo] = useAtom(userInfoAtom);
+  const [writingData, setWritingData] = useAtom(writingDataAtom);
+  // const [userInfo, setUserInfo] = useState<UserInfo>({});
   const [selectedWritingId, setSelectedWritingId] = useState("");
-  const [writingData, setWritingData] = useState<any>({});
-  const [isLoggedIn, setLoggedIn] = useState(true);
+  // const [writingData, setWritingData] = useState<any>({});
   const [remainingTime, setRemainingTime] = useState<string>();
   const [remainingTime2, setRemainingTime2] = useState<string>();
   const [buttonActivated, setButtonActivated] = useState<boolean>(false);
@@ -416,7 +418,6 @@ export default function Writer() {
   useEffect(() => {
     if (badgeCount > 0) {
       setShowBadge(true);
-      console.log(showBadge, "true?");
     } else {
       setShowBadge(false);
     }
@@ -432,6 +433,12 @@ export default function Writer() {
         const currentWritings = await getCurrentSessions(accessToken);
         console.log("현재 글쓰기 데이터 정보: ", currentWritings);
         setCurrentWritingsData(currentWritings);
+
+        setLoginState({
+          username: "",
+          isLoggedIn: true,
+          accessToken: accessToken,
+        });
 
         if (isFirst == true) {
           setIsFirstModalOpen(true);
@@ -625,10 +632,13 @@ export default function Writer() {
   };
 
   const handleLogIn = () => {
-    setLoggedIn((prevLoggedIn) => !prevLoggedIn);
-    if (isLoggedIn === true) {
-      setLoggedIn(false);
-      // nookies.destroy(null, "access_token");
+    if (loginState.isLoggedIn === true) {
+      setLoginState({
+        username: "",
+        isLoggedIn: false,
+        accessToken: null,
+      });
+      nookies.destroy(null, "access_token");
       router.push("/");
     }
   };
@@ -710,7 +720,7 @@ export default function Writer() {
                 나의 보관함
               </a>
               <a className="cursor-pointer" onClick={handleLogIn}>
-                {isLoggedIn === false ? "로그인" : "로그아웃"}
+                {loginState.isLoggedIn === false ? "로그인" : "로그아웃"}
               </a>
             </div>
           </div>
@@ -860,12 +870,12 @@ export default function Writer() {
                   </div>
                 )}
                 {currentWritingsData?.data?.writings !== null && (
-                  <div className="flex flex-col max-h-full mb-5 overflow-y-auto">
+                  <div className="flex flex-col lg:max-h-[560px] gap-y-2 lg:gap-y-4 max-h-[340px] my-5 overflow-y-scroll rounded-xl">
                     {currentWritingsData?.data?.writings?.map(
                       (writing, index) => (
                         <div
                           key={index}
-                          className="flex cursor-pointer px-5 py-5 flex-row w-full h-52 mt-5 rounded-xl"
+                          className="flex cursor-pointer px-5 py-5 flex-row w-full h-52 rounded-xl"
                           style={{ backgroundColor: "#F4EDE0" }}
                           onClick={() => handleEditClick(writing.id)}
                         >
