@@ -4,7 +4,12 @@ import { getCookie } from "..";
 import Image from "next/image";
 import { useSelector } from "react-redux";
 import { useAtom } from "jotai";
-import { loginAtom, userInfoAtom, writingDataAtom } from "../atoms";
+import {
+  accessTokenAtom,
+  loginAtom,
+  userInfoAtom,
+  writingDataAtom,
+} from "../../../public/atoms";
 import { putWriting, submitWriting } from "@/api/api";
 import { useState } from "react";
 
@@ -17,7 +22,7 @@ interface WritingState {
 export const NewWriting = () => {
   const router = useRouter();
   const { writingId } = router.query;
-  const accessToken = getCookie("access_token");
+  const [accessToken] = useAtom(accessTokenAtom);
   const [userInfo, setUserInfo] = useAtom(userInfoAtom);
   const [writingInfo, setWritingInfo] = useAtom(writingDataAtom);
   const [loginState, setLoginState] = useAtom(loginAtom);
@@ -61,6 +66,10 @@ export const NewWriting = () => {
 
     if (typeof writingIdStr !== "string") {
       console.error("Invalid writing ID");
+      return;
+    }
+    if (!accessToken) {
+      console.error("Access token is not available");
       return;
     }
 

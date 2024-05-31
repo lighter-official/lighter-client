@@ -6,11 +6,11 @@ import Image from "next/image";
 import BookItem from "../../components/BookItem";
 import { getCookie } from "..";
 import { useAtom } from "jotai";
-import { loginAtom } from "../atoms";
+import { accessTokenAtom, loginAtom } from "../../../public/atoms";
 
 export default function MyBook() {
   const router = useRouter();
-  const accessToken = getCookie("access_token");
+  const [accessToken] = useAtom(accessTokenAtom);
   const [loginState, setLoginState] = useAtom(loginAtom);
 
   return (
@@ -51,7 +51,7 @@ export default function MyBook() {
                 style={{ color: "#A49E90" }}
                 onClick={() => router.push("/")}
               >
-                {loginState.isLoggedIn == true ? "로그아웃" : "로그인"}
+                {loginState.isLoggedIn ? "로그아웃" : "로그인"}
               </a>
             </div>
           </div>

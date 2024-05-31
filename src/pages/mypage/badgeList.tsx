@@ -2,7 +2,12 @@
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useAtom } from "jotai";
-import { loginAtom, userInfoAtom, writingDataAtom } from "../atoms";
+import {
+  accessTokenAtom,
+  loginAtom,
+  userInfoAtom,
+  writingDataAtom,
+} from "../../../public/atoms";
 import { getCookie } from "..";
 import { getGlooingInfo, getUserInfo } from "@/api/api";
 import "../globals.css";
@@ -73,7 +78,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
 
 export default function BadgeList() {
   const router = useRouter();
-  const accessToken = getCookie("access_token");
+  const [accessToken] = useAtom(accessTokenAtom);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggedIn, setLoggedIn] = useState(false);
   const [userInfo, setUserInfo] = useAtom(userInfoAtom);

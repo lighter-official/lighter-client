@@ -5,10 +5,12 @@ import "../globals.css";
 import Image from "next/image";
 import BookItem from "../../components/BookItem";
 import { getCookie } from "..";
+import { useAtom } from "jotai";
+import { accessTokenAtom } from "../../../public/atoms";
 
 export default function MyBook() {
   const router = useRouter();
-  const accessToken = getCookie("access_token");
+  const [accessToken] = useAtom(accessTokenAtom);
 
   return (
     <div className="flex flex-col my-[50px] w-full">

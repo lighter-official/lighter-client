@@ -1,4 +1,4 @@
-import { loginAtom, userInfoAtom, writingDataAtom } from "@/pages/atoms";
+import { loginAtom, userInfoAtom, writingDataAtom } from "../atoms";
 import { useAtom } from "jotai";
 import { useRouter } from "next/router";
 import nookies from "nookies";

@@ -155,7 +155,7 @@ export const submitWriting = async (
   }
 };
 
-// 글 목록 & 정보 가져오는 API
+// 클릭한 글의 정보를 가져오는 API
 export const getWritingInfo = async (id: string, accessToken: string) => {
   try {
     const config = {

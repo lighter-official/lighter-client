@@ -3,14 +3,19 @@ import { useRouter } from "next/router";
 import React, { useState } from "react";
 import "../globals.css";
 import { useAtom } from "jotai";
-import { loginAtom, userInfoAtom, writingDataAtom } from "../atoms";
+import {
+  accessTokenAtom,
+  loginAtom,
+  userInfoAtom,
+  writingDataAtom,
+} from "../../../public/atoms";
 import Image from "next/image";
 import BookItem from "../../components/BookItem";
 import { getCookie } from "..";
 
 export default function UnfinishedBook() {
   const router = useRouter();
-  const accessToken = getCookie("access_token");
+  const [accessToken] = useAtom(accessTokenAtom);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loginState, setLoginState] = useAtom(loginAtom);
   const [userInfo, setUserInfo] = useAtom(userInfoAtom);

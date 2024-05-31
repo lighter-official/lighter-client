@@ -7,6 +7,8 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Dropdown from "../components/Dropdown";
+import { useAtom } from "jotai";
+import { accessTokenAtom } from "../../public/atoms";
 
 export default function Settings() {
   const router = useRouter();
@@ -26,7 +28,8 @@ export default function Settings() {
     startAt[1] == undefined ||
     startAt[2] == undefined ||
     !writingHours;
-  const accessToken = router.query.access_token as string;
+
+  const [accessToken] = useAtom(accessTokenAtom);
 
   useEffect(() => {
     console.log("subject updated:", subject);
@@ -46,6 +49,10 @@ export default function Settings() {
     }
     if (startAt[0] === "PM") {
       adjustedHour += 12; // PM
+    }
+    if (!accessToken) {
+      console.error("Access token is not available");
+      return;
     }
 
     try {

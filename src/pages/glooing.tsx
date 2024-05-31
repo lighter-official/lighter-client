@@ -1,8 +1,8 @@
 // @ts-nocheck
 "use client";
 import {
+  getGlooingInfo,
   getUserInfo,
-  getCurrentSessions,
   getWritingInfo,
   putWriting,
   startWriting,
@@ -12,14 +12,18 @@ import {
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import nookies from "nookies";
-import { Redirection, getCookie } from ".";
 import "./globals.css";
 import { day } from "@/lib/dayjs";
 import Image from "next/image";
 import { ModalProps, PostingInfo } from "../../interface";
 import { formatDate } from "../../public/utils/utils";
 import { useAtom } from "jotai";
-import { loginAtom, userInfoAtom, writingDataAtom } from "./atoms";
+import {
+  loginAtom,
+  userInfoAtom,
+  accessTokenAtom,
+  writingDataAtom,
+} from "../../public/atoms";
 
 // 새로 등록하는 모달
 const Modal: React.FC<ModalProps> = ({
@@ -37,7 +41,7 @@ const Modal: React.FC<ModalProps> = ({
 }) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const accessToken = getCookie("access_token");
+  const [accessToken] = useAtom(accessTokenAtom);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const disabled = !title || !content;
 
@@ -221,7 +225,7 @@ const EditModal: React.FC<ModalProps> = ({
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const accessToken = router.query.access_token as string;
+  const [accessToken] = useAtom(accessTokenAtom);
   const [isConfirmationModal2Open, setIsConfirmationModal2Open] =
     useState(false);
   const disabled = !title || !content;
@@ -414,22 +418,9 @@ export default function Writer() {
   }, [postedWriting?.newBadges?.length]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const userInfoData = await fetchUserInfo();
-        userInfoAtom.setState(userInfoData);
-        setUserInfo(userInfo);
-
-        const writingInfo = await fetchWritingData();
-        writingDataAtom.setState(writingInfoData);
-        setWritingInfo(writingInfo);
-      } catch (error) {
-        console.error("Error refreshing data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
+    console.log(userInfo);
+    console.log(writingInfo);
+  }, [userInfo, writingInfo]);
 
   useEffect(() => {
     if (isFirst == true) {
@@ -640,11 +631,9 @@ export default function Writer() {
   }
 
   const completion_percentage = writingInfo?.data?.progressPercentage;
-  const accessToken = getCookie("access_token");
+  const [accessToken] = useAtom(accessTokenAtom);
 
   useEffect(() => {
-    const accessToken = getCookie("access_token");
-
     // 페이지에 변동사항이 있을 때 리다이렉트
     if (accessToken) {
       router.push({

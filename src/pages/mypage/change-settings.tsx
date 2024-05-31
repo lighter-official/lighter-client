@@ -3,12 +3,15 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import "../globals.css";
 import Image from "next/image";
-import { getCookie } from "..";
 import { getCurrentSessions, editWritingSetUp } from "@/api/api";
 import Dropdown from "@/components/Dropdown";
 import { SettingData } from "../../../interface";
 import { useAtom } from "jotai";
-import { loginAtom, userInfoAtom, writingDataAtom } from "../atoms";
+import {
+  accessTokenAtom,
+  loginAtom,
+  writingDataAtom,
+} from "../../../public/atoms";
 
 interface ModalProps {
   isOpen: boolean;
@@ -63,7 +66,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
 
 export default function ChangeSettings() {
   const router = useRouter();
-  const accessToken = getCookie("access_token");
+  const [accessToken] = useAtom(accessTokenAtom);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentSessionInfo, setCurrentSessionInfo] = useState<any>({});
   const [writingTime, setWritingTime] = useState(
@@ -82,10 +85,13 @@ export default function ChangeSettings() {
   const writingData = useAtom(writingDataAtom);
   useEffect(() => {
     const fetchUserData = async () => {
+      if (!accessToken) {
+        console.error("Access token is not available");
+        return;
+      }
       try {
         const currentSessionInfo = await getCurrentSessions(accessToken);
         console.log("현재 글쓰기 데이터 정보: ", currentSessionInfo);
-        console.log(writingData[0].data);
         setCurrentSessionInfo(currentSessionInfo);
         setChangedData({
           page: currentSessionInfo?.data?.page,
@@ -116,6 +122,10 @@ export default function ChangeSettings() {
 
   const changeSessionSettings = async () => {
     console.log("바꿀 설정 정보: ", changedData);
+    if (!accessToken) {
+      console.error("Access token is not available");
+      return;
+    }
     try {
       const changeOptions = await editWritingSetUp(
         currentSessionInfo?.data?.id,
@@ -233,7 +243,7 @@ export default function ChangeSettings() {
                 </div>
                 <div className="flex text-[15px] lg:text-[20px] cursor-pointer lg:mt-[20px]">
                   글쓰기 시간을 변경할 수 있어요. (
-                  {writingData[0].data.modifyingCount}/3)
+                  {writingData[0]?.data?.modifyingCount}/3)
                 </div>
                 <div
                   className="flex text-[14px] cursor-pointer mt-[8px]"
