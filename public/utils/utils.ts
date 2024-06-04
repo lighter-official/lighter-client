@@ -2,6 +2,26 @@ import { loginAtom, userInfoAtom, writingDataAtom } from "../atoms";
 import { useAtom } from "jotai";
 import { useRouter } from "next/router";
 import nookies from "nookies";
+import { GetServerSidePropsContext } from "next";
+import { useState } from "react";
+
+export const getAccessTokenFromCookies = (
+  ctx: GetServerSidePropsContext
+): string | null => {
+  const cookies = nookies.get(ctx);
+  return cookies.access_token || null;
+};
+
+export const useMenu = () => {
+  const router = useRouter();
+  const [showMenu, setShowMenu] = useState(false);
+  const toggleMenu = () => {
+    setShowMenu((prevShowMenu) => !prevShowMenu);
+    console.log(showMenu, "showMenu");
+  };
+
+  return { showMenu, setShowMenu, toggleMenu, router };
+};
 
 export function formatDate(dateString: string) {
   const dateObject = new Date(dateString);

@@ -14,6 +14,8 @@ import "../globals.css";
 import Image from "next/image";
 import BadgeItem from "../../components/BadgeItem";
 import { BadgeItemProps, UserInfo } from "../../../interface";
+import { useMenu } from "../../../public/utils/utils";
+import Menu from "@/components/Menu";
 
 interface BadgeItem {
   badge: {
@@ -84,6 +86,7 @@ export default function BadgeList() {
   const [userInfo, setUserInfo] = useAtom(userInfoAtom);
   const [writingData, setWritingData] = useAtom(writingDataAtom);
   const [loginState, setLoginState] = useAtom(loginAtom);
+  const { showMenu, setShowMenu, toggleMenu } = useMenu();
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -98,49 +101,14 @@ export default function BadgeList() {
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
       <div className="flex flex-row mx-auto w-full">
         <div className="flex flex-col w-full mx-[120px] sm:max-w-[682px] lg:max-w-none">
-          <div className="flex flex-row justify-between sm:max-w-[682px] lg:max-w-none lg:w-full">
-            <Image
-              className="cursor-pointer lg:mb-[20px] mb-0 w-[74px] lg:w-[105px] h-[24px] lg:h-[35px]"
-              src="https://gloo-image-bucket.s3.amazonaws.com/archive/logo.svg"
-              width="105"
-              height="35"
-              alt="Logo"
-            />
-            <Image
-              className="lg:hidden block h-[18px] w-[18px]"
-              src="https://gloo-image-bucket.s3.amazonaws.com/archive/Group 57.png"
-              width={18}
-              height={18}
-              alt="menu"
-            />
-            <div className="hidden lg:block flex-row">
-              <a
-                className="lg:pr-10 cursor-pointer"
-                onClick={() =>
-                  router.push({
-                    pathname: "/glooing",
-                    query: { access_token: accessToken },
-                  })
-                }
-              >
-                글루ING
-              </a>
-              <a
-                className="lg:pr-10 cursor-pointer font-bold"
-                onClick={() =>
-                  router.push({
-                    pathname: "/mypage/badgeList",
-                    query: { access_token: accessToken },
-                  })
-                }
-              >
-                나의 보관함
-              </a>
-              <a className="cursor-pointer" onClick={() => router.push("/")}>
-                {loginState.isLoggedIn == true ? "로그아웃" : "로그인"}
-              </a>
-            </div>
-          </div>
+          <Menu
+            showMenu={showMenu}
+            setShowMenu={setShowMenu}
+            toggleMenu={toggleMenu}
+            accessToken={accessToken}
+            loginState={loginState}
+            router={router}
+          />
           <hr
             className="lg:block hidden w-full bg-[#7C766C] h-[1px] sm:my-[17px] lg:my-0"
             style={{ color: "#7C766C", borderColor: "#7C766C" }}
@@ -155,7 +123,12 @@ export default function BadgeList() {
                   <div
                     className="flex text-[20px] font-normal lg:font-bold cursor-pointer"
                     style={{ color: "#CEB292" }}
-                    onClick={() => router.push("/mypage/badgeList")}
+                    onClick={() =>
+                      router.push({
+                        pathname: "/mypage/badgeList",
+                        query: { access_token: accessToken },
+                      })
+                    }
                   >
                     나의 뱃지
                   </div>
@@ -166,21 +139,36 @@ export default function BadgeList() {
                   <div
                     className="hidden lg:flex text-[20px] cursor-pointer"
                     style={{ color: "#CEB292" }}
-                    onClick={() => router.push("/mypage/finished")}
+                    onClick={() =>
+                      router.push({
+                        pathname: "/mypage/finished",
+                        query: { access_token: accessToken },
+                      })
+                    }
                   >
                     내가 발행한 책
                   </div>
                   <div
                     className="hidden lg:flex text-[20px] cursor-pointer"
                     style={{ color: "#CEB292" }}
-                    onClick={() => router.push("/mypage/unfinished")}
+                    onClick={() =>
+                      router.push({
+                        pathname: "/mypage/unfinished",
+                        query: { access_token: accessToken },
+                      })
+                    }
                   >
                     못다쓴 책
                   </div>
                   <div
                     className="hidden lg:flex text-[20px] cursor-pointer"
                     style={{ color: "#CEB292" }}
-                    onClick={() => router.push("/mypage/change-settings")}
+                    onClick={() =>
+                      router.push({
+                        pathname: "/mypage/change-settings",
+                        query: { access_token: accessToken },
+                      })
+                    }
                   >
                     설정
                   </div>

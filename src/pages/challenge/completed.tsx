@@ -1,16 +1,25 @@
 "use client";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import "../globals.css";
 import Image from "next/image";
-import BookItem from "../../components/BookItem";
-import { getCookie } from "..";
 import { useAtom } from "jotai";
-import { accessTokenAtom } from "../../../public/atoms";
+import {
+  accessTokenAtom,
+  userInfoAtom,
+  writingDataAtom,
+} from "../../../public/atoms";
 
 export default function MyBook() {
   const router = useRouter();
   const [accessToken] = useAtom(accessTokenAtom);
+  const [writingInfo, setWritingInfo] = useAtom(writingDataAtom);
+  const [userInfo, setUserInfo] = useAtom(userInfoAtom);
+
+  useEffect(() => {
+    console.log(userInfo);
+    console.log(writingInfo);
+  }, [userInfo, writingInfo]);
 
   return (
     <div className="flex flex-col my-[50px] w-full">
@@ -41,7 +50,12 @@ export default function MyBook() {
               <a
                 className="cursor-pointer"
                 style={{ color: "#A49E90" }}
-                onClick={() => router.push("/mypage/badgeList")}
+                onClick={() =>
+                  router.push({
+                    pathname: "/mypage/badgeList",
+                    query: { access_token: accessToken },
+                  })
+                }
               >
                 나의 보관함
               </a>
@@ -63,7 +77,7 @@ export default function MyBook() {
               <div className="w-full ml-2">
                 <div className="flex flex-col items-center gap-y-2">
                   <div className="w-full text-black mt-[18px] text-center text-[22px] font-bold">
-                    ㅇㅇㅇ님의
+                    {userInfo?.data?.nickname}님의
                     <br />
                     N번째 전자책이 발행되었습니다!
                   </div>

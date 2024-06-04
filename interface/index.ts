@@ -1,6 +1,36 @@
+import { Session } from "inspector";
+
+export interface StartAt {
+  hour: number;
+  minute: number;
+}
+
+export interface SessionInfo {
+  id: number;
+  coverImageType: string | null;
+  createdAt: string;
+  finishDate: string;
+  isActivated: boolean;
+  modifyingCount: number;
+  nearestFinishDate: string;
+  nearestStartDate: string;
+  page: number;
+  period: number;
+  progressPercentage: number;
+  progressStep: number;
+  startAt: StartAt;
+  startDate: string;
+  status: string;
+  subject: string;
+  updatedAt: string;
+  userId: string;
+  writingHours: number;
+}
+
 export interface WritingData {
   code: string;
   data: {
+    coverImageType: any;
     createdAt: string;
     finishDate: string;
     id: number;
@@ -12,14 +42,14 @@ export interface WritingData {
     period: number;
     progressPercentage: number;
     progressStep: number;
-    startAt: { hour: number; minute: number };
+    startAt: StartAt;
     startDate: string;
     status: string;
     subject: string;
     updatedAt: string;
     userId: string;
     writingHours: number;
-    writings: any[]; // writings 데이터 형식이 제공되지 않아서 임시로 any[] 사용
+    writings?: any[]; // writings 데이터 형식이 제공되지 않아서 임시로 any[] 사용
   };
   statusCode: number;
   success: boolean;
@@ -29,7 +59,7 @@ export interface SettingData {
   subject: string;
   period: number;
   page: number;
-  startAt: { hour: number; minute: number | undefined };
+  startAt: StartAt;
   writingHours: number;
 }
 
@@ -52,6 +82,22 @@ export interface BadgeItemProps {
   createdAt: string;
   id: string;
   userId: string;
+}
+
+export interface EditData {
+  code: string;
+  data: {
+    content: string;
+    createdAt: string;
+    id: number;
+    step: number;
+    title: string;
+    updatedAt: string;
+    writingSession: SessionInfo;
+    writingSessionId: number;
+  };
+  statusCode: number;
+  success: boolean;
 }
 
 export interface UserInfo {

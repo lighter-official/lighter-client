@@ -24,6 +24,90 @@ import {
   accessTokenAtom,
   writingDataAtom,
 } from "../../public/atoms";
+import { useMenu } from "../../public/utils/utils";
+import Menu from "../components/Menu";
+
+const Menubar = ({ toggleMenu, showMenu, setShowMenu }) => {
+  const router = useRouter();
+  const [accessToken] = useAtom(accessTokenAtom);
+  return (
+    <div>
+      {showMenu && (
+        <div
+          className="lg:hidden block fixed inset-0 bg-black bg-opacity-40"
+          onClick={() => setShowMenu(false)}
+        ></div>
+      )}
+      <div
+        className={`lg:hidden block fixed top-0 right-0 h-screen w-[50%] bg-[#302F2D] transition-transform transform ${
+          showMenu ? "translate-x-5" : "translate-x-full"
+        }`}
+        style={{ zIndex: 10 }}
+      >
+        <div className="flex flex-col gap-y-4 ml-[60px] mt-[140px] justify-center">
+          <div
+            className="text-[#CEB292] text-[20px] cursor-pointer"
+            onClick={() => setShowMenu(false)}
+          >
+            글루ING
+          </div>
+          <div className="text-[#858178] text-[20px] cursor-pointer">
+            나의 보관함
+          </div>
+          <div className="flex flex-col ml-3 gap-y-3">
+            <div
+              className="text-[#858178] text-[16px] cursor-pointer"
+              onClick={() =>
+                router.push({
+                  pathname: "/mypage/badgeList",
+                  query: { access_token: accessToken },
+                })
+              }
+            >
+              - 나의 뱃지
+            </div>
+            <div
+              className="text-[#858178] text-[16px] cursor-pointer"
+              onClick={() =>
+                router.push({
+                  pathname: "/mypage/finished",
+                  query: { access_token: accessToken },
+                })
+              }
+            >
+              - 내가 발행한 책
+            </div>
+            <div
+              className="text-[#858178] text-[16px] cursor-pointer"
+              onClick={() =>
+                router.push({
+                  pathname: "/mypage/unfinished",
+                  query: { access_token: accessToken },
+                })
+              }
+            >
+              - 못다쓴 책
+            </div>
+          </div>
+          <div
+            className="text-[#858178] text-[20px] cursor-pointer"
+            onClick={() =>
+              router.push({
+                pathname: "/mypage/change-settings",
+                query: { access_token: accessToken },
+              })
+            }
+          >
+            설정
+          </div>
+          <div className="text-[#858178] text-[20px] cursor-pointer">
+            로그아웃
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // 새로 등록하는 모달
 const Modal: React.FC<ModalProps> = ({
@@ -220,7 +304,7 @@ const EditModal: React.FC<ModalProps> = ({
   onClose,
   data,
   id,
-  writingData,
+  editData,
 }) => {
   const router = useRouter();
   const [title, setTitle] = useState("");
@@ -270,14 +354,14 @@ const EditModal: React.FC<ModalProps> = ({
 
   const handleConfirmPost = async () => {
     // 작성한 글을 서버에 저장
-    const editData = {
-      title: title || writingData?.title || null,
-      content: content || writingData?.content || null,
+    const editedData = {
+      title: title || editData?.title || null,
+      content: content || editData?.content || null,
     };
 
     try {
       // 기존 글 수정
-      const editedContent = await putWriting(id, editData, accessToken);
+      const editedContent = await putWriting(id, editedData, accessToken);
 
       // 페이지 새로 고침 없이 현재 URL에 토큰을 포함하여 다시 로드
       const currentURL = window.location.href;
@@ -301,9 +385,7 @@ const EditModal: React.FC<ModalProps> = ({
       ></div>
       <div className="relative flex flex-col bg-white w-[800px] h-[550px] rounded-lg z-50">
         <div className="p-8">
-          <div className="text-[16px]">
-            {writingData?.data?.step + "번째 글"}
-          </div>
+          <div className="text-[16px]">{editData?.step + "번째 글"}</div>
           <div
             className="mb-[10px] font-bold text-[22px]"
             style={{ color: "#646464" }}
@@ -313,7 +395,7 @@ const EditModal: React.FC<ModalProps> = ({
           <textarea
             className="text-[40px] w-full mb-[10px] h-[50px]"
             placeholder="제목을 입력해주세요."
-            value={title || writingData?.data?.title}
+            value={title || editData?.title}
             onChange={handleTitleChange}
           />
 
@@ -324,7 +406,7 @@ const EditModal: React.FC<ModalProps> = ({
           <textarea
             className="mt-[20px] w-full h-[220px] overflow-y-auto"
             placeholder="내용을 입력해주세요."
-            value={content || writingData?.data?.content}
+            value={content || editData?.content}
             onChange={(e) => {
               const inputValue = e.target.value;
               // 최대 입력 글자수 - 4000자로 제한
@@ -394,6 +476,7 @@ export default function Writer() {
   const [isFirstModalOpen, setIsFirstModalOpen] = useState(false);
   const [userInfo, setUserInfo] = useAtom(userInfoAtom);
   const [writingInfo, setWritingInfo] = useAtom(writingDataAtom);
+  const [editData, setEditData] = useState<EditData>({});
   const [selectedWritingId, setSelectedWritingId] = useState("");
   const [remainingTime, setRemainingTime] = useState<string>();
   const [remainingTime2, setRemainingTime2] = useState<string>();
@@ -408,6 +491,18 @@ export default function Writer() {
   const [showBadge, setShowBadge] = useState(false);
   const [postedWriting, setPostedWriting] = useState<PostingInfo>({});
   const badgeCount = postedWriting?.newBadges?.length || 0;
+  // const [showMenu, setShowMenu] = useState(false);
+  const { showMenu, setShowMenu, toggleMenu } = useMenu();
+  // const toggleMenu = () => {
+  //   setShowMenu((prevShowMenu) => !prevShowMenu);
+  //   console.log(showMenu, "showMenu");
+  // };
+
+  // useEffect(() => {
+  //   const cookies = nookies.get(null);
+  //   const accessToken = cookies.access_token || null;
+  //   setAccessToken(accessToken);
+  // }, [setAccessToken]);
 
   useEffect(() => {
     if (badgeCount > 0) {
@@ -606,8 +701,9 @@ export default function Writer() {
   const handleEditClick = async (writingId: string) => {
     try {
       const writingData = await getWritingInfo(writingId, accessToken);
-      setWritingData(writingData);
-      setSelectedWritingId(writingId);
+      setEditData(writingData?.data);
+      setSelectedWritingId(writingData?.data?.id);
+      console.log("writing?", writingData?.data, writingId, selectedWritingId);
       setIsEditModalOpen(true);
     } catch (error) {
       console.error("Error fetching writing data:", error);
@@ -662,49 +758,15 @@ export default function Writer() {
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
       <div className="flex flex-row mx-auto w-full">
         <div className="flex flex-col w-full mx-[120px]">
-          <div className="flex flex-row justify-between sm:max-w-[682px] lg:max-w-none lg:w-full">
-            <Image
-              className="cursor-pointer lg:mb-[20px] mb-0 w-[74px] lg:w-[105px] h-[24px] lg:h-[35px]"
-              src="https://gloo-image-bucket.s3.amazonaws.com/archive/logo.svg"
-              width="105"
-              height="35"
-              alt="Logo"
-            />
-            <Image
-              className="lg:hidden block h-[18px] w-[18px]"
-              src="https://gloo-image-bucket.s3.amazonaws.com/archive/Group 57.png"
-              width={18}
-              height={18}
-              alt="menu"
-            />
-            <div className="hidden lg:block flex-row">
-              <a
-                className="lg:pr-10 cursor-pointer font-bold"
-                onClick={() =>
-                  router.push({
-                    pathname: "/glooing",
-                    query: { access_token: accessToken },
-                  })
-                }
-              >
-                글루ING
-              </a>
-              <a
-                className="lg:pr-10 cursor-pointer"
-                onClick={() =>
-                  router.push({
-                    pathname: "/mypage/badgeList",
-                    query: { access_token: accessToken },
-                  })
-                }
-              >
-                나의 보관함
-              </a>
-              <a className="cursor-pointer" onClick={handleLogIn}>
-                {loginState.isLoggedIn === false ? "로그인" : "로그아웃"}
-              </a>
-            </div>
-          </div>
+          <Menu
+            showMenu={showMenu}
+            setShowMenu={setShowMenu}
+            toggleMenu={toggleMenu}
+            handleLogIn={handleLogIn}
+            accessToken={accessToken}
+            loginState={loginState}
+            router={router}
+          />
           <hr
             className="lg:block hidden w-full bg-[#7C766C] h-[1px] sm:my-[17px] lg:my-0"
             style={{ color: "#7C766C", borderColor: "#7C766C" }}
@@ -744,37 +806,39 @@ export default function Writer() {
                 >
                   {buttonActivated === true ? remainingTime2 : remainingTime}
                 </div>
-                <div className="flex justify-center items-center mt-[50px] lg:mt-[100px] relative">
-                  <button
-                    className={`rounded-lg text-[14px] lg:text-[16px] lg:rounded-xl w-[210px] lg:w-[333px] h-[40px] lg:h-[62px] ${
-                      buttonActivated === true
-                        ? "bg-orange-500 text-black"
-                        : "bg-zinc-700  text-white"
-                    }`}
-                    disabled={!buttonActivated}
-                    onClick={handleNewWriting}
-                  >
-                    글 작성하기
-                  </button>
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "5%",
-                      left: "68%",
-                      transform: "translate(-50%, -50%)",
-                      zIndex: 0,
-                    }}
-                  >
-                    {buttonActivated === false && (
-                      <Image
-                        src="https://gloo-image-bucket.s3.amazonaws.com/archive/soon2.png"
-                        width={120}
-                        height={42}
-                        alt="soon2"
-                      />
-                    )}
+                {!showMenu && (
+                  <div className="flex justify-center items-center mt-[50px] lg:mt-[100px] relative">
+                    <button
+                      className={`rounded-lg text-[14px] lg:text-[16px] lg:rounded-xl w-[210px] lg:w-[333px] h-[40px] lg:h-[62px] ${
+                        buttonActivated === true
+                          ? "bg-orange-500 text-black"
+                          : "bg-zinc-700  text-white"
+                      }`}
+                      disabled={!buttonActivated}
+                      onClick={handleNewWriting}
+                    >
+                      글 작성하기
+                    </button>
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "5%",
+                        left: "68%",
+                        transform: "translate(-50%, -50%)",
+                        zIndex: 1,
+                      }}
+                    >
+                      {buttonActivated === false && (
+                        <Image
+                          src="https://gloo-image-bucket.s3.amazonaws.com/archive/soon2.png"
+                          width={120}
+                          height={42}
+                          alt="soon2"
+                        />
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
             <div
@@ -843,14 +907,12 @@ export default function Writer() {
                     {writingInfo?.data?.writings?.map((writing, index) => (
                       <div
                         key={index}
-                        className="flex cursor-pointer px-5 py-5 flex-row w-full h-52 rounded-xl"
+                        className="flex cursor-pointer px-5 py-5 flex-row w-full lg:h-[200px] h-[150px] rounded-xl"
                         style={{ backgroundColor: "#F4EDE0" }}
                         onClick={() => handleEditClick(writing.id)}
                       >
-                        <div className="my-3 mx-3">
-                          <div className="w-full h-10 text-xl">
-                            {writing?.title}
-                          </div>
+                        <div className="my-3 mx-">
+                          <div className="w-full text-xl">{writing?.title}</div>
                           <div
                             className="mt-3 max-w-full truncate text-base"
                             style={{ color: "#C5BCAB" }}
@@ -905,7 +967,7 @@ export default function Writer() {
                 className="absolute w-full h-full bg-gray-800 opacity-50"
                 onClick={handleCloseMiniModal}
               ></div>
-              <div className="flex flex-col bg-white w-[264px] max-w-[328px] min-h-[171px] max-h-[400px] text-center justify-center items-center rounded-lg z-50">
+              <div className="flex flex-col bg-white w-[264px] max-w-[328px] py-[20px] min-h-[171px] max-h-[500px] text-center justify-center items-center rounded-lg z-50">
                 <div className="text-center items-center flex flex-col">
                   <div className="text-[15px] font-bold mb-[2px]">
                     {writingInfo?.data?.writings.length + 1}번째
@@ -973,7 +1035,7 @@ export default function Writer() {
         isOpen={isEditModalOpen}
         onClose={handleCloseEditModal}
         id={selectedWritingId}
-        writingData={writingInfo}
+        editData={editData}
       />
     </div>
   );

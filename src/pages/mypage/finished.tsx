@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../globals.css";
 import { useAtom } from "jotai";
 import {
@@ -12,54 +12,86 @@ import {
 import Image from "next/image";
 import BookItem from "../../components/BookItem";
 import { getCookie } from "..";
+import { formatDate, useMenu } from "../../../public/utils/utils";
+import { UserInfo } from "../../../interface";
+import Menu from "@/components/Menu";
 
-interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
+// interface ModalProps {
+//   isOpen: boolean;
+//   onClose: () => void;
+// }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
-  if (!isOpen) return null;
+// const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
+//   if (!isOpen) return null;
+
+//   return (
+//     <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
+//       <div
+//         className="absolute w-full h-full bg-gray-800 opacity-50"
+//         onClick={onClose}
+//       ></div>
+//       <div className="relative flex flex-col bg-white w-[800px] h-[550px] rounded-lg z-50">
+//         <div className="p-8">
+//           <div className="text-[16px]">4번째 글</div>
+//           <div className="mb-[10px] text-[22px]">뮤직비디오 해석하기</div>
+//           <textarea
+//             className="text-[40px] w-full mb-[30px] h-[50px]"
+//             placeholder="제목을 입력해주세요."
+//           />
+//           <hr
+//             className="w-full bg-[#7C766C] h-[1px] my-[17px]"
+//             style={{ color: "#7C766C", borderColor: "#7C766C" }}
+//           />
+//           <textarea
+//             className="mt-[30px] w-full h-[220px] overflow-y-auto"
+//             placeholder="내용을 입력해주세요."
+//           />
+//         </div>
+//         <div className="flex flex-col w-full rounded-md">
+//           <div
+//             className="h-[100px] flex justify-between  p-8 items-center rounded-md w-full"
+//             style={{ backgroundColor: "#F1F1F1" }}
+//           >
+//             <a className="items-start justify-start flex">남은 시간 01:03:55</a>
+//             <button
+//               className="w-[152px] h-[53px] rounded-md"
+//               style={{ backgroundColor: "#979797" }}
+//               onClick={onClose}
+//             >
+//               저장
+//             </button>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+const FinshedItem = ({ data }: UserInfo) => {
+  const filteredWritingSessions = data?.writingSessions?.filter(
+    (session: any) => !session.isActivated && session.progressPercentage == 100 //수정 필요
+  );
 
   return (
-    <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
-      <div
-        className="absolute w-full h-full bg-gray-800 opacity-50"
-        onClick={onClose}
-      ></div>
-      <div className="relative flex flex-col bg-white w-[800px] h-[550px] rounded-lg z-50">
-        <div className="p-8">
-          <div className="text-[16px]">4번째 글</div>
-          <div className="mb-[10px] text-[22px]">뮤직비디오 해석하기</div>
-          <textarea
-            className="text-[40px] w-full mb-[30px] h-[50px]"
-            placeholder="제목을 입력해주세요."
-          />
-          <hr
-            className="w-full bg-[#7C766C] h-[1px] my-[17px]"
-            style={{ color: "#7C766C", borderColor: "#7C766C" }}
-          />
-          <textarea
-            className="mt-[30px] w-full h-[220px] overflow-y-auto"
-            placeholder="내용을 입력해주세요."
-          />
-        </div>
-        <div className="flex flex-col w-full rounded-md">
-          <div
-            className="h-[100px] flex justify-between  p-8 items-center rounded-md w-full"
-            style={{ backgroundColor: "#F1F1F1" }}
-          >
-            <a className="items-start justify-start flex">남은 시간 01:03:55</a>
-            <button
-              className="w-[152px] h-[53px] rounded-md"
-              style={{ backgroundColor: "#979797" }}
-              onClick={onClose}
-            >
-              저장
-            </button>
+    <div className="flex flex-col max-h-[643px] overflow-y-auto mb-[21px]">
+      {filteredWritingSessions?.length > 0 ? (
+        filteredWritingSessions.map((session: any) => (
+          <div key={session.id} className="mt-2 flex flex-row gap-x-[46px]">
+            <BookItem
+              imageUrl="https://gloo-image-bucket.s3.amazonaws.com/archive/book_yet.png"
+              title={session?.subject}
+              date={formatDate(session?.finishDate)}
+            />
           </div>
+        ))
+      ) : (
+        <div
+          style={{ color: "#D5C8AE" }}
+          className="text-[18px] lg:text-[20px] font-bold"
+        >
+          아직 발행한 책이 없어요.
         </div>
-      </div>
+      )}
     </div>
   );
 };
@@ -68,69 +100,33 @@ export default function MyBook() {
   const router = useRouter();
   const [accessToken] = useAtom(accessTokenAtom);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { showMenu, setShowMenu, toggleMenu } = useMenu();
   const [loginState, setLoginState] = useAtom(loginAtom);
   const [userInfo, setUserInfo] = useAtom(userInfoAtom);
-  const [writingData, setWritingData] = useAtom(writingDataAtom);
+  const [writingInfo, setWritingInfo] = useAtom(writingDataAtom);
+  const filteredWritingSessions = userInfo?.data?.writingSessions?.filter(
+    (session: any) => !session.isActivated && session.progressPercentage == 100 //수정 필요
+  );
 
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+  useEffect(() => {
+    console.log(userInfo);
+    console.log(writingInfo);
+    console.log(accessTokenAtom);
+  }, [userInfo, writingInfo]);
 
   return (
     <div className="flex flex-col my-[50px] w-full">
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
       <div className="flex flex-row mx-auto w-full">
         <div className="flex flex-col w-full mx-[120px] sm:max-w-[682px] lg:max-w-none">
-          <div className="flex flex-row justify-between sm:max-w-[682px] lg:max-w-none lg:w-full">
-            <Image
-              className="cursor-pointer lg:mb-[20px] mb-0 w-[74px] lg:w-[105px] h-[24px] lg:h-[35px]"
-              src="https://gloo-image-bucket.s3.amazonaws.com/archive/logo.svg"
-              width="105"
-              height="35"
-              alt="Logo"
-            />
-            <Image
-              className="lg:hidden block h-[18px] w-[18px]"
-              src="https://gloo-image-bucket.s3.amazonaws.com/archive/Group 57.png"
-              width={18}
-              height={18}
-              alt="menu"
-            />
-            <div className="hidden lg:block flex-row">
-              <a
-                className="lg:pr-10 cursor-pointer"
-                onClick={() =>
-                  router.push({
-                    pathname: "/glooing",
-                    query: { access_token: accessToken },
-                  })
-                }
-              >
-                글루ING
-              </a>
-              <a
-                className="lg:pr-10 cursor-pointer font-bold"
-                onClick={() =>
-                  router.push({
-                    pathname: "/mypage/badgeList",
-                    query: { access_token: accessToken },
-                  })
-                }
-              >
-                나의 보관함
-              </a>
-              <a
-                className="cursor-pointer"
-                // onClick={handleLogIn}
-              >
-                {loginState.isLoggedIn == true ? "로그아웃" : "로그인"}
-              </a>
-            </div>
-          </div>
+          <Menu
+            showMenu={showMenu}
+            setShowMenu={setShowMenu}
+            toggleMenu={toggleMenu}
+            accessToken={accessToken}
+            loginState={loginState}
+            router={router}
+          />
           <hr
             className="lg:block hidden w-full bg-[#7C766C] h-[1px] sm:my-[17px] lg:my-0"
             style={{ color: "#7C766C", borderColor: "#7C766C" }}
@@ -145,14 +141,24 @@ export default function MyBook() {
                   <div
                     className="hidden lg:flex text-[20px] cursor-pointer"
                     style={{ color: "#CEB292" }}
-                    onClick={() => router.push("/mypage/badgeList")}
+                    onClick={() =>
+                      router.push({
+                        pathname: "/mypage/badgeList",
+                        query: { access_token: accessToken },
+                      })
+                    }
                   >
                     나의 뱃지
                   </div>
                   <div
                     className="flex text-[20px] font-normal lg:font-bold cursor-pointer"
                     style={{ color: "#CEB292" }}
-                    onClick={() => router.push("/mypage/finished")}
+                    onClick={() =>
+                      router.push({
+                        pathname: "/mypage/finished",
+                        query: { access_token: accessToken },
+                      })
+                    }
                   >
                     내가 발행한 책
                   </div>
@@ -163,14 +169,24 @@ export default function MyBook() {
                   <div
                     className="hidden lg:flex text-[20px] cursor-pointer"
                     style={{ color: "#CEB292" }}
-                    onClick={() => router.push("/mypage/unfinished")}
+                    onClick={() =>
+                      router.push({
+                        pathname: "/mypage/unfinished",
+                        query: { access_token: accessToken },
+                      })
+                    }
                   >
                     못다쓴 책
                   </div>
                   <div
                     className="hidden lg:flex text-[20px] cursor-pointer"
                     style={{ color: "#CEB292" }}
-                    onClick={() => router.push("/mypage/change-settings")}
+                    onClick={() =>
+                      router.push({
+                        pathname: "/mypage/change-settings",
+                        query: { access_token: accessToken },
+                      })
+                    }
                   >
                     설정
                   </div>
@@ -181,7 +197,7 @@ export default function MyBook() {
               <div className="w-full lg:ml-2 ">
                 <div className="flex flex-row items-center ">
                   <div className="hidden lg:block w-full text-black mt-[8px] lg:text-[32px] text-[25px] font-bold">
-                    내가 발행한 책
+                    내가 발행한 책 ({filteredWritingSessions?.length})
                   </div>
                 </div>
                 <div className="mt-2 text-[15px] lg:text-[20px]">
@@ -189,11 +205,9 @@ export default function MyBook() {
                 </div>
                 <div className="flex flex-col max-h-[643px] overflow-y-auto mt-5 mb-2">
                   <div className="mt-2 flex flex-row gap-x-[46px]">
-                    <BookItem
-                      imageUrl="https://gloo-image-bucket.s3.amazonaws.com/archive/book_1.png"
-                      title="영화"
-                      date="2023년 12월 15일 발행"
-                    />
+                    <div className=" mt-2 flex flex-row gap-x-[46px]">
+                      <FinshedItem {...userInfo} />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -201,7 +215,7 @@ export default function MyBook() {
           </div>
         </div>
       </div>
-      <Modal isOpen={isModalOpen} onClose={handleCloseModal} />
+      {/* <Modal isOpen={isModalOpen} onClose={handleCloseModal} /> */}
     </div>
   );
 }

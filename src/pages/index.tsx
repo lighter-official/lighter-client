@@ -17,8 +17,8 @@ export default function Home() {
   const [loginState, setLoginState] = useAtom(loginAtom);
   const [accessToken, setAccessToken] = useAtom(accessTokenAtom);
   const APP_KEY = "67511eea297fb0f856f791b369c67355";
-  // const REDIRECT_URI = "https://lighter-client.vercel.app";
-  const REDIRECT_URI = "http://localhost:8000";
+  const REDIRECT_URI = "https://lighter-client.vercel.app";
+  // const REDIRECT_URI = "http://localhost:8000";
   const link = `https://kauth.kakao.com/oauth/authorize?client_id=${APP_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
 
   const initKakao = () => {

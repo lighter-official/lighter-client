@@ -42,7 +42,12 @@ export default function MyBook() {
               <a
                 className="cursor-pointer font-bold"
                 style={{ color: "#A49E90" }}
-                onClick={() => router.push("/mypage/badgeList")}
+                onClick={() =>
+                  router.push({
+                    pathname: "/mypage/badgeList",
+                    query: { access_token: accessToken },
+                  })
+                }
               >
                 나의 보관함
               </a>
@@ -126,7 +131,12 @@ export default function MyBook() {
                   <div className="mt-5">
                     <button
                       className="bg-black text-[15px] w-[185px] h-[40px] rounded-md text-center text-white"
-                      onClick={() => router.push("/challenge/completed")}
+                      onClick={() =>
+                        router.push({
+                          pathname: "/challenge/completed",
+                          query: { access_token: accessToken },
+                        })
+                      }
                     >
                       발행하기
                     </button>

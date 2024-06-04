@@ -1,7 +1,13 @@
 import { getCurrentSessions, getUserInfo } from "@/api/api";
 import { atom } from "jotai";
+import nookies from "nookies";
 
-export const accessTokenAtom = atom<string | null>(null);
+const getAccessTokenFromCookies = () => {
+  const cookies = nookies.get(null);
+  return cookies.access_token || null;
+};
+
+export const accessTokenAtom = atom<string | null>(getAccessTokenFromCookies());
 
 export const loginAtom = atom(
   { username: "", isLoggedIn: false, accessToken: null as string | null },

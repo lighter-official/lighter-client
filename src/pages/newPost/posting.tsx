@@ -247,7 +247,12 @@ export const NewWriting = () => {
         <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
           <div
             className="absolute w-full h-full bg-gray-800 opacity-50"
-            onClick={() => router.push("/glooing")}
+            onClick={() =>
+              router.push({
+                pathname: "/mypage/glooing",
+                query: { access_token: accessToken },
+              })
+            }
           ></div>
           <div className="flex flex-col bg-white w-[300px] h-[155px] text-center justify-center items-center rounded-lg z-50">
             <div className="p-8 ">

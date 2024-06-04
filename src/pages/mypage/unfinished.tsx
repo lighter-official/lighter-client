@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../globals.css";
 import { useAtom } from "jotai";
 import {
@@ -11,7 +11,38 @@ import {
 } from "../../../public/atoms";
 import Image from "next/image";
 import BookItem from "../../components/BookItem";
-import { getCookie } from "..";
+import { SessionInfo, UserInfo } from "../../../interface";
+import { formatDate, useMenu } from "../../../public/utils/utils";
+import Menu from "@/components/Menu";
+
+const UnfinshedItem = ({ data }: UserInfo) => {
+  const filteredWritingSessions = data?.writingSessions?.filter(
+    (session: any) => !session.isActivated && session.progressPercentage < 100 //수정 필요
+  );
+
+  return (
+    <div className="flex flex-col max-h-[643px] overflow-y-auto mb-[21px]">
+      {filteredWritingSessions?.length > 0 ? (
+        filteredWritingSessions.map((session: any) => (
+          <div key={session.id} className="mt-2 flex flex-row gap-x-[46px]">
+            <BookItem
+              imageUrl="https://gloo-image-bucket.s3.amazonaws.com/archive/book_yet.png"
+              title={session?.subject}
+              date={formatDate(session?.finishDate)}
+            />
+          </div>
+        ))
+      ) : (
+        <div
+          style={{ color: "#D5C8AE" }}
+          className="text-[18px] lg:text-[20px] font-bold"
+        >
+          아직 못다쓴 책이 없어요.
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default function UnfinishedBook() {
   const router = useRouter();
@@ -19,7 +50,17 @@ export default function UnfinishedBook() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loginState, setLoginState] = useAtom(loginAtom);
   const [userInfo, setUserInfo] = useAtom(userInfoAtom);
-  const [writingData, setWritingData] = useAtom(writingDataAtom);
+  const [writingInfo, setWritingInfo] = useAtom(writingDataAtom);
+  const filteredWritingSessions = userInfo?.data?.writingSessions?.filter(
+    (session: any) => !session.isActivated && session.progressPercentage < 100 //수정 필요
+  );
+  const { showMenu, setShowMenu, toggleMenu } = useMenu();
+
+  useEffect(() => {
+    console.log(userInfo);
+    console.log(writingInfo);
+    console.log(accessTokenAtom);
+  }, [userInfo, writingInfo]);
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -34,49 +75,14 @@ export default function UnfinishedBook() {
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
       <div className="flex flex-row mx-auto w-full">
         <div className="flex flex-col w-full mx-[120px] sm:max-w-[682px] lg:max-w-none">
-          <div className="flex flex-row justify-between sm:max-w-[682px] lg:max-w-none lg:w-full">
-            <Image
-              className="cursor-pointer lg:mb-[20px] mb-0 w-[74px] lg:w-[105px] h-[24px] lg:h-[35px]"
-              src="https://gloo-image-bucket.s3.amazonaws.com/archive/logo.svg"
-              width="105"
-              height="35"
-              alt="Logo"
-            />
-            <Image
-              className="lg:hidden block h-[18px] w-[18px]"
-              src="https://gloo-image-bucket.s3.amazonaws.com/archive/Group 57.png"
-              width={18}
-              height={18}
-              alt="menu"
-            />
-            <div className="hidden lg:block flex-row">
-              <a
-                className="lg:pr-10 cursor-pointer"
-                onClick={() =>
-                  router.push({
-                    pathname: "/glooing",
-                    query: { access_token: accessToken },
-                  })
-                }
-              >
-                글루ING
-              </a>
-              <a
-                className="lg:pr-10 cursor-pointer font-bold"
-                onClick={() =>
-                  router.push({
-                    pathname: "/mypage/badgeList",
-                    query: { access_token: accessToken },
-                  })
-                }
-              >
-                나의 보관함
-              </a>
-              <a className="cursor-pointer" onClick={() => router.push("/")}>
-                {loginState.isLoggedIn == true ? "로그아웃" : "로그인"}
-              </a>
-            </div>
-          </div>
+          <Menu
+            showMenu={showMenu}
+            setShowMenu={setShowMenu}
+            toggleMenu={toggleMenu}
+            accessToken={accessToken}
+            loginState={loginState}
+            router={router}
+          />
           <hr
             className="lg:block hidden w-full bg-[#7C766C] h-[1px] sm:my-[17px] lg:my-0"
             style={{ color: "#7C766C", borderColor: "#7C766C" }}
@@ -91,21 +97,36 @@ export default function UnfinishedBook() {
                   <div
                     className="hidden lg:flex text-[20px] cursor-pointer"
                     style={{ color: "#CEB292" }}
-                    onClick={() => router.push("/mypage/badgeList")}
+                    onClick={() =>
+                      router.push({
+                        pathname: "/mypage/badgeList",
+                        query: { access_token: accessToken },
+                      })
+                    }
                   >
                     나의 뱃지
                   </div>
                   <div
                     className="hidden lg:flex text-[20px] cursor-pointer"
                     style={{ color: "#CEB292" }}
-                    onClick={() => router.push("/mypage/finished")}
+                    onClick={() =>
+                      router.push({
+                        pathname: "/mypage/finished",
+                        query: { access_token: accessToken },
+                      })
+                    }
                   >
                     내가 발행한 책
                   </div>
                   <div
                     className="flex text-[20px] font-normal lg:font-bold cursor-pointer"
                     style={{ color: "#CEB292" }}
-                    onClick={() => router.push("/mypage/unfinished")}
+                    onClick={() =>
+                      router.push({
+                        pathname: "/mypage/unfinished",
+                        query: { access_token: accessToken },
+                      })
+                    }
                   >
                     못다쓴 책
                   </div>
@@ -116,7 +137,12 @@ export default function UnfinishedBook() {
                   <div
                     className="hidden lg:flex text-[20px] cursor-pointer"
                     style={{ color: "#CEB292" }}
-                    onClick={() => router.push("/mypage/change-settings")}
+                    onClick={() =>
+                      router.push({
+                        pathname: "/mypage/change-settings",
+                        query: { access_token: accessToken },
+                      })
+                    }
                   >
                     설정
                   </div>
@@ -125,18 +151,17 @@ export default function UnfinishedBook() {
             </div>
             <div className="w-full max-w-[1120px] rounded-sm flex flex-row max-h-[797px]">
               <div className="w-full lg:ml-2 ">
-                <div className="flex flex-row items-center ">
-                  <div className="lg:block hidden w-[205px] text-black mt-[8px] lg:text-[32px] text-[25px] font-bold">
-                    못다쓴 책
+                <div className="flex flex-col items-center ">
+                  <div className="lg:block hidden w-full text-black mt-[8px] lg:text-[32px] text-[25px] font-bold">
+                    못다쓴 책 ({filteredWritingSessions?.length})
+                  </div>
+                  <div className="lg:block hidden w-full mt-2">
+                    글쓰기 달성 완료하지 못한 게시글을 이어서 작성할 수 있어요.
                   </div>
                 </div>
                 <div className="flex flex-col max-h-[643px] overflow-y-auto mt-[21px] mb-[21px] ">
                   <div className=" mt-2 flex flex-row gap-x-[46px]">
-                    <BookItem
-                      imageUrl="https://gloo-image-bucket.s3.amazonaws.com/archive/book_yet.png"
-                      title="영화 평론"
-                      date="2023년 12월 25일 발행"
-                    />
+                    <UnfinshedItem {...userInfo} />
                   </div>
                 </div>
               </div>
