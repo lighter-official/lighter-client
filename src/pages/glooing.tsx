@@ -26,6 +26,7 @@ import {
 } from "../../public/atoms";
 import { useMenu } from "../../public/utils/utils";
 import Menu from "../components/Menu";
+import { start } from "repl";
 
 const Menubar = ({ toggleMenu, showMenu, setShowMenu }) => {
   const router = useRouter();
@@ -212,7 +213,7 @@ const Modal: React.FC<ModalProps> = ({
             {writingData?.data?.subject}
           </div>
           <textarea
-            className="text-[40px] w-full mb-[10px] h-[50px]"
+            className="text-[40px] w-full mb-[10px] h-[50px] resize-none"
             placeholder="제목을 입력해주세요."
             value={title}
             onChange={handleTitleChange}
@@ -224,7 +225,7 @@ const Modal: React.FC<ModalProps> = ({
             style={{ color: "#7C766C", borderColor: "#7C766C" }}
           />
           <textarea
-            className="mt-[20px] w-full h-[220px] overflow-y-auto"
+            className="mt-[20px] w-full h-[220px] overflow-y-auto resize-none"
             placeholder="내용을 입력해주세요."
             value={content}
             onChange={(e) => {
@@ -393,7 +394,7 @@ const EditModal: React.FC<ModalProps> = ({
             {data?.setting?.subject}
           </div>
           <textarea
-            className="text-[40px] w-full mb-[10px] h-[50px]"
+            className="text-[40px] w-full mb-[10px] h-[50px] resize-none"
             placeholder="제목을 입력해주세요."
             value={title || editData?.title}
             onChange={handleTitleChange}
@@ -404,7 +405,7 @@ const EditModal: React.FC<ModalProps> = ({
             style={{ color: "#7C766C", borderColor: "#7C766C" }}
           />
           <textarea
-            className="mt-[20px] w-full h-[220px] overflow-y-auto"
+            className="mt-[20px] w-full h-[220px] overflow-y-auto resize-none"
             placeholder="내용을 입력해주세요."
             value={content || editData?.content}
             onChange={(e) => {
@@ -741,13 +742,16 @@ export default function Writer() {
 
   const startDateString = writingInfo?.data?.startDate;
   const finishDateString = writingInfo?.data?.finishDate;
+  const nearestStartDateString = writingInfo?.data?.nearestStartDate;
 
   const formattedStartDate = formatDate(startDateString);
   const formattedFinishDate = formatDate(finishDateString);
+  const formattedNearestStartDate = formatDate(nearestStartDateString);
 
-  const startDate = new Date(startDateString);
   const finishDate = new Date(finishDateString);
-  const timeDiff = finishDate - startDate;
+  const nearestDate = new Date(formattedNearestStartDate);
+  const timeDiff = finishDate - nearestDate;
+
   const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
   const result = `D-${daysDiff}`;
 
@@ -911,7 +915,7 @@ export default function Writer() {
                         style={{ backgroundColor: "#F4EDE0" }}
                         onClick={() => handleEditClick(writing.id)}
                       >
-                        <div className="my-3 mx-">
+                        <div className="my-3 mx-3">
                           <div className="w-full text-xl">{writing?.title}</div>
                           <div
                             className="mt-3 max-w-full truncate text-base"

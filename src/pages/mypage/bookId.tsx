@@ -38,7 +38,7 @@ export default function MyBookItem() {
   const [userInfo, setUserInfo] = useAtom(userInfoAtom);
   const [writingInfo, setWritingInfo] = useAtom(writingDataAtom);
   const filteredWritingSessions = userInfo?.data?.writingSessions?.filter(
-    (session: any) => !session.isActivated && session.progressPercentage < 100 //수정 필요
+    (session: any) => !session.isActivated && session.progressPercentage < 75 //수정 필요
   );
   const { showMenu, setShowMenu, toggleMenu } = useMenu();
 

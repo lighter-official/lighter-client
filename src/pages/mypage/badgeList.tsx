@@ -201,8 +201,7 @@ export default function BadgeList() {
                           나비
                         </a>
                       </div>
-
-                      <div className=" mt-[20px] flex flex-row gap-x-[46px]">
+                      <div className="container space-between flex-wrap mt-[20px] xl:flex-nowrap flex flex-row gap-x-[26px]">
                         {userInfo?.data?.userBadges?.map((item: any) => (
                           <BadgeItem
                             key={item.id}

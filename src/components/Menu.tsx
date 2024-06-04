@@ -17,6 +17,7 @@ export const Menubar: React.FC<MenuProps> = ({
   toggleMenu,
   showMenu,
   setShowMenu,
+  loginState,
 }) => {
   const router = useRouter();
   const [accessToken] = useAtom(accessTokenAtom);
@@ -37,7 +38,12 @@ export const Menubar: React.FC<MenuProps> = ({
         <div className="flex flex-col gap-y-4 ml-[60px] mt-[140px] justify-center">
           <div
             className="text-[#CEB292] text-[20px] cursor-pointer"
-            onClick={() => setShowMenu(false)}
+            onClick={() =>
+              router.push({
+                pathname: "/glooing",
+                query: { access_token: accessToken },
+              })
+            }
           >
             글루ING
           </div>
@@ -91,7 +97,7 @@ export const Menubar: React.FC<MenuProps> = ({
             설정
           </div>
           <div className="text-[#858178] text-[20px] cursor-pointer">
-            로그아웃
+            {loginState.isLoggedIn === false ? "로그인" : "로그아웃"}
           </div>
         </div>
       </div>

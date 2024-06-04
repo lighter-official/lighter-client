@@ -5,7 +5,7 @@ import { formatDate } from "../../public/utils/utils";
 
 export const BadgeItem: React.FC<BadgeItemProps> = ({ badge, createdAt }) => {
   return (
-    <div>
+    <div className="item w-[30%]">
       <div
         className="w-[153px] h-[154px]"
         style={{ backgroundColor: "#D5C8AE" }}
