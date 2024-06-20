@@ -7,19 +7,27 @@ import Image from "next/image";
 import Script from "next/script";
 import { useAtom } from "jotai";
 import { accessTokenAtom, loginAtom } from "../../public/atoms";
+import { getAccessTokenFromCookies } from "../../public/utils/utils";
+import { GetServerSideProps } from "next";
 
 export function getCookie(name: any) {
   return nookies.get(null)[name];
 }
 
-export default function Home() {
+export default function Home({ initialLoginState }: any) {
   const router = useRouter();
   const [loginState, setLoginState] = useAtom(loginAtom);
   const [accessToken, setAccessToken] = useAtom(accessTokenAtom);
   const APP_KEY = "67511eea297fb0f856f791b369c67355";
-  const REDIRECT_URI = "https://lighter-client.vercel.app";
-  // const REDIRECT_URI = "http://localhost:8000";
+  // const REDIRECT_URI = "https://lighter-client.vercel.app";
+  const REDIRECT_URI = "http://localhost:8000";
   const link = `https://kauth.kakao.com/oauth/authorize?client_id=${APP_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+
+  useEffect(() => {
+    if (initialLoginState) {
+      setLoginState(initialLoginState);
+    }
+  }, [initialLoginState]);
 
   const initKakao = () => {
     const Kakao = window.Kakao;
@@ -57,7 +65,6 @@ export default function Home() {
         }
       );
       const data = await response.json();
-      console.log(data, "========================");
 
       if (data?.data?.accessToken) {
         const accessToken = data?.data?.accessToken;
@@ -73,8 +80,6 @@ export default function Home() {
           isLoggedIn: true,
         });
         setAccessToken(accessToken);
-        console.log(data?.data?.accessToken, "getToken-token?");
-        // accessToken을 설정한 후에 router.push 호출
         if (
           data?.data?.isSignUp === true ||
           data?.data?.hasOnProcessedWritingSession === false
@@ -173,3 +178,19 @@ export default function Home() {
     </>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const accessToken = getAccessTokenFromCookies(ctx);
+
+  const initialLoginState = {
+    username: "", // 필요에 따라 사용자 정보를 여기에 추가
+    isLoggedIn: !!accessToken,
+    accessToken,
+  };
+
+  return {
+    props: {
+      initialLoginState,
+    },
+  };
+};

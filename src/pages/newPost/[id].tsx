@@ -2,22 +2,31 @@
 import { useRouter } from "next/router";
 import { getCookie } from "..";
 import Image from "next/image";
-import { useSelector } from "react-redux";
 import { useAtom } from "jotai";
+import "../globals.css";
 import {
   accessTokenAtom,
   loginAtom,
+  remainingTime2Atom,
   userInfoAtom,
   writingDataAtom,
 } from "../../../public/atoms";
 import { putWriting, submitWriting } from "@/api/api";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface WritingState {
   dataArray: {
     arrayData: any[];
   };
 }
+
+const convertTimeToMinutes = (timeString: Number) => {
+  const [hours, minutes, seconds] = timeString
+    .toString()
+    .split(":")
+    .map(Number);
+  return hours * 60 + minutes + seconds / 60;
+};
 
 export const NewWriting = () => {
   const router = useRouter();
@@ -32,11 +41,8 @@ export const NewWriting = () => {
   const dataString = Array.isArray(router.query.data)
     ? router.query.data[0]
     : router.query.data;
-
-  const currentWritings = useSelector(
-    (state: WritingState) => state.dataArray.arrayData
-  );
-  console.log(currentWritings, writingId, "current?");
+  const [remainingTime] = useAtom(remainingTime2Atom);
+  console.log(typeof remainingTime);
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const inputText = e.target.value;
@@ -79,9 +85,7 @@ export const NewWriting = () => {
         writingIdStr,
         accessToken
       );
-      console.log(response, "정상 제출?");
-      // console.log(postedWriting.data, "posted?");
-      // setPostedWriting(response.data);
+      console.log("Submitted Data ---- ", response);
 
       const currentURL = window.location.href;
       const newURL = `${currentURL}?access_token=${accessToken}`;
@@ -113,7 +117,7 @@ export const NewWriting = () => {
           />
           <Image
             className="lg:hidden block h-[18px] w-[18px]"
-            src="https://gloo-image-bucket.s3.amazonaws.com/archive/Group 57.png"
+            src="https://gloo-image-bucket.s3.amazonaws.com/archive/menu_small.png"
             width={18}
             height={18}
             alt="menu"
@@ -213,16 +217,15 @@ export const NewWriting = () => {
               />
             </div>
             <div className="flex flex-col rounded-md mx-[30px]">
-              <div className="lg:h-[100px] flex justify-between p-8 items-center rounded-md w-full">
+              <div className="lg:h-[100px] flex justify-between px-[64px] py-[100px] lg:p-8 items-center rounded-md w-full">
                 <a
                   className={`items-start justify-center lg:justify-start flex ${
-                    "text-orange-500"
-                    // textColor ?
-                    // "text-orange-500" : "text-black"
+                    convertTimeToMinutes(remainingTime) < 10
+                      ? "text-orange-500"
+                      : "text-black"
                   }`}
                 >
-                  남은 시간 djhfjldhj
-                  {/* {remainingTime2} */}
+                  남은 시간 {remainingTime}
                 </a>
                 <button
                   className={`w-[152px] items-center justify-center h-[53px] cursor-pointer rounded-md ${
@@ -237,9 +240,6 @@ export const NewWriting = () => {
                 </button>
               </div>
             </div>
-            {/* <div className="flex flex-col max-h-[580px] mb-[21px] overflow-y-auto">
-            dgjhaljdhs
-          </div> */}
           </div>
         </div>
       </div>

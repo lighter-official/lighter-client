@@ -192,7 +192,7 @@ export const putWriting = async (
   }
 };
 
-// 각 글 수정하는 API
+// 설정 수정하는 API
 export const editWritingSetUp = async (
   id: string,
   data: EditOrSetData,
@@ -204,7 +204,31 @@ export const editWritingSetUp = async (
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    console.log(response.data, "수정된 데이터 -----------");
+    console.log(response.data, "수정된 설정값 -----------");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    throw error;
+  }
+};
+
+// 못다쓴 책 재개를 위한 설정 변경 API
+export const unfinishedWritingSetUp = async (
+  id: string,
+  data: EditOrSetData,
+  accessToken: string
+) => {
+  try {
+    const response = await axios.put(
+      `${apiUrl}/writing-session/${id}/continue`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    console.log(response.data, "못다쓴 책 재설정 -----------");
     return response.data;
   } catch (error) {
     console.error("Error fetching data:", error);

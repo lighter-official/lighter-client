@@ -12,8 +12,9 @@ import {
   loginAtom,
   writingDataAtom,
 } from "../../../public/atoms";
-import Menu from "@/components/Menu";
+import Menu from "@/components/MenuWithTopbar";
 import { useMenu } from "../../../public/utils/utils";
+import MenuWithTopbar from "@/components/MenuWithTopbar";
 
 interface ModalProps {
   isOpen: boolean;
@@ -76,6 +77,7 @@ export default function ChangeSettings() {
     parseInt(currentSessionInfo?.data?.startAt?.hour) < 12 ? "AM" : "PM"
   );
   const [editCount, setEditCount] = useState(0);
+  const [isChanged, setIsChanged] = useState(false);
   const [loginState, setLoginState] = useAtom(loginAtom);
   const [changedData, setChangedData] = useState<SettingData>({
     // 초기 상태 설정
@@ -135,8 +137,11 @@ export default function ChangeSettings() {
         changedData,
         accessToken
       );
-      console.log("변경 옵션:", changeOptions);
       setEditCount(editCount + 1);
+      setIsChanged(true);
+      setTimeout(() => {
+        setIsChanged(false);
+      }, 3000);
     } catch (error) {
       console.error("Error - change session setting :", error);
     }
@@ -147,7 +152,7 @@ export default function ChangeSettings() {
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
       <div className="flex flex-row mx-auto w-full">
         <div className="flex flex-col w-full mx-[120px] sm:max-w-[682px] lg:max-w-none">
-          <Menu
+          <MenuWithTopbar
             showMenu={showMenu}
             setShowMenu={setShowMenu}
             toggleMenu={toggleMenu}
@@ -237,7 +242,9 @@ export default function ChangeSettings() {
                   className="flex text-[14px] cursor-pointer mt-[8px]"
                   style={{ color: "#918A7C" }}
                 >
-                  *주 최대 2회 변경 가능합니다. <br />
+                  *주 최대 2회 변경 가능하며, 설정을 변경한 날은 글을 쓸 수
+                  없어요.
+                  <br />
                 </div>
                 <div className="w-[250px] mt-[30px] flex flex-row gap-x-[14px]">
                   <button
@@ -335,10 +342,12 @@ export default function ChangeSettings() {
                   </div>
                 </div>
                 <button
-                  className="rounded-md mx-auto mt-[20px] w-[115px] h-[30px] text-[15px] bg-black text-white"
+                  className={`rounded-md mx-auto mt-[20px] w-[115px] h-[30px] text-[15px] ${
+                    isChanged ? "bg-orange-500" : "bg-black"
+                  } text-white`}
                   onClick={changeSessionSettings}
                 >
-                  변경하기
+                  {isChanged ? "변경 완료!" : "변경하기"}
                 </button>
               </div>
             </div>

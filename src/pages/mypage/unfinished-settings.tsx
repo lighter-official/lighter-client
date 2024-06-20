@@ -1,17 +1,17 @@
 "use client";
-import "./globals.css";
-import { postSetUp } from "@/api/api";
-import axios from "axios";
-import { fork } from "child_process";
+import "../globals.css";
+import { unfinishedWritingSetUp } from "@/api/api";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import Dropdown from "../components/Dropdown";
 import { useAtom } from "jotai";
-import { accessTokenAtom } from "../../public/atoms";
+import Dropdown from "@/components/Dropdown";
+import { accessTokenAtom, writingDataAtom } from "../../../public/atoms";
 
-export default function Settings() {
+export default function UnfinishedSettings() {
   const router = useRouter();
+
+  const [writingInfo, setWritingInfo] = useAtom(writingDataAtom);
   const [isFirst, setIsFirst] = useState<boolean>(false);
   const [subject, setSubject] = useState("");
   const [period, setPeriod] = useState(0);
@@ -21,9 +21,7 @@ export default function Settings() {
   >(["", undefined, undefined]);
   const [writingHours, setWritingHours] = useState(0);
   const disabled =
-    !subject ||
     !period ||
-    !page ||
     !startAt[0] ||
     startAt[1] == undefined ||
     startAt[2] == undefined ||
@@ -31,16 +29,6 @@ export default function Settings() {
 
   const [accessToken] = useAtom(accessTokenAtom);
 
-  useEffect(() => {
-    console.log("subject updated:", subject);
-    console.log("period updated:", period);
-    console.log("page updated:", page);
-    console.log("start_time updated:", startAt);
-    console.log("for_hours updated:", writingHours);
-  }, [subject, period, page, startAt, writingHours]);
-
-  // 시작하기 버튼 클릭 시 서버로 설정된 값들을 전송
-  const isPageValid = page < 10; // 10 미만이면 필수 필드 채워지지 않은 것으로 간주
   const handleStart = async () => {
     let adjustedHour = startAt[1] || 0; // 초기값은 그대로
 
@@ -56,7 +44,8 @@ export default function Settings() {
     }
 
     try {
-      const response = await postSetUp(
+      const response = await unfinishedWritingSetUp(
+        writingInfo?.data?.id,
         {
           subject,
           period,
@@ -101,43 +90,39 @@ export default function Settings() {
             className="w-full bg-[#7C766C] h-[1px] lg:my-0 my-[17px]"
             style={{ color: "#7C766C", borderColor: "#7C766C" }}
           />
-          <div className="flex flex-col mx-auto">
+          <div className="flex flex-col mx-auto my-auto">
             <div className="flex w-full font-bold items-center justify-center mt-[20px] lg:mt-[40px] text-[30px] lg:text-[40px] h-[55px]">
-              글쓰기의 첫걸음
+              못다쓴 책을 이어서 작성해봐요
             </div>
             <div className="w-full text-center mt-[22px]">
-              평소 흥미로웠던 주제로 정해진 시간에 글을 쓰는 연습을 함께 해봐요.
+              도전을 이어서 진행하시는군요!
               <br />
-              <a className="w-full items-center justify-center font-bold">
-                타이머가 설정되어 설정한 시간에만 글을 쓸 수 있어요!
+              <a className="w-full items-center justify-center">
+                저번 도전에 대해 간단하게 설명드릴게요.
               </a>
             </div>
-            <div className="flex flex-col items-center justify-center  h-[70px] mt-[40px]">
-              <div className="flex w-full font-bold items-center justify-center text-[18px] lg:text-[22px]">
-                어떤 주제로 글을 써볼까요?
-              </div>
-              <div
-                className="text-[10px] lg:text-[12px] my-2"
-                style={{ color: "#FF8126" }}
-              >
-                *10자 이내로 작성해주세요.
-              </div>
+            <div className="my-[30px] text-[17px] flex flex-col items-center text-[#7C766C] gap-y-2">
+              <a>
+                글쓰기 주제는{" "}
+                <a className="font-bold">{writingInfo?.data?.subject}</a>
+                였어요.
+              </a>
+              <a>
+                글쓰기 달성률은{" "}
+                <a className="font-bold">
+                  {writingInfo?.data?.progressPercentage}
+                </a>
+                %였어요.
+              </a>
+              <a>
+                <a className="font-bold">{writingInfo?.data?.page}</a>편 중{" "}
+                <a className="font-bold">
+                  {writingInfo?.data?.page - writingInfo?.data?.progressStep}
+                </a>
+                편만 더 작성하면 책을 완성할 수 있어요.
+              </a>
             </div>
-            <textarea
-              className="w-[466px] lg:w-[593px] rounded-md h-[48px] mx-auto text-center flex items-center justify-center"
-              placeholder="ex. 뮤직 비디오, 리뷰, 영화, 맛집 탐방 기록"
-              value={subject}
-              style={{ lineHeight: "45px" }}
-              onChange={(e) => {
-                const inputText = e.target.value;
-                if (inputText.length <= 10) {
-                  setSubject(inputText);
-                }
-              }}
-            ></textarea>
-            <div className="flex w-full items-center font-bold justify-center mt-[50px] lg:mt-[60px] text-[18px] lg:text-[22px] h-[30px]">
-              글쓰기 목표를 설정해보아요!
-            </div>
+
             <div>
               <div>
                 <div className="flex flex-col mt-[20px] gap-y-[20px]">
@@ -162,46 +147,11 @@ export default function Settings() {
                       </button>
                       <button
                         className={`w-[82px] h-[40px] border-1 rounded-md ${
-                          period === 2 ? "bg-black text-white" : " bg-white"
+                          period === 100 ? "bg-black text-white" : " bg-white"
                         }`}
-                        onClick={() => setPeriod(2)}
+                        onClick={() => setPeriod(100)}
                       >
-                        1일
-                      </button>
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-y-[20px]">
-                    <a className="font-bold">2. 글쓰기 페이지 수</a>
-                    <div className="flex flex-row gap-x-[20px]">
-                      <button
-                        className={`w-[82px] h-[40px] border-1 rounded-md ${
-                          page === 10 ? "bg-black text-white" : " bg-white"
-                        }`}
-                        onClick={() => {
-                          setPage(10);
-                        }}
-                      >
-                        10편
-                      </button>
-                      <button
-                        className={`w-[82px] h-[40px] border-1 rounded-md ${
-                          page === 20 ? "bg-black text-white" : " bg-white"
-                        }`}
-                        onClick={() => {
-                          setPage(20);
-                        }}
-                      >
-                        20편
-                      </button>
-                      <button
-                        className={`w-[82px] h-[40px] border-1 rounded-md ${
-                          page === 30 ? "bg-black text-white" : " bg-white"
-                        }`}
-                        onClick={() => {
-                          setPage(30);
-                        }}
-                      >
-                        30편
+                        100일
                       </button>
                       <textarea
                         className={`w-[82px] flex text-center items-center justify-center h-[40px] border-1 border-black rounded-lg`}
@@ -211,27 +161,18 @@ export default function Settings() {
                           setPage(0);
                           const inputValue = e.target.value;
                           const numericValue = parseInt(inputValue, 10); // 문자열을 숫자로 변환
-                          // 숫자로 변환 가능한 경우에만 set
-                          if (!isNaN(numericValue) && numericValue >= 10) {
+                          // 숫자로 변환 가능한 경우에만 set, 못다쓴 책에서는 0일 이상이면 모두 설정 가능
+                          if (!isNaN(numericValue) && numericValue > 0) {
                             setPage(numericValue);
                             console.log(numericValue, typeof numericValue);
                           }
                         }}
                       ></textarea>
-                      {isPageValid ? (
-                        <div
-                          className="items-center flex text-[10px]"
-                          style={{ color: "#FF8126" }}
-                        >
-                          *10편 이상 입력해주세요.
-                        </div>
-                      ) : (
-                        ""
-                      )}
                     </div>
                   </div>
-                  <div className="flex flex-col gap-y-[20px]">
-                    <a className="font-bold">3. 글쓰기 시간</a>
+
+                  <div className="flex flex-col gap-y-[20px] mt-[20px]">
+                    <a className="font-bold">2. 글쓰기 시간</a>
                     <div className="flex flex-col lg:flex-row gap-y-4 lg:gap-x-4">
                       <div className="flex flex-row gap-x-[20px]">
                         <button
@@ -319,7 +260,7 @@ export default function Settings() {
                     </div>
                   </div>
                   <button
-                    className={`rounded-md mx-auto mt-[30px] lg:w-[386px] w-[321px] font-bold lg:h-[62px] h-[48px] ${
+                    className={`rounded-md mx-auto mt-[100px] lg:w-[386px] w-[321px] font-bold lg:h-[62px] h-[48px] ${
                       disabled
                         ? "bg-gray-800 text-gray-600"
                         : "bg-orange-500 text-black"

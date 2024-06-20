@@ -104,10 +104,9 @@ export interface UserInfo {
   code: string;
   data: {
     createdAt: string;
-    encryptedPassword: string | null;
     id: string;
     nickname: string;
-    providerType: string;
+    Type: string;
     updatedAt: string;
     userBadges: Badge[];
     writingSessions: WritingData[];

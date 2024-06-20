@@ -21,11 +21,13 @@ export const Menubar: React.FC<MenuProps> = ({
 }) => {
   const router = useRouter();
   const [accessToken] = useAtom(accessTokenAtom);
+  const isCurrentPath = (path: string) => router.pathname === path;
+
   return (
     <div>
       {showMenu && (
         <div
-          className="lg:hidden block fixed inset-0 bg-black bg-opacity-40"
+          className="lg:hidden block fixed inset-0 bg-black bg-opacity-40 z-10"
           onClick={() => setShowMenu(false)}
         ></div>
       )}
@@ -37,7 +39,9 @@ export const Menubar: React.FC<MenuProps> = ({
       >
         <div className="flex flex-col gap-y-4 ml-[60px] mt-[140px] justify-center">
           <div
-            className="text-[#CEB292] text-[20px] cursor-pointer"
+            className={`text-[20px] cursor-pointer ${
+              isCurrentPath("/glooing") ? "text-[#CEB292]" : "text-[#858178]"
+            }`}
             onClick={() =>
               router.push({
                 pathname: "/glooing",
@@ -47,12 +51,24 @@ export const Menubar: React.FC<MenuProps> = ({
           >
             글루ING
           </div>
-          <div className="text-[#858178] text-[20px] cursor-pointer">
+          <div
+            className={`text-[20px] cursor-pointer ${
+              isCurrentPath("/mypage/badgeList") ||
+              isCurrentPath("/mypage/finished") ||
+              isCurrentPath("/mypage/unfinished")
+                ? "text-[#CEB292]"
+                : "text-[#858178]"
+            }`}
+          >
             나의 보관함
           </div>
           <div className="flex flex-col ml-3 gap-y-3">
             <div
-              className="text-[#858178] text-[16px] cursor-pointer"
+              className={`text-[16px] cursor-pointer ${
+                isCurrentPath("/mypage/badgeList")
+                  ? "text-white"
+                  : "text-[#858178] "
+              }`}
               onClick={() =>
                 router.push({
                   pathname: "/mypage/badgeList",
@@ -63,7 +79,11 @@ export const Menubar: React.FC<MenuProps> = ({
               - 나의 뱃지
             </div>
             <div
-              className="text-[#858178] text-[16px] cursor-pointer"
+              className={`text-[16px] cursor-pointer ${
+                isCurrentPath("/mypage/finished")
+                  ? "text-white"
+                  : "text-[#858178] "
+              }`}
               onClick={() =>
                 router.push({
                   pathname: "/mypage/finished",
@@ -74,7 +94,11 @@ export const Menubar: React.FC<MenuProps> = ({
               - 내가 발행한 책
             </div>
             <div
-              className="text-[#858178] text-[16px] cursor-pointer"
+              className={`text-[16px] cursor-pointer ${
+                isCurrentPath("/mypage/unfinished")
+                  ? "text-white"
+                  : "text-[#858178] "
+              }`}
               onClick={() =>
                 router.push({
                   pathname: "/mypage/unfinished",
@@ -86,7 +110,11 @@ export const Menubar: React.FC<MenuProps> = ({
             </div>
           </div>
           <div
-            className="text-[#858178] text-[20px] cursor-pointer"
+            className={`text-[20px] cursor-pointer ${
+              isCurrentPath("/mypage/change-settings")
+                ? "text-[#CEB292]"
+                : "text-[#858178]"
+            }`}
             onClick={() =>
               router.push({
                 pathname: "/mypage/change-settings",
@@ -105,7 +133,7 @@ export const Menubar: React.FC<MenuProps> = ({
   );
 };
 
-export const Menu: React.FC<MenuProps> = ({
+export const MenuWithTopbar: React.FC<MenuProps> = ({
   showMenu,
   setShowMenu,
   toggleMenu,
@@ -114,6 +142,8 @@ export const Menu: React.FC<MenuProps> = ({
   loginState,
   router,
 }) => {
+  const isCurrentPath = (path: string) => router.pathname === path;
+
   return (
     <div className="flex flex-row justify-between sm:max-w-[682px] lg:max-w-none lg:w-full">
       <Image
@@ -125,7 +155,7 @@ export const Menu: React.FC<MenuProps> = ({
       />
       <Image
         className="lg:hidden block h-[18px] w-[18px]"
-        src="https://gloo-image-bucket.s3.amazonaws.com/archive/Group 57.png"
+        src="https://gloo-image-bucket.s3.amazonaws.com/archive/menu_small.png"
         width={18}
         height={18}
         alt="menu"
@@ -143,7 +173,9 @@ export const Menu: React.FC<MenuProps> = ({
       )}
       <div className="hidden lg:block flex-row">
         <a
-          className="lg:pr-10 cursor-pointer font-bold"
+          className={`lg:pr-10 cursor-pointer ${
+            isCurrentPath("/glooing") ? "font-bold" : ""
+          }`}
           onClick={() =>
             router.push({
               pathname: "/glooing",
@@ -154,7 +186,14 @@ export const Menu: React.FC<MenuProps> = ({
           글루ING
         </a>
         <a
-          className="lg:pr-10 cursor-pointer"
+          className={`lg:pr-10 cursor-pointer ${
+            isCurrentPath("/mypage/badgeList") ||
+            isCurrentPath("/mypage/finished") ||
+            isCurrentPath("/mypage/unfinished") ||
+            isCurrentPath("/mypage/change-settings")
+              ? "font-bold"
+              : ""
+          }`}
           onClick={() =>
             router.push({
               pathname: "/mypage/badgeList",
@@ -172,4 +211,4 @@ export const Menu: React.FC<MenuProps> = ({
   );
 };
 
-export default Menu;
+export default MenuWithTopbar;

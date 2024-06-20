@@ -15,10 +15,11 @@ export const BadgeItem: React.FC<BadgeItemProps> = ({ badge, createdAt }) => {
           src={badge?.imageUrl}
           width={152}
           height={153}
-          alt={badge.name}
+          alt={badge?.name}
+          style={{ width: 152, height: 153 }}
         />
       </div>
-      <div className="mt-[10px] text-[36px]">{badge.name}</div>
+      <div className="mt-[10px] text-[36px]">{badge?.name}</div>
       <div className="mt-[10px] text-[16px]" style={{ color: "#8A8170" }}>
         {formatDate(createdAt)}
       </div>

@@ -1,8 +1,6 @@
 // @ts-nocheck
 "use client";
 import {
-  getGlooingInfo,
-  getUserInfo,
   getWritingInfo,
   putWriting,
   startWriting,
@@ -23,92 +21,10 @@ import {
   userInfoAtom,
   accessTokenAtom,
   writingDataAtom,
+  remainingTime2Atom,
 } from "../../public/atoms";
-import { useMenu } from "../../public/utils/utils";
-import Menu from "../components/Menu";
-import { start } from "repl";
-
-const Menubar = ({ toggleMenu, showMenu, setShowMenu }) => {
-  const router = useRouter();
-  const [accessToken] = useAtom(accessTokenAtom);
-  return (
-    <div>
-      {showMenu && (
-        <div
-          className="lg:hidden block fixed inset-0 bg-black bg-opacity-40"
-          onClick={() => setShowMenu(false)}
-        ></div>
-      )}
-      <div
-        className={`lg:hidden block fixed top-0 right-0 h-screen w-[50%] bg-[#302F2D] transition-transform transform ${
-          showMenu ? "translate-x-5" : "translate-x-full"
-        }`}
-        style={{ zIndex: 10 }}
-      >
-        <div className="flex flex-col gap-y-4 ml-[60px] mt-[140px] justify-center">
-          <div
-            className="text-[#CEB292] text-[20px] cursor-pointer"
-            onClick={() => setShowMenu(false)}
-          >
-            글루ING
-          </div>
-          <div className="text-[#858178] text-[20px] cursor-pointer">
-            나의 보관함
-          </div>
-          <div className="flex flex-col ml-3 gap-y-3">
-            <div
-              className="text-[#858178] text-[16px] cursor-pointer"
-              onClick={() =>
-                router.push({
-                  pathname: "/mypage/badgeList",
-                  query: { access_token: accessToken },
-                })
-              }
-            >
-              - 나의 뱃지
-            </div>
-            <div
-              className="text-[#858178] text-[16px] cursor-pointer"
-              onClick={() =>
-                router.push({
-                  pathname: "/mypage/finished",
-                  query: { access_token: accessToken },
-                })
-              }
-            >
-              - 내가 발행한 책
-            </div>
-            <div
-              className="text-[#858178] text-[16px] cursor-pointer"
-              onClick={() =>
-                router.push({
-                  pathname: "/mypage/unfinished",
-                  query: { access_token: accessToken },
-                })
-              }
-            >
-              - 못다쓴 책
-            </div>
-          </div>
-          <div
-            className="text-[#858178] text-[20px] cursor-pointer"
-            onClick={() =>
-              router.push({
-                pathname: "/mypage/change-settings",
-                query: { access_token: accessToken },
-              })
-            }
-          >
-            설정
-          </div>
-          <div className="text-[#858178] text-[20px] cursor-pointer">
-            로그아웃
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+import { useMenu, getAccessTokenFromCookies } from "../../public/utils/utils";
+import MenuWithTopbar from "../components/MenuWithTopbar";
 
 // 새로 등록하는 모달
 const Modal: React.FC<ModalProps> = ({
@@ -116,7 +32,6 @@ const Modal: React.FC<ModalProps> = ({
   onClose,
   writingData,
   remainingTime,
-  textColor,
   mini,
   id,
   remainingSecond,
@@ -245,7 +160,7 @@ const Modal: React.FC<ModalProps> = ({
           >
             <a
               className={`items-start justify-start flex ${
-                textColor ? "text-orange-500" : "text-black"
+                remainingTime2 < 10 ? "text-orange-500" : "text-black"
               }`}
             >
               남은 시간 {remainingTime2}
@@ -307,13 +222,18 @@ const EditModal: React.FC<ModalProps> = ({
   id,
   editData,
 }) => {
-  const router = useRouter();
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [title, setTitle] = useState(editData?.title || "");
+  const [content, setContent] = useState(editData?.content || "");
   const [accessToken] = useAtom(accessTokenAtom);
   const [isConfirmationModal2Open, setIsConfirmationModal2Open] =
     useState(false);
-  const disabled = !title || !content;
+  const isChanged =
+    !!editData && (title !== editData.title || content !== editData.content);
+
+  useEffect(() => {
+    setTitle(editData?.title || "");
+    setContent(editData?.content || "");
+  }, [editData]);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
@@ -321,9 +241,9 @@ const EditModal: React.FC<ModalProps> = ({
       intervalId = setInterval(async () => {
         try {
           await temporarySaveWriting(id, accessToken, { title, content });
-          console.log("임시 저장 성공");
+          alert("임시 저장이 완료되었습니다.");
         } catch (error) {
-          console.error("임시 저장 실패:", error);
+          alert("임시 저장에 실패했습니다.");
         }
       }, 30000); // 30초마다 호출
     }
@@ -339,8 +259,7 @@ const EditModal: React.FC<ModalProps> = ({
     if (inputText.length <= 40) {
       // 40자 이내일 때만 setTitle 호출하여 상태 업데이트
       setTitle(inputText);
-    }
-    // 만약 40자를 초과하면 무시
+    } else alert("제목은 40자를 초과할 수 없습니다.");
   };
 
   const handleCancelPost = () => {
@@ -413,6 +332,7 @@ const EditModal: React.FC<ModalProps> = ({
               // 최대 입력 글자수 - 4000자로 제한
               if (inputValue.length <= 4000) {
                 setContent(inputValue);
+                console.log(content, "content");
               }
             }}
           />
@@ -424,8 +344,11 @@ const EditModal: React.FC<ModalProps> = ({
             style={{ backgroundColor: "#F1F1F1" }}
           >
             <button
-              className="w-[152px] h-[53px] cursor-pointer rounded-md bg-orange-500 text-black"
-              // disabled={disabled}
+              className={`w-[152px] h-[53px] cursor-pointer rounded-md ${
+                isChanged
+                  ? "bg-orange-500  text-black"
+                  : "bg-gray-400 text-gray-800"
+              }`}
               onClick={handleEditPost}
             >
               수정
@@ -480,9 +403,8 @@ export default function Writer() {
   const [editData, setEditData] = useState<EditData>({});
   const [selectedWritingId, setSelectedWritingId] = useState("");
   const [remainingTime, setRemainingTime] = useState<string>();
-  const [remainingTime2, setRemainingTime2] = useState<string>();
+  const [remainingTime2, setRemainingTime2] = useAtom(remainingTime2Atom);
   const [buttonActivated, setButtonActivated] = useState<boolean>(false);
-  const [textColor, setTextColor] = useState<boolean>(false);
   const [remainingSecond, setRemainingSecond] = useState<number>();
   const [intervalId, setIntervalId] = useState<number | null>(null);
   const [isSubmissionSuccessful, setIsSubmissionSuccessful] = useState(false);
@@ -492,18 +414,19 @@ export default function Writer() {
   const [showBadge, setShowBadge] = useState(false);
   const [postedWriting, setPostedWriting] = useState<PostingInfo>({});
   const badgeCount = postedWriting?.newBadges?.length || 0;
-  // const [showMenu, setShowMenu] = useState(false);
   const { showMenu, setShowMenu, toggleMenu } = useMenu();
-  // const toggleMenu = () => {
-  //   setShowMenu((prevShowMenu) => !prevShowMenu);
-  //   console.log(showMenu, "showMenu");
-  // };
+  useEffect(() => {
+    console.log(loginState, accessToken, "=====================");
+  }, [loginState]);
 
-  // useEffect(() => {
-  //   const cookies = nookies.get(null);
-  //   const accessToken = cookies.access_token || null;
-  //   setAccessToken(accessToken);
-  // }, [setAccessToken]);
+  useEffect(() => {
+    const token = getAccessTokenFromCookies();
+    if (token) {
+      setLoginState({ ...loginState, accessToken: token, isLoggedIn: true });
+    } else {
+      setLoginState({ ...loginState, isLoggedIn: false });
+    }
+  }, []);
 
   useEffect(() => {
     if (badgeCount > 0) {
@@ -643,13 +566,15 @@ export default function Writer() {
       const response = await startWriting(writingInfo?.data?.id, accessToken);
       console.log(response, "시작 ???");
       const newWritingId = response?.data?.writing?.id;
-      setWritingId(newWritingId);
       console.log(writingId, "???????????????");
       if (newWritingId) {
         setWritingId(newWritingId);
         router.push({
-          pathname: "/newPost/posting",
-          query: { access_token: accessToken, writingId: newWritingId },
+          pathname: `/newPost/${newWritingId}`,
+          query: {
+            access_token: accessToken,
+            writingId: newWritingId,
+          },
         });
       } else {
         console.error("Failed to get new writing ID");
@@ -757,12 +682,37 @@ export default function Writer() {
 
   const formattedDateRange = `${formattedStartDate} - ${formattedFinishDate}`;
 
+  const WritingList = React.memo(function WritingList({ writings }) {
+    return (
+      <div className="flex flex-col lg:max-h-[560px] gap-y-2 lg:gap-y-4 max-h-[340px] my-5 overflow-y-scroll rounded-xl">
+        {writings?.map((writing, index) => (
+          <div
+            key={index}
+            className="flex cursor-pointer px-5 py-5 flex-row w-full lg:h-[200px] h-[150px] rounded-xl"
+            style={{ backgroundColor: "#F4EDE0" }}
+            onClick={() => handleEditClick(writing?.id)}
+          >
+            <div className="my-3 mx-3">
+              <div className="w-full text-xl">{writing?.title}</div>
+              <div
+                className="mt-3 max-w-full truncate text-base"
+                style={{ color: "#C5BCAB" }}
+              >
+                {writing?.content}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  });
+  WritingList.displayName = "WritingList";
   return (
     <div className="flex flex-col my-[50px] w-full overflow-hidden">
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
       <div className="flex flex-row mx-auto w-full">
         <div className="flex flex-col w-full mx-[120px]">
-          <Menu
+          <MenuWithTopbar
             showMenu={showMenu}
             setShowMenu={setShowMenu}
             toggleMenu={toggleMenu}
@@ -907,26 +857,7 @@ export default function Writer() {
                   </div>
                 )}
                 {writingInfo?.data?.writings !== null && (
-                  <div className="flex flex-col lg:max-h-[560px] gap-y-2 lg:gap-y-4 max-h-[340px] my-5 overflow-y-scroll rounded-xl">
-                    {writingInfo?.data?.writings?.map((writing, index) => (
-                      <div
-                        key={index}
-                        className="flex cursor-pointer px-5 py-5 flex-row w-full lg:h-[200px] h-[150px] rounded-xl"
-                        style={{ backgroundColor: "#F4EDE0" }}
-                        onClick={() => handleEditClick(writing.id)}
-                      >
-                        <div className="my-3 mx-3">
-                          <div className="w-full text-xl">{writing?.title}</div>
-                          <div
-                            className="mt-3 max-w-full truncate text-base"
-                            style={{ color: "#C5BCAB" }}
-                          >
-                            {writing?.content}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                  <WritingList writings={writingInfo?.data?.writings} />
                 )}
               </div>
             </div>
@@ -1029,7 +960,6 @@ export default function Writer() {
         writingData={writingInfo}
         mini={setIsMiniModalOpen}
         remainingTime={remainingTime}
-        textColor={textColor}
         remainingSecond={remainingSecond}
         remainingTime2={remainingTime2}
         postedWriting={postedWriting}

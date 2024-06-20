@@ -1,13 +1,13 @@
 import { getCurrentSessions, getUserInfo } from "@/api/api";
+import { access } from "fs";
 import { atom } from "jotai";
 import nookies from "nookies";
+import { getAccessTokenFromCookies } from "./utils/utils";
 
-const getAccessTokenFromCookies = () => {
-  const cookies = nookies.get(null);
-  return cookies.access_token || null;
-};
-
-export const accessTokenAtom = atom<string | null>(getAccessTokenFromCookies());
+export const accessTokenAtom = atom<string | null>(null);
+export const sessionDataAtom = atom<any>(null);
+export const remainingTimeAtom = atom(0);
+export const remainingTime2Atom = atom(0);
 
 export const loginAtom = atom(
   { username: "", isLoggedIn: false, accessToken: null as string | null },
@@ -29,6 +29,7 @@ export const userInfoAtom = atom(async (get) => {
   const accessToken = get(accessTokenAtom);
   if (accessToken) {
     const userData = await getUserInfo(accessToken);
+    console.log(userData, "user?");
     return userData;
   }
   return null;
@@ -38,6 +39,7 @@ export const writingDataAtom = atom(async (get) => {
   const accessToken = get(accessTokenAtom);
   if (accessToken) {
     const currentWritings = await getCurrentSessions(accessToken);
+    console.log(currentWritings, "current!");
     return currentWritings;
   }
   return null;

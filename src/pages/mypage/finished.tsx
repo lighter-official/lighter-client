@@ -9,12 +9,11 @@ import {
   userInfoAtom,
   writingDataAtom,
 } from "../../../public/atoms";
-import Image from "next/image";
 import BookItem from "../../components/BookItem";
-import { getCookie } from "..";
 import { formatDate, useMenu } from "../../../public/utils/utils";
 import { UserInfo } from "../../../interface";
-import Menu from "@/components/Menu";
+import Menu from "@/components/MenuWithTopbar";
+import MenuWithTopbar from "@/components/MenuWithTopbar";
 
 // interface ModalProps {
 //   isOpen: boolean;
@@ -69,8 +68,17 @@ import Menu from "@/components/Menu";
 
 const FinshedItem = ({ data }: UserInfo) => {
   const filteredWritingSessions = data?.writingSessions?.filter(
-    (session: any) => !session.isActivated && session.progressPercentage == 100 //수정 필요
+    (session: any) =>
+      session.progressPercentage >= 75 && session.status === "completed"
   );
+  const imageUrls = [
+    "https://gloo-image-bucket.s3.amazonaws.com/archive/cover_1.png",
+    "https://gloo-image-bucket.s3.amazonaws.com/archive/cover_2.png",
+    "https://gloo-image-bucket.s3.amazonaws.com/archive/cover_3.png",
+  ];
+
+  const randomImageUrl =
+    imageUrls[Math.floor(Math.random() * imageUrls.length)];
 
   return (
     <div className="flex flex-col max-h-[643px] overflow-y-auto mb-[21px]">
@@ -78,16 +86,19 @@ const FinshedItem = ({ data }: UserInfo) => {
         filteredWritingSessions.map((session: any) => (
           <div key={session.id} className="mt-2 flex flex-row gap-x-[46px]">
             <BookItem
-              imageUrl="https://gloo-image-bucket.s3.amazonaws.com/archive/book_yet.png"
+              id={session?.id}
+              imageUrl={randomImageUrl}
               title={session?.subject}
               date={formatDate(session?.finishDate)}
+              username={data?.nickname}
+              session={session}
             />
           </div>
         ))
       ) : (
         <div
           style={{ color: "#D5C8AE" }}
-          className="text-[18px] lg:text-[20px] font-bold"
+          className="text-[18px] lg:text-[20px]"
         >
           아직 발행한 책이 없어요.
         </div>
@@ -105,7 +116,8 @@ export default function MyBook() {
   const [userInfo, setUserInfo] = useAtom(userInfoAtom);
   const [writingInfo, setWritingInfo] = useAtom(writingDataAtom);
   const filteredWritingSessions = userInfo?.data?.writingSessions?.filter(
-    (session: any) => !session.isActivated && session.progressPercentage == 100 //수정 필요
+    (session: any) =>
+      session.progressPercentage >= 75 && session.status === "completed"
   );
 
   useEffect(() => {
@@ -119,7 +131,7 @@ export default function MyBook() {
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
       <div className="flex flex-row mx-auto w-full">
         <div className="flex flex-col w-full mx-[120px] sm:max-w-[682px] lg:max-w-none">
-          <Menu
+          <MenuWithTopbar
             showMenu={showMenu}
             setShowMenu={setShowMenu}
             toggleMenu={toggleMenu}

@@ -9,16 +9,27 @@ import {
   userInfoAtom,
   writingDataAtom,
 } from "../../../public/atoms";
-import Image from "next/image";
 import BookItem from "../../components/BookItem";
-import { SessionInfo, UserInfo } from "../../../interface";
+import { UserInfo } from "../../../interface";
 import { formatDate, useMenu } from "../../../public/utils/utils";
-import Menu from "@/components/Menu";
+import Menu from "@/components/MenuWithTopbar";
+import MenuWithTopbar from "@/components/MenuWithTopbar";
 
-const UnfinshedItem = ({ data }: UserInfo) => {
+const UnfinishedItem = ({ data }: UserInfo) => {
   const filteredWritingSessions = data?.writingSessions?.filter(
-    (session: any) => !session.isActivated && session.progressPercentage < 75 //수정 필요
+    (session: any) =>
+      session.progressPercentage < 75 && session.status === "aborted"
   );
+  console.log(data?.writingSessions, "[===========");
+
+  const imageUrls = [
+    "https://gloo-image-bucket.s3.amazonaws.com/archive/cover_1.png",
+    "https://gloo-image-bucket.s3.amazonaws.com/archive/cover_2.png",
+    "https://gloo-image-bucket.s3.amazonaws.com/archive/cover_3.png",
+  ];
+
+  const randomImageUrl =
+    imageUrls[Math.floor(Math.random() * imageUrls.length)];
 
   return (
     <div className="flex flex-col max-h-[643px] overflow-y-auto mb-[21px]">
@@ -26,16 +37,19 @@ const UnfinshedItem = ({ data }: UserInfo) => {
         filteredWritingSessions.map((session: any) => (
           <div key={session.id} className="mt-2 flex flex-row gap-x-[46px]">
             <BookItem
-              imageUrl="https://gloo-image-bucket.s3.amazonaws.com/archive/book_yet.png"
+              id={session?.id}
+              imageUrl={randomImageUrl}
               title={session?.subject}
               date={formatDate(session?.finishDate)}
+              username={data?.nickname}
+              session={session}
             />
           </div>
         ))
       ) : (
         <div
           style={{ color: "#D5C8AE" }}
-          className="text-[18px] lg:text-[20px] font-bold"
+          className="text-[18px] lg:text-[20px]"
         >
           아직 못다쓴 책이 없어요.
         </div>
@@ -51,16 +65,20 @@ export default function UnfinishedBook() {
   const [loginState, setLoginState] = useAtom(loginAtom);
   const [userInfo, setUserInfo] = useAtom(userInfoAtom);
   const [writingInfo, setWritingInfo] = useAtom(writingDataAtom);
+
   const filteredWritingSessions = userInfo?.data?.writingSessions?.filter(
-    (session: any) => !session.isActivated && session.progressPercentage < 75 //수정 필요
+    (session: any) =>
+      session.progressPercentage < 75 && session.status === "aborted"
   );
+
+  console.log(filteredWritingSessions, "filter");
   const { showMenu, setShowMenu, toggleMenu } = useMenu();
 
   useEffect(() => {
     console.log(userInfo);
     console.log(writingInfo);
     console.log(accessTokenAtom);
-  }, [userInfo, writingInfo]);
+  }, []);
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -75,7 +93,7 @@ export default function UnfinishedBook() {
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
       <div className="flex flex-row mx-auto w-full">
         <div className="flex flex-col w-full mx-[120px] sm:max-w-[682px] lg:max-w-none">
-          <Menu
+          <MenuWithTopbar
             showMenu={showMenu}
             setShowMenu={setShowMenu}
             toggleMenu={toggleMenu}
@@ -161,7 +179,7 @@ export default function UnfinishedBook() {
                 </div>
                 <div className="flex flex-col max-h-[643px] overflow-y-auto mt-[21px] mb-[21px] ">
                   <div className=" mt-2 flex flex-row gap-x-[46px]">
-                    <UnfinshedItem {...userInfo} />
+                    <UnfinishedItem {...userInfo} />
                   </div>
                 </div>
               </div>

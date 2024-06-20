@@ -15,7 +15,8 @@ import Image from "next/image";
 import BadgeItem from "../../components/BadgeItem";
 import { BadgeItemProps, UserInfo } from "../../../interface";
 import { useMenu } from "../../../public/utils/utils";
-import Menu from "@/components/Menu";
+import Menu from "@/components/MenuWithTopbar";
+import MenuWithTopbar from "@/components/MenuWithTopbar";
 
 interface BadgeItem {
   badge: {
@@ -101,7 +102,7 @@ export default function BadgeList() {
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
       <div className="flex flex-row mx-auto w-full">
         <div className="flex flex-col w-full mx-[120px] sm:max-w-[682px] lg:max-w-none">
-          <Menu
+          <MenuWithTopbar
             showMenu={showMenu}
             setShowMenu={setShowMenu}
             toggleMenu={toggleMenu}
@@ -201,7 +202,7 @@ export default function BadgeList() {
                           나비
                         </a>
                       </div>
-                      <div className="container space-between flex-wrap mt-[20px] xl:flex-nowrap flex flex-row gap-x-[26px]">
+                      <div className="container space-between flex-wrap mt-[20px] xl:flex-nowrap flex flex-row gap-x-[26px] gap-y-[20px]">
                         {userInfo?.data?.userBadges?.map((item: any) => (
                           <BadgeItem
                             key={item.id}
