@@ -2,7 +2,6 @@
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import "../globals.css";
-import Image from "next/image";
 import { getCurrentSessions, editWritingSetUp } from "@/api/api";
 import Dropdown from "@/components/Dropdown";
 import { SettingData } from "../../../interface";
@@ -12,7 +11,6 @@ import {
   loginAtom,
   writingDataAtom,
 } from "../../../public/atoms";
-import Menu from "@/components/MenuWithTopbar";
 import { useMenu } from "../../../public/utils/utils";
 import MenuWithTopbar from "@/components/MenuWithTopbar";
 import { SideMenu } from "@/components/SideMenu";

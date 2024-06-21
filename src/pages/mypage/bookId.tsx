@@ -16,7 +16,6 @@ import {
   useMenu,
 } from "../../../public/utils/utils";
 import { GetServerSideProps } from "next";
-import Menu from "@/components/MenuWithTopbar";
 import BookItem from "@/components/BookItem";
 import MenuWithTopbar from "@/components/MenuWithTopbar";
 

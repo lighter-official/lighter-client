@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useAtom } from "jotai";
 import {
   accessTokenAtom,
@@ -8,14 +8,9 @@ import {
   userInfoAtom,
   writingDataAtom,
 } from "../../../public/atoms";
-import { getCookie } from "..";
-import { getGlooingInfo, getUserInfo } from "@/api/api";
 import "../globals.css";
-import Image from "next/image";
 import BadgeItem from "../../components/BadgeItem";
-import { BadgeItemProps, UserInfo } from "../../../interface";
 import { useMenu } from "../../../public/utils/utils";
-import Menu from "@/components/MenuWithTopbar";
 import MenuWithTopbar from "@/components/MenuWithTopbar";
 import { SideMenu } from "@/components/SideMenu";
 

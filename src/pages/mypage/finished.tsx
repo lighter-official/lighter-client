@@ -12,7 +12,6 @@ import {
 import BookItem from "../../components/BookItem";
 import { formatDate, useMenu } from "../../../public/utils/utils";
 import { UserInfo } from "../../../interface";
-import Menu from "@/components/MenuWithTopbar";
 import MenuWithTopbar from "@/components/MenuWithTopbar";
 import { SideMenu } from "@/components/SideMenu";
 
