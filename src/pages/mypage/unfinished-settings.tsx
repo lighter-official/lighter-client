@@ -61,7 +61,6 @@ export default function UnfinishedSettings() {
       router.push({
         pathname: "/glooing",
         query: {
-          access_token: accessToken,
           isFirst: isFirst,
         },
       });

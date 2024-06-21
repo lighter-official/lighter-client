@@ -96,7 +96,7 @@ const Modal: React.FC<ModalProps> = ({
       setPostedWriting(response.data);
 
       const currentURL = window.location.href;
-      const newURL = `${currentURL}?access_token=${accessToken}`;
+      const newURL = `${currentURL}`;
       window.history.replaceState({}, document.title, newURL);
 
       mini(true);
@@ -572,7 +572,6 @@ export default function Writer() {
         router.push({
           pathname: `/newPost/${newWritingId}`,
           query: {
-            access_token: accessToken,
             writingId: newWritingId,
           },
         });
@@ -595,7 +594,6 @@ export default function Writer() {
     try {
       router.push({
         pathname: "/glooing",
-        query: { access_token: accessToken },
       });
     } catch (error) {
       console.error("Error redirecting after closing writer modal:", error);
@@ -660,7 +658,6 @@ export default function Writer() {
     if (accessToken) {
       router.push({
         pathname: router.pathname,
-        query: { access_token: accessToken },
       });
     }
   }, [writingInfo]);

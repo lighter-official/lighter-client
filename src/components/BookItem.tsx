@@ -26,7 +26,6 @@ const BookItem: React.FC<BookItemProps> = ({
     setSessionData(session);
     router.push({
       pathname: "/mypage/bookId",
-      query: { access_token: accessToken },
     });
   };
 

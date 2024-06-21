@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 import "./globals.css";
 import nookies from "nookies";
 import Image from "next/image";
@@ -19,13 +19,14 @@ export default function Home({ initialLoginState }: any) {
   const [loginState, setLoginState] = useAtom(loginAtom);
   const [accessToken, setAccessToken] = useAtom(accessTokenAtom);
   const APP_KEY = "67511eea297fb0f856f791b369c67355";
-  const REDIRECT_URI = "https://lighter-client.vercel.app";
-  // const REDIRECT_URI = "http://localhost:8000";
+  // const REDIRECT_URI = "https://lighter-client.vercel.app";
+  const REDIRECT_URI = "http://localhost:8000";
   const link = `https://kauth.kakao.com/oauth/authorize?client_id=${APP_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
 
   useEffect(() => {
     if (initialLoginState) {
       setLoginState(initialLoginState);
+      console.log(initialLoginState, "initial state");
     }
   }, [initialLoginState]);
 
@@ -79,6 +80,7 @@ export default function Home({ initialLoginState }: any) {
           accessToken,
           isLoggedIn: true,
         });
+        console.log(loginState, "loginstate?");
         setAccessToken(accessToken);
         if (
           data?.data?.isSignUp === true ||
@@ -87,13 +89,11 @@ export default function Home({ initialLoginState }: any) {
           // 신규 회원가입이거나 진행중인 세션이 없을 경우
           router.push({
             pathname: "/session-settings",
-            query: { access_token: accessToken },
-          } as any);
+          });
         } else if (data?.data?.hasOnProcessedWritingSession === true) {
           router.push({
             pathname: "/glooing",
-            query: { access_token: accessToken },
-          } as any);
+          });
         }
       }
     } catch (error) {

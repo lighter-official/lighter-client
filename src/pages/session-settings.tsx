@@ -72,7 +72,6 @@ export default function Settings() {
       router.push({
         pathname: "/glooing",
         query: {
-          access_token: accessToken,
           isFirst: isFirst,
         },
       });

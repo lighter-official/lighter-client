@@ -121,7 +121,6 @@ export default function MyBookItem() {
                             onClick={() =>
                               router.push({
                                 pathname: "/mypage/unfinished-settings",
-                                query: { access_token: accessToken },
                               })
                             }
                           >

@@ -85,13 +85,12 @@ export const NewWriting = () => {
       console.log("Submitted Data ---- ", response);
 
       const currentURL = window.location.href;
-      const newURL = `${currentURL}?access_token=${accessToken}`;
+      const newURL = `${currentURL}`;
       window.history.replaceState({}, document.title, newURL);
 
       // mini(true);
       router.push({
         pathname: "/glooing",
-        query: { access_token: accessToken },
       });
     } catch (error) {
       console.error("Error saving writing:", error);
@@ -126,7 +125,6 @@ export const NewWriting = () => {
               onClick={() =>
                 router.push({
                   pathname: "/glooing",
-                  query: { access_token: accessToken },
                 })
               }
             >
@@ -137,7 +135,6 @@ export const NewWriting = () => {
               onClick={() =>
                 router.push({
                   pathname: "/mypage/badgeList",
-                  query: { access_token: accessToken },
                 })
               }
             >
@@ -242,7 +239,6 @@ export const NewWriting = () => {
             onClick={() =>
               router.push({
                 pathname: "/mypage/glooing",
-                query: { access_token: accessToken },
               })
             }
           ></div>

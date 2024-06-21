@@ -33,7 +33,6 @@ export default function MyBook() {
                 onClick={() =>
                   router.push({
                     pathname: "/glooing",
-                    query: { access_token: accessToken },
                   })
                 }
               >
@@ -45,7 +44,6 @@ export default function MyBook() {
                 onClick={() =>
                   router.push({
                     pathname: "/mypage/badgeList",
-                    query: { access_token: accessToken },
                   })
                 }
               >
@@ -134,7 +132,6 @@ export default function MyBook() {
                       onClick={() =>
                         router.push({
                           pathname: "/challenge/completed",
-                          query: { access_token: accessToken },
                         })
                       }
                     >

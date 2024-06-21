@@ -45,7 +45,6 @@ export const Menubar: React.FC<MenuProps> = ({
             onClick={() =>
               router.push({
                 pathname: "/glooing",
-                query: { access_token: accessToken },
               })
             }
           >
@@ -72,7 +71,6 @@ export const Menubar: React.FC<MenuProps> = ({
               onClick={() =>
                 router.push({
                   pathname: "/mypage/badgeList",
-                  query: { access_token: accessToken },
                 })
               }
             >
@@ -87,7 +85,6 @@ export const Menubar: React.FC<MenuProps> = ({
               onClick={() =>
                 router.push({
                   pathname: "/mypage/finished",
-                  query: { access_token: accessToken },
                 })
               }
             >
@@ -102,7 +99,6 @@ export const Menubar: React.FC<MenuProps> = ({
               onClick={() =>
                 router.push({
                   pathname: "/mypage/unfinished",
-                  query: { access_token: accessToken },
                 })
               }
             >
@@ -118,7 +114,6 @@ export const Menubar: React.FC<MenuProps> = ({
             onClick={() =>
               router.push({
                 pathname: "/mypage/change-settings",
-                query: { access_token: accessToken },
               })
             }
           >
@@ -179,7 +174,6 @@ export const MenuWithTopbar: React.FC<MenuProps> = ({
           onClick={() =>
             router.push({
               pathname: "/glooing",
-              query: { access_token: accessToken },
             })
           }
         >
@@ -197,7 +191,6 @@ export const MenuWithTopbar: React.FC<MenuProps> = ({
           onClick={() =>
             router.push({
               pathname: "/mypage/badgeList",
-              query: { access_token: accessToken },
             })
           }
         >

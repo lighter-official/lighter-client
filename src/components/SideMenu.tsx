@@ -29,7 +29,6 @@ export const SideMenu: React.FC<SideMenuProps> = ({ loginState }) => {
             onClick={() =>
               router.push({
                 pathname: "/mypage/badgeList",
-                query: { access_token: accessToken },
               })
             }
           >
@@ -43,7 +42,6 @@ export const SideMenu: React.FC<SideMenuProps> = ({ loginState }) => {
             onClick={() =>
               router.push({
                 pathname: "/mypage/finished",
-                query: { access_token: accessToken },
               })
             }
           >
@@ -57,7 +55,6 @@ export const SideMenu: React.FC<SideMenuProps> = ({ loginState }) => {
             onClick={() =>
               router.push({
                 pathname: "/mypage/unfinished",
-                query: { access_token: accessToken },
               })
             }
           >
@@ -75,7 +72,6 @@ export const SideMenu: React.FC<SideMenuProps> = ({ loginState }) => {
             onClick={() =>
               router.push({
                 pathname: "/mypage/change-settings",
-                query: { access_token: accessToken },
               })
             }
           >
