@@ -15,6 +15,7 @@ import {
 import Menu from "@/components/MenuWithTopbar";
 import { useMenu } from "../../../public/utils/utils";
 import MenuWithTopbar from "@/components/MenuWithTopbar";
+import { SideMenu } from "@/components/SideMenu";
 
 interface ModalProps {
   isOpen: boolean;
@@ -165,68 +166,11 @@ export default function ChangeSettings() {
             style={{ color: "#7C766C", borderColor: "#7C766C" }}
           />
           <div className="flex mt-[20px] justify-between gap-x-[20px] lg:flex-row flex-col my-[30px]">
-            <div className="lg:bg-black rounded-sm flex flex-col w-full lg:w-[400px] h-[130px] lg:h-[471px]">
-              <div className="flex flex-col lg:mx-[20px]">
-                <div className="text-black lg:text-white lg:mt-[34px] mt-[20px] w-full lg:h-[51px] h-[40px] text-[25px] lg:text-[36px] font-bold lg:font-normal">
-                  나의 보관함
-                </div>
-                <div className="flex flex-col lg:gap-y-[26px] mt-[24px]">
-                  <div
-                    className="hidden lg:flex text-[20px] cursor-pointer"
-                    style={{ color: "#CEB292" }}
-                    onClick={() =>
-                      router.push({
-                        pathname: "/mypage/badgeList",
-                        query: { access_token: accessToken },
-                      })
-                    }
-                  >
-                    나의 뱃지
-                  </div>
-                  <div
-                    className="hidden lg:flex text-[20px] cursor-pointer"
-                    style={{ color: "#CEB292" }}
-                    onClick={() =>
-                      router.push({
-                        pathname: "/mypage/finished",
-                        query: { access_token: accessToken },
-                      })
-                    }
-                  >
-                    내가 발행한 책
-                  </div>
-                  <div
-                    className="hidden lg:flex text-[20px] cursor-pointer"
-                    style={{ color: "#CEB292" }}
-                    onClick={() =>
-                      router.push({
-                        pathname: "/mypage/unfinished",
-                        query: { access_token: accessToken },
-                      })
-                    }
-                  >
-                    못다쓴 책
-                  </div>
-
-                  <div
-                    className="flex text-[20px] font-normal lg:font-bold cursor-pointer"
-                    style={{ color: "#CEB292" }}
-                    onClick={() =>
-                      router.push({
-                        pathname: "/mypage/change-settings",
-                        query: { access_token: accessToken },
-                      })
-                    }
-                  >
-                    설정
-                  </div>
-                  <hr
-                    className="block lg:hidden w-full bg-[#7C766C] h-[1px] mt-2"
-                    style={{ color: "#7C766C", borderColor: "#7C766C" }}
-                  />
-                </div>
-              </div>
-            </div>
+            <SideMenu
+              accessToken={accessToken}
+              loginState={loginState}
+              router={router}
+            />
             <div className="w-full max-w-[1120px] rounded-sm flex flex-row max-h-[797px]">
               <div className="w-full lg:ml-2">
                 <div className="flex flex-row items-center ">

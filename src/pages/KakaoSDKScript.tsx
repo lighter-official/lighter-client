@@ -8,7 +8,7 @@ declare global {
 
 function KakaoSDKScript() {
   const initKakaoSDK = () => {
-    const kakaoAppKey = 'blabla' // 여기 수정
+    const kakaoAppKey = "67511eea297fb0f856f791b369c67355";
     window.Kakao.init(kakaoAppKey);
   };
 

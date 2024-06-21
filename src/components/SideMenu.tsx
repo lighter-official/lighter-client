@@ -1,23 +1,15 @@
 import { useRouter } from "next/router";
 import { accessTokenAtom } from "../../public/atoms";
 import { useAtom } from "jotai";
+import { NextRouter } from "next/router";
 
 interface SideMenuProps {
-  showMenu: boolean;
-  setShowMenu: React.Dispatch<React.SetStateAction<boolean>>;
-  toggleMenu: () => void;
-  handleLogIn?: () => void;
   accessToken: string | null;
   loginState: { isLoggedIn: boolean };
-  router: any;
+  router: NextRouter;
 }
 
-export const SideMenu: React.FC<SideMenuProps> = ({
-  toggleMenu,
-  showMenu,
-  setShowMenu,
-  loginState,
-}) => {
+export const SideMenu: React.FC<SideMenuProps> = ({ loginState }) => {
   const router = useRouter();
   const [accessToken] = useAtom(accessTokenAtom);
   const isCurrentPath = (path: string) => router.pathname === path;
@@ -30,7 +22,9 @@ export const SideMenu: React.FC<SideMenuProps> = ({
         </div>
         <div className="flex flex-col lg:gap-y-[26px] mt-[24px]">
           <div
-            className="hidden lg:flex text-[20px] cursor-pointer"
+            className={`hidden lg:flex text-[20px] cursor-pointer ${
+              isCurrentPath("/mypage/badgeList") ? "font-bold" : ""
+            }`}
             style={{ color: "#CEB292" }}
             onClick={() =>
               router.push({
@@ -42,7 +36,9 @@ export const SideMenu: React.FC<SideMenuProps> = ({
             나의 뱃지
           </div>
           <div
-            className="hidden lg:flex text-[20px] cursor-pointer"
+            className={`hidden lg:flex text-[20px] cursor-pointer ${
+              isCurrentPath("/mypage/finished") ? "font-bold" : ""
+            }`}
             style={{ color: "#CEB292" }}
             onClick={() =>
               router.push({
@@ -54,7 +50,9 @@ export const SideMenu: React.FC<SideMenuProps> = ({
             내가 발행한 책
           </div>
           <div
-            className="flex text-[20px] font-normal lg:font-bold cursor-pointer"
+            className={`hidden lg:flex text-[20px] cursor-pointer ${
+              isCurrentPath("/mypage/unfinished") ? "font-bold" : ""
+            }`}
             style={{ color: "#CEB292" }}
             onClick={() =>
               router.push({
@@ -70,7 +68,9 @@ export const SideMenu: React.FC<SideMenuProps> = ({
             style={{ color: "#7C766C", borderColor: "#7C766C" }}
           />
           <div
-            className="hidden lg:flex text-[20px] cursor-pointer"
+            className={`hidden lg:flex text-[20px] cursor-pointer ${
+              isCurrentPath("/mypage/change-settings") ? "font-bold" : ""
+            }`}
             style={{ color: "#CEB292" }}
             onClick={() =>
               router.push({

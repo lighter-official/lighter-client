@@ -162,11 +162,11 @@ export default function Settings() {
                       </button>
                       <button
                         className={`w-[82px] h-[40px] border-1 rounded-md ${
-                          period === 2 ? "bg-black text-white" : " bg-white"
+                          period === 100 ? "bg-black text-white" : " bg-white"
                         }`}
-                        onClick={() => setPeriod(2)}
+                        onClick={() => setPeriod(100)}
                       >
-                        1일
+                        100일
                       </button>
                     </div>
                   </div>

@@ -1,16 +1,16 @@
 import Image from "next/image";
 import { useAtom } from "jotai";
-import { useRouter } from "next/router";
+import { NextRouter, useRouter } from "next/router";
 import { accessTokenAtom } from "../../public/atoms";
 
 interface MenuProps {
   showMenu: boolean;
   setShowMenu: React.Dispatch<React.SetStateAction<boolean>>;
-  toggleMenu: () => void;
+  toggleMenu?: () => void;
   handleLogIn?: () => void;
   accessToken: string | null;
   loginState: { isLoggedIn: boolean };
-  router: any;
+  router: NextRouter;
 }
 
 export const Menubar: React.FC<MenuProps> = ({

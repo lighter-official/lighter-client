@@ -30,7 +30,7 @@ export interface SessionInfo {
 export interface WritingData {
   code: string;
   data: {
-    coverImageType: any;
+    coverImageType: string;
     createdAt: string;
     finishDate: string;
     id: number;

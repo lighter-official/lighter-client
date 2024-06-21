@@ -12,7 +12,7 @@ import {
   writingDataAtom,
 } from "../../../public/atoms";
 import { putWriting, submitWriting } from "@/api/api";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 interface WritingState {
   dataArray: {
@@ -38,9 +38,6 @@ export const NewWriting = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
-  const dataString = Array.isArray(router.query.data)
-    ? router.query.data[0]
-    : router.query.data;
   const [remainingTime] = useAtom(remainingTime2Atom);
   console.log(typeof remainingTime);
 
@@ -107,6 +104,7 @@ export const NewWriting = () => {
     <div className="w-full max-w-[1200px] rounded-sm flex flex-col mx-auto lg:my-[50px]">
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
       <div className="hidden lg:block">
+        {/* MenuWithTopBar 추가 예정 */}
         <div className="flex flex-row justify-between">
           <Image
             className="cursor-pointer lg:mb-[20px] mb-0 w-[74px] h-[24px]"
@@ -172,7 +170,7 @@ export const NewWriting = () => {
           />
 
           <div className="flex flex-col items-between justify-between w-full h-full lg:bg-none">
-            <div className="flex w-full px-[64px] pt-[32px] lg:pb-[22px] flex-col">
+            <div className="flex w-full px-[64px] pt-[32px] flex-col">
               <div className="w-full text-black text-[22px] lg:text-[36px]">
                 <textarea
                   className="text-[20px] lg:text-[40px] resize-none w-full lg:mb-[10px] h-[30px] lg:h-[50px] bg-[#F2EBDD] lg:bg-[#E0D5BF]"
@@ -182,22 +180,17 @@ export const NewWriting = () => {
                   maxLength={40}
                 />
               </div>
-              <div
+              {/* <div
                 className="lg:block hidden w-[300px] text-[12px] lg:text-[16px]"
                 style={{ color: "#706B61" }}
               >
                 날짜
-              </div>
-              {/* <div className="w-[83px] h-[49px] text-[30px] lg:text-[36px] justify-end">
-              <a className="text-black">1</a>/{" "}
-              <a style={{ color: "#706B61" }}>32</a>
-            </div> */}
+              </div> */}
             </div>
             <hr
               className="mx-[64px] items-center h-[1px]"
               style={{ color: "#7C766C", borderColor: "#7C766C" }}
             />
-            {/* <div className="w-full h-[29px] flex items-center">{50}</div> */}
             <div
               className="flex px-[64px] py-[32px] items-center justify-center text-center h-full"
               style={{ color: "#706B61" }}
@@ -206,7 +199,6 @@ export const NewWriting = () => {
                 className="lg:mt-[20px] resize-none w-full h-full overflow-y-auto flex  bg-[#F2EBDD] lg:bg-[#E0D5BF]"
                 placeholder="내용을 입력해주세요."
                 value={content}
-                // style={{ backgroundColor: "#E0D5BF" }}
                 onChange={(e) => {
                   const inputValue = e.target.value;
                   // 최대 입력 글자수 - 4000자로 제한
