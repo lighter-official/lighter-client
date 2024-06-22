@@ -3,6 +3,7 @@ import React from "react";
 import { accessTokenAtom, sessionDataAtom } from "../../public/atoms";
 import { useAtom } from "jotai";
 import { BookItemProps } from "../../interface";
+import Image from "next/image";
 
 const BookItem: React.FC<BookItemProps> = ({
   imageUrl,
@@ -26,7 +27,7 @@ const BookItem: React.FC<BookItemProps> = ({
         className="w-[217px] h-[317px] relative"
         style={{ backgroundColor: "#D5C8AE", border: "1px solid gray" }}
       >
-        <img
+        <Image
           className="z-50"
           src={imageUrl}
           alt={title}

@@ -11,7 +11,6 @@ import {
   userInfoAtom,
   writingDataAtom,
 } from "../../../public/atoms";
-import { WritingData } from "../../../interface";
 
 export default function MyBook() {
   const router = useRouter();
@@ -97,7 +96,7 @@ export default function MyBook() {
                           border: "1px solid gray",
                         }}
                       >
-                        <img
+                        <Image
                           className="w-full h-full z-50"
                           src={
                             "https://gloo-image-bucket.s3.amazonaws.com/archive/book_1.png"
