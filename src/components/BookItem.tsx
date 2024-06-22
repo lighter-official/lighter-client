@@ -2,15 +2,7 @@ import router from "next/router";
 import React from "react";
 import { accessTokenAtom, sessionDataAtom } from "../../public/atoms";
 import { useAtom } from "jotai";
-
-interface BookItemProps {
-  imageUrl: string;
-  title: string;
-  date: string;
-  username: string;
-  id: number;
-  session: any;
-}
+import { BookItemProps } from "../../interface";
 
 const BookItem: React.FC<BookItemProps> = ({
   imageUrl,
@@ -20,16 +12,14 @@ const BookItem: React.FC<BookItemProps> = ({
   id,
   session,
 }) => {
-  const [accessToken, setAccessToken] = useAtom(accessTokenAtom);
   const [sessionData, setSessionData] = useAtom(sessionDataAtom);
   const handleClick = () => {
     setSessionData(session);
     router.push({
-      pathname: "/mypage/bookId",
+      pathname: "/mypage/detail",
     });
   };
 
-  console.log(session, "session~");
   return (
     <div>
       <div

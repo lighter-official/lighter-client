@@ -9,7 +9,6 @@ import {
 } from "@/api/api";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import nookies from "nookies";
 import "./globals.css";
 import { day } from "@/lib/dayjs";
 import Image from "next/image";
@@ -21,198 +20,201 @@ import {
   userInfoAtom,
   accessTokenAtom,
   writingDataAtom,
+  remainingTimeAtom,
   remainingTime2Atom,
+  useUserInfoAtom,
+  useWritingDataAtom,
 } from "../../public/atoms";
-import { useMenu, getAccessTokenFromCookies } from "../../public/utils/utils";
+import { useMenu } from "../../public/utils/utils";
 import MenuWithTopbar from "../components/MenuWithTopbar";
 
-// 새로 등록하는 모달
-const Modal: React.FC<ModalProps> = ({
-  isOpen,
-  onClose,
-  writingData,
-  remainingTime,
-  mini,
-  id,
-  remainingSecond,
-  remainingTime2,
-  postedWriting,
-  setPostedWriting,
-}) => {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [accessToken] = useAtom(accessTokenAtom);
-  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
-  const disabled = !title || !content;
+// // 새로 등록하는 모달
+// const Modal: React.FC<ModalProps> = ({
+//   isOpen,
+//   onClose,
+//   writingData,
+//   remainingTime,
+//   mini,
+//   id,
+//   remainingSecond,
+//   remainingTime2,
+//   postedWriting,
+//   setPostedWriting,
+// }) => {
+//   const [title, setTitle] = useState("");
+//   const [content, setContent] = useState("");
+//   const [accessToken] = useAtom(accessTokenAtom);
+//   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
+//   const disabled = !title || !content;
 
-  useEffect(() => {
-    let intervalId: NodeJS.Timeout;
-    if (isOpen) {
-      intervalId = setInterval(async () => {
-        try {
-          await temporarySaveWriting(writingData?.data?.id, accessToken, {
-            title,
-            content,
-          });
-          console.log("임시 저장 성공");
-        } catch (error) {
-          console.error("임시 저장 실패:", error);
-        }
-      }, 30000); // 30초마다 호출
-    }
+//   useEffect(() => {
+//     let intervalId: NodeJS.Timeout;
+//     if (isOpen) {
+//       intervalId = setInterval(async () => {
+//         try {
+//           await temporarySaveWriting(writingData?.data?.id, accessToken, {
+//             title,
+//             content,
+//           });
+//           console.log("임시 저장 성공");
+//         } catch (error) {
+//           console.error("임시 저장 실패:", error);
+//         }
+//       }, 30000); // 30초마다 호출
+//     }
 
-    // 컴포넌트 언마운트 or 모달이 닫힐 경우 clear interval하도록 설정
-    return () => clearInterval(intervalId);
-  }, [isOpen, title, content]);
+//     // 컴포넌트 언마운트 or 모달이 닫힐 경우 clear interval하도록 설정
+//     return () => clearInterval(intervalId);
+//   }, [isOpen, title, content]);
 
-  const handleCancelPost = () => {
-    setIsConfirmationModalOpen(false);
-  };
+//   const handleCancelPost = () => {
+//     setIsConfirmationModalOpen(false);
+//   };
 
-  const handleTitleChange = (e) => {
-    const inputText = e.target.value;
+//   const handleTitleChange = (e) => {
+//     const inputText = e.target.value;
 
-    // 최대 길이를 40으로 설정
-    if (inputText.length <= 40) {
-      // 40자 이내일 때만 setTitle 호출하여 상태 업데이트, 초과하면 무시
-      setTitle(inputText);
-    }
-  };
+//     // 최대 길이를 40으로 설정
+//     if (inputText.length <= 40) {
+//       // 40자 이내일 때만 setTitle 호출하여 상태 업데이트, 초과하면 무시
+//       setTitle(inputText);
+//     }
+//   };
 
-  const handlePost = async () => {
-    // 모달 열기 전에 확인 모달을 띄우도록 수정
-    setIsConfirmationModalOpen(true);
-  };
+//   const handlePost = async () => {
+//     // 모달 열기 전에 확인 모달을 띄우도록 수정
+//     setIsConfirmationModalOpen(true);
+//   };
 
-  const handleConfirmPost = async () => {
-    const writingData = {
-      title: title || null, // 만약 title이 빈 문자열이면 null로 설정
-      content: content || null, // 만약 content가 빈 문자열이면 null로 설정
-    };
-    try {
-      const response = await submitWriting(writingData, id, accessToken);
-      console.log(response, "정상 제출?");
-      console.log(postedWriting.data, "posted?");
-      setPostedWriting(response.data);
+//   const handleConfirmPost = async () => {
+//     const writingData = {
+//       title: title || null, // 만약 title이 빈 문자열이면 null로 설정
+//       content: content || null, // 만약 content가 빈 문자열이면 null로 설정
+//     };
+//     try {
+//       const response = await submitWriting(writingData, id, accessToken);
+//       console.log(response, "정상 제출?");
+//       console.log(postedWriting.data, "posted?");
+//       setPostedWriting(response.data);
 
-      const currentURL = window.location.href;
-      const newURL = `${currentURL}`;
-      window.history.replaceState({}, document.title, newURL);
+//       const currentURL = window.location.href;
+//       const newURL = `${currentURL}`;
+//       window.history.replaceState({}, document.title, newURL);
 
-      mini(true);
-    } catch (error) {
-      console.error("Error saving writing:", error);
-    }
+//       mini(true);
+//     } catch (error) {
+//       console.error("Error saving writing:", error);
+//     }
 
-    onClose();
-    setIsConfirmationModalOpen(false);
-  };
+//     onClose();
+//     setIsConfirmationModalOpen(false);
+//   };
 
-  if (!isOpen) return null;
+//   if (!isOpen) return null;
 
-  return (
-    <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
-      <div
-        className="absolute w-full h-full bg-gray-800 opacity-50"
-        onClick={onClose}
-      ></div>
-      <div className="relative flex flex-col bg-white w-[800px] h-[550px] rounded-lg z-50">
-        <div className="p-8">
-          <div className="text-[16px]">
-            {writingData?.data?.writings?.length + 1}번째 글
-          </div>
-          <div
-            className="mb-[10px] font-bold text-[22px]"
-            style={{ color: "#646464" }}
-          >
-            {writingData?.data?.subject}
-          </div>
-          <textarea
-            className="text-[40px] w-full mb-[10px] h-[50px] resize-none"
-            placeholder="제목을 입력해주세요."
-            value={title}
-            onChange={handleTitleChange}
-            maxLength={40}
-          />
+//   return (
+//     <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
+//       <div
+//         className="absolute w-full h-full bg-gray-800 opacity-50"
+//         onClick={onClose}
+//       ></div>
+//       <div className="relative flex flex-col bg-white w-[800px] h-[550px] rounded-lg z-50">
+//         <div className="p-8">
+//           <div className="text-[16px]">
+//             {writingData?.data?.writings?.length + 1}번째 글
+//           </div>
+//           <div
+//             className="mb-[10px] font-bold text-[22px]"
+//             style={{ color: "#646464" }}
+//           >
+//             {writingData?.data?.subject}
+//           </div>
+//           <textarea
+//             className="text-[40px] w-full mb-[10px] h-[50px] resize-none"
+//             placeholder="제목을 입력해주세요."
+//             value={title}
+//             onChange={handleTitleChange}
+//             maxLength={40}
+//           />
 
-          <hr
-            className="w-full bg-[#7C766C] h-[1px] my-[17px]"
-            style={{ color: "#7C766C", borderColor: "#7C766C" }}
-          />
-          <textarea
-            className="mt-[20px] w-full h-[220px] overflow-y-auto resize-none"
-            placeholder="내용을 입력해주세요."
-            value={content}
-            onChange={(e) => {
-              const inputValue = e.target.value;
-              // 최대 입력 글자수 - 4000자로 제한
-              if (inputValue.length <= 4000) {
-                setContent(inputValue);
-              }
-            }}
-          />
-          <div className="text-[14px] text-gray-500 items-end justify-end flex">{`${content.length}/4000`}</div>
-        </div>
-        <div className="flex flex-col w-full rounded-md">
-          <div
-            className="h-[100px] flex justify-between  p-8 items-center rounded-md w-full"
-            style={{ backgroundColor: "#F1F1F1" }}
-          >
-            <a
-              className={`items-start justify-start flex ${
-                remainingTime2 < 10 ? "text-orange-500" : "text-black"
-              }`}
-            >
-              남은 시간 {remainingTime2}
-            </a>
-            <button
-              className={`w-[152px] h-[53px] cursor-pointer rounded-md ${
-                disabled
-                  ? "bg-zinc-400 text-gray-100"
-                  : "bg-orange-500 text-black"
-              }`}
-              disabled={disabled}
-              onClick={handlePost}
-            >
-              저장
-            </button>
-          </div>
-        </div>
-      </div>
-      {isConfirmationModalOpen && (
-        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
-          <div
-            className="absolute w-full h-full bg-gray-800 opacity-50"
-            onClick={onClose}
-          ></div>
-          <div className="flex flex-col bg-white w-[300px] h-[155px] text-center justify-center items-center rounded-lg z-50">
-            <div className="p-8 ">
-              <div className="text-[16px] mb-[30px]">
-                해당 내용으로 발행하시겠습니까?
-              </div>
-              <div className="flex justify-center gap-x-[10px]">
-                <button
-                  className="w-[120px] text-[14px] cursor-pointer h-[40px] rounded-md"
-                  style={{ backgroundColor: "#D9D9D9" }}
-                  onClick={handleCancelPost}
-                >
-                  취소
-                </button>
-                <button
-                  className="w-[120px] text-[14px] cursor-pointer h-[40px] rounded-md"
-                  style={{ backgroundColor: "#FF8126" }}
-                  onClick={handleConfirmPost}
-                >
-                  확인
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
+//           <hr
+//             className="w-full bg-[#7C766C] h-[1px] my-[17px]"
+//             style={{ color: "#7C766C", borderColor: "#7C766C" }}
+//           />
+//           <textarea
+//             className="mt-[20px] w-full h-[220px] overflow-y-auto resize-none"
+//             placeholder="내용을 입력해주세요."
+//             value={content}
+//             onChange={(e) => {
+//               const inputValue = e.target.value;
+//               // 최대 입력 글자수 - 4000자로 제한
+//               if (inputValue.length <= 4000) {
+//                 setContent(inputValue);
+//               }
+//             }}
+//           />
+//           <div className="text-[14px] text-gray-500 items-end justify-end flex">{`${content.length}/4000`}</div>
+//         </div>
+//         <div className="flex flex-col w-full rounded-md">
+//           <div
+//             className="h-[100px] flex justify-between  p-8 items-center rounded-md w-full"
+//             style={{ backgroundColor: "#F1F1F1" }}
+//           >
+//             <a
+//               className={`items-start justify-start flex ${
+//                 remainingTime2 < 10 ? "text-orange-500" : "text-black"
+//               }`}
+//             >
+//               남은 시간 {remainingTime2}
+//             </a>
+//             <button
+//               className={`w-[152px] h-[53px] cursor-pointer rounded-md ${
+//                 disabled
+//                   ? "bg-zinc-400 text-gray-100"
+//                   : "bg-orange-500 text-black"
+//               }`}
+//               disabled={disabled}
+//               onClick={handlePost}
+//             >
+//               저장
+//             </button>
+//           </div>
+//         </div>
+//       </div>
+//       {isConfirmationModalOpen && (
+//         <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
+//           <div
+//             className="absolute w-full h-full bg-gray-800 opacity-50"
+//             onClick={onClose}
+//           ></div>
+//           <div className="flex flex-col bg-white w-[300px] h-[155px] text-center justify-center items-center rounded-lg z-50">
+//             <div className="p-8 ">
+//               <div className="text-[16px] mb-[30px]">
+//                 해당 내용으로 발행하시겠습니까?
+//               </div>
+//               <div className="flex justify-center gap-x-[10px]">
+//                 <button
+//                   className="w-[120px] text-[14px] cursor-pointer h-[40px] rounded-md"
+//                   style={{ backgroundColor: "#D9D9D9" }}
+//                   onClick={handleCancelPost}
+//                 >
+//                   취소
+//                 </button>
+//                 <button
+//                   className="w-[120px] text-[14px] cursor-pointer h-[40px] rounded-md"
+//                   style={{ backgroundColor: "#FF8126" }}
+//                   onClick={handleConfirmPost}
+//                 >
+//                   확인
+//                 </button>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
 
 // 수정용 모달로 사용
 const EditModal: React.FC<ModalProps> = ({
@@ -285,7 +287,7 @@ const EditModal: React.FC<ModalProps> = ({
 
       // 페이지 새로 고침 없이 현재 URL에 토큰을 포함하여 다시 로드
       const currentURL = window.location.href;
-      const newURL = `${currentURL}?access_token=${accessToken}`;
+      const newURL = `${currentURL}`;
       window.history.replaceState({}, document.title, newURL);
     } catch (error) {
       console.error("Error saving writing:", error);
@@ -398,14 +400,13 @@ export default function Writer() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isMiniModalOpen, setIsMiniModalOpen] = useState(false);
   const [isFirstModalOpen, setIsFirstModalOpen] = useState(false);
-  const [userInfo, setUserInfo] = useAtom(userInfoAtom);
-  const [writingInfo, setWritingInfo] = useAtom(writingDataAtom);
+  const userInfo = useUserInfoAtom();
+  const writingInfo = useWritingDataAtom();
   const [editData, setEditData] = useState<EditData>({});
   const [selectedWritingId, setSelectedWritingId] = useState("");
-  const [remainingTime, setRemainingTime] = useState<string>();
+  const [remainingTime, setRemainingTime] = useAtom(remainingTimeAtom);
   const [remainingTime2, setRemainingTime2] = useAtom(remainingTime2Atom);
   const [buttonActivated, setButtonActivated] = useState<boolean>(false);
-  const [remainingSecond, setRemainingSecond] = useState<number>();
   const [intervalId, setIntervalId] = useState<number | null>(null);
   const [isSubmissionSuccessful, setIsSubmissionSuccessful] = useState(false);
   const [writingId, setWritingId] = useState<number | null>(null);
@@ -415,18 +416,8 @@ export default function Writer() {
   const [postedWriting, setPostedWriting] = useState<PostingInfo>({});
   const badgeCount = postedWriting?.newBadges?.length || 0;
   const { showMenu, setShowMenu, toggleMenu } = useMenu();
-  useEffect(() => {
-    console.log(loginState, accessToken, "=====================");
-  }, [loginState]);
-
-  useEffect(() => {
-    const token = getAccessTokenFromCookies();
-    if (token) {
-      setLoginState({ ...loginState, accessToken: token, isLoggedIn: true });
-    } else {
-      setLoginState({ ...loginState, isLoggedIn: false });
-    }
-  }, []);
+  const [accessToken] = useAtom(accessTokenAtom);
+  const [writingInfoLoaded, setWritingInfoLoaded] = useState(false); // writingInfo가 로딩되었음을 나타내는 상태
 
   useEffect(() => {
     if (badgeCount > 0) {
@@ -437,18 +428,28 @@ export default function Writer() {
   }, [postedWriting?.newBadges?.length]);
 
   useEffect(() => {
-    console.log(userInfo);
-    console.log(writingInfo);
+    if (userInfo !== null && writingInfo !== null) {
+      console.log(userInfo);
+      console.log(writingInfo);
+      setWritingInfoLoaded(true); // writingInfo가 로딩된 후 상태 업데이트
+    }
   }, [userInfo, writingInfo]);
 
   useEffect(() => {
     if (isFirst == true) {
       setIsFirstModalOpen(true);
     }
+    if (!writingInfoLoaded) {
+      return;
+    }
     const finishedString = writingInfo?.data?.nearestFinishDate;
     const finishTime = new Date(finishedString);
     const newStartString = writingInfo?.data?.nearestStartDate;
     const newStartTime = new Date(newStartString);
+
+    if (!finishedString || !newStartString) {
+      return;
+    }
 
     // 타이머
     const newIntervalId = setInterval(() => {
@@ -525,7 +526,7 @@ export default function Writer() {
         setIntervalId(null);
       }
     };
-  }, [buttonActivated]);
+  }, [buttonActivated, writingInfoLoaded]);
 
   useEffect(() => {
     // currentWritings?.data?.isActivated 값이 true이면 버튼 활성화, false이면 비활성화
@@ -641,26 +642,11 @@ export default function Writer() {
         isLoggedIn: false,
         accessToken: null,
       });
-      nookies.destroy(null, "access_token");
       router.push("/");
     }
   };
 
-  function getCookie(name: string) {
-    return nookies.get(null)[name];
-  }
-
   const completion_percentage = writingInfo?.data?.progressPercentage;
-  const [accessToken] = useAtom(accessTokenAtom);
-
-  useEffect(() => {
-    // 페이지에 변동사항이 있을 때 리다이렉트
-    if (accessToken) {
-      router.push({
-        pathname: router.pathname,
-      });
-    }
-  }, [writingInfo]);
 
   const startDateString = writingInfo?.data?.startDate;
   const finishDateString = writingInfo?.data?.finishDate;
@@ -704,6 +690,7 @@ export default function Writer() {
     );
   });
   WritingList.displayName = "WritingList";
+
   return (
     <div className="flex flex-col my-[50px] w-full overflow-hidden">
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
@@ -755,7 +742,9 @@ export default function Writer() {
                   className="flex w-full justify-start lg:text-[72px] text-[48px]"
                   style={{ color: "#F2EBDD" }}
                 >
-                  {buttonActivated === true ? remainingTime2 : remainingTime}
+                  {writingInfoLoaded === true && buttonActivated
+                    ? remainingTime2
+                    : remainingTime}
                 </div>
                 {!showMenu && (
                   <div className="flex justify-center items-center mt-[50px] lg:mt-[100px] relative">
@@ -950,7 +939,7 @@ export default function Writer() {
           )}
         </div>
       </div>
-      <Modal
+      {/* <Modal
         isOpen={isWriterModalOpen}
         onClose={handleCloseWriterModal}
         id={writingId}
@@ -961,7 +950,7 @@ export default function Writer() {
         remainingTime2={remainingTime2}
         postedWriting={postedWriting}
         setPostedWriting={setPostedWriting}
-      />
+      /> */}
       <EditModal
         isOpen={isEditModalOpen}
         onClose={handleCloseEditModal}

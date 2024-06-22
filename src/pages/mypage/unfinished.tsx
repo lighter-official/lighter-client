@@ -6,11 +6,13 @@ import { useAtom } from "jotai";
 import {
   accessTokenAtom,
   loginAtom,
+  useUserInfoAtom,
+  useWritingDataAtom,
   userInfoAtom,
   writingDataAtom,
 } from "../../../public/atoms";
 import BookItem from "../../components/BookItem";
-import { UserInfo } from "../../../interface";
+import { UserInfo, WritingData } from "../../../interface";
 import { formatDate, useMenu } from "../../../public/utils/utils";
 import MenuWithTopbar from "@/components/MenuWithTopbar";
 import { SideMenu } from "@/components/SideMenu";
@@ -28,17 +30,18 @@ const UnfinishedItem = ({ data }: UserInfo) => {
     "https://gloo-image-bucket.s3.amazonaws.com/archive/cover_3.png",
   ];
 
-  const randomImageUrl =
-    imageUrls[Math.floor(Math.random() * imageUrls.length)];
+  const getRandomImageUrl = () => {
+    return imageUrls[Math.floor(Math.random() * imageUrls.length)];
+  };
 
   return (
     <div className="container space-between flex-wrap xl:flex-nowrap gap-x-[30px] flex flex-row max-h-[643px] overflow-y-auto mb-[21px]">
-      {filteredWritingSessions?.length > 0 ? (
+      {filteredWritingSessions && filteredWritingSessions?.length > 0 ? (
         filteredWritingSessions.map((session: any) => (
           <div key={session.id} className="mt-2 flex flex-row gap-x-[46px]">
             <BookItem
               id={session?.id}
-              imageUrl={randomImageUrl}
+              imageUrl={getRandomImageUrl()}
               title={session?.subject}
               date={formatDate(session?.finishDate)}
               username={data?.nickname}
@@ -63,15 +66,15 @@ export default function UnfinishedBook() {
   const [accessToken] = useAtom(accessTokenAtom);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loginState, setLoginState] = useAtom(loginAtom);
-  const [userInfo, setUserInfo] = useAtom(userInfoAtom);
-  const [writingInfo, setWritingInfo] = useAtom(writingDataAtom);
+  const userInfo = useUserInfoAtom();
+  const writingInfo = useWritingDataAtom();
 
   const filteredWritingSessions = userInfo?.data?.writingSessions?.filter(
-    (session: any) =>
-      session.progressPercentage < 75 && session.status === "aborted"
+    (session: WritingData) =>
+      session?.data?.progressPercentage < 75 &&
+      session?.data?.status === "aborted"
   );
 
-  console.log(filteredWritingSessions, "filter");
   const { showMenu, setShowMenu, toggleMenu } = useMenu();
 
   useEffect(() => {

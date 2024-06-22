@@ -1,16 +1,7 @@
 import { loginAtom, userInfoAtom, writingDataAtom } from "../atoms";
 import { useAtom } from "jotai";
 import { useRouter } from "next/router";
-import nookies from "nookies";
-import { GetServerSidePropsContext } from "next";
 import { useState } from "react";
-
-export const getAccessTokenFromCookies = (
-  ctx: GetServerSidePropsContext
-): string | null => {
-  const cookies = nookies.get(ctx);
-  return cookies.access_token || null;
-};
 
 export const useMenu = () => {
   const router = useRouter();
@@ -23,7 +14,8 @@ export const useMenu = () => {
   return { showMenu, setShowMenu, toggleMenu, router };
 };
 
-export function formatDate(dateString: string) {
+export function formatDate(dateString: string | undefined): string {
+  if (!dateString) return "";
   const dateObject = new Date(dateString);
   const year = dateObject.getFullYear();
   const month = (dateObject.getMonth() + 1).toString().padStart(2, "0"); // 월은 0부터 시작하므로 +1, 두 자리로 맞춤
@@ -37,11 +29,9 @@ export const Logout = () => {
 
   const handleLogout = () => {
     setLoginState({
-      username: "",
       isLoggedIn: false,
       accessToken: null,
     });
-    nookies.destroy(null, "access_token");
     router.push("/");
   };
 

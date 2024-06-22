@@ -1,10 +1,9 @@
 "use client";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React from "react";
 import "../globals.css";
 import Image from "next/image";
 import BookItem from "../../components/BookItem";
-import { getCookie } from "..";
 import { useAtom } from "jotai";
 import { accessTokenAtom, loginAtom } from "../../../public/atoms";
 

@@ -2,17 +2,10 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/router";
 import "./globals.css";
-import nookies from "nookies";
 import Image from "next/image";
 import Script from "next/script";
 import { useAtom } from "jotai";
 import { accessTokenAtom, loginAtom } from "../../public/atoms";
-import { getAccessTokenFromCookies } from "../../public/utils/utils";
-import { GetServerSideProps } from "next";
-
-export function getCookie(name: any) {
-  return nookies.get(null)[name];
-}
 
 export default function Home({ initialLoginState }: any) {
   const router = useRouter();
@@ -69,19 +62,12 @@ export default function Home({ initialLoginState }: any) {
 
       if (data?.data?.accessToken) {
         const accessToken = data?.data?.accessToken;
-        nookies.set(null, "access_token", accessToken, {
-          path: "/",
-          secure: true,
-          maxAge: 3600,
-          sameSite: "Strict",
-        });
+        localStorage.setItem("access_token", accessToken);
+        setAccessToken(accessToken);
         setLoginState({
-          username: data?.data?.nickname,
           accessToken,
           isLoggedIn: true,
         });
-        console.log(loginState, "loginstate?");
-        setAccessToken(accessToken);
         if (
           data?.data?.isSignUp === true ||
           data?.data?.hasOnProcessedWritingSession === false
@@ -113,16 +99,6 @@ export default function Home({ initialLoginState }: any) {
   const handleLoginClick = (code: any) => {
     window.location.href = link;
     getToken(code);
-    // // setLoginState({ username: "", isLoggedIn: true, accessToken: accessToken });
-
-    // if (loginState.isLoggedIn) {
-    //   // 로그인된 경우
-    //   console.log(loginState.isLoggedIn, "logloglog");
-    //   router.push({
-    //     pathname: "/session-settings",
-    //     query: { access_token: accessToken },
-    //   } as any);
-    // }
   };
 
   return (
@@ -178,19 +154,3 @@ export default function Home({ initialLoginState }: any) {
     </>
   );
 }
-
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const accessToken = getAccessTokenFromCookies(ctx);
-
-  const initialLoginState = {
-    username: "", // 필요에 따라 사용자 정보를 여기에 추가
-    isLoggedIn: !!accessToken,
-    accessToken,
-  };
-
-  return {
-    props: {
-      initialLoginState,
-    },
-  };
-};

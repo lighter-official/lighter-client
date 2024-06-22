@@ -1,40 +1,25 @@
 "use client";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import "../globals.css";
 import { useAtom } from "jotai";
 import {
   accessTokenAtom,
   loginAtom,
-  userInfoAtom,
-  writingDataAtom,
   sessionDataAtom,
+  useUserInfoAtom,
+  useWritingDataAtom,
 } from "../../../public/atoms";
-import {
-  formatDate,
-  getAccessTokenFromCookies,
-  useMenu,
-} from "../../../public/utils/utils";
-import { GetServerSideProps } from "next";
+import { formatDate, useMenu } from "../../../public/utils/utils";
 import BookItem from "@/components/BookItem";
 import MenuWithTopbar from "@/components/MenuWithTopbar";
-
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const accessToken = getAccessTokenFromCookies(ctx);
-
-  return {
-    props: {
-      accessToken,
-    },
-  };
-};
 
 export default function MyBookItem() {
   const router = useRouter();
   const [accessToken, setAccessToken] = useAtom(accessTokenAtom);
   const [loginState, setLoginState] = useAtom(loginAtom);
-  const [userInfo, setUserInfo] = useAtom(userInfoAtom);
-  const [writingInfo, setWritingInfo] = useAtom(writingDataAtom);
+  const userInfo = useUserInfoAtom();
+  const writingInfo = useWritingDataAtom();
   const { showMenu, setShowMenu, toggleMenu } = useMenu();
   const [sessionData] = useAtom(sessionDataAtom);
 
@@ -90,8 +75,10 @@ export default function MyBookItem() {
                           id={sessionData?.id}
                           imageUrl={randomImageUrl}
                           title={sessionData?.subject}
-                          date={formatDate(writingInfo?.finishDate)}
-                          username={userInfo?.nickname}
+                          date={formatDate(
+                            writingInfo?.data?.nearestFinishDate
+                          )}
+                          username={userInfo?.data?.nickname}
                           session={sessionData}
                         />
                       </div>
@@ -101,11 +88,11 @@ export default function MyBookItem() {
                         className="mt-[10px] lg:text-[20px] text-[16px]"
                         style={{ color: "#8A8170" }}
                       >
-                        {formatDate(sessionData.finishDate)} 완료
+                        {formatDate(sessionData?.finishDate)} 완료
                       </div>
                       <div className="lg:text-[20px] text-[16px]">
                         총 {sessionData?.writings?.length ?? 0}/
-                        {sessionData.page}편
+                        {sessionData?.page}편
                       </div>
                       <div className="flex flex-row gap-x-5">
                         <button

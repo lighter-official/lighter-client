@@ -1,6 +1,5 @@
 "use client";
 import { useRouter } from "next/router";
-import { getCookie } from "..";
 import Image from "next/image";
 import { useAtom } from "jotai";
 import "../globals.css";
@@ -8,6 +7,7 @@ import {
   accessTokenAtom,
   loginAtom,
   remainingTime2Atom,
+  useUserInfoAtom,
   userInfoAtom,
   writingDataAtom,
 } from "../../../public/atoms";
@@ -32,14 +32,12 @@ export const NewWriting = () => {
   const router = useRouter();
   const { writingId } = router.query;
   const [accessToken] = useAtom(accessTokenAtom);
-  const [userInfo, setUserInfo] = useAtom(userInfoAtom);
-  const [writingInfo, setWritingInfo] = useAtom(writingDataAtom);
+  // const userInfo = useUserInfoAtom();
   const [loginState, setLoginState] = useAtom(loginAtom);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [remainingTime] = useAtom(remainingTime2Atom);
-  console.log(typeof remainingTime);
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const inputText = e.target.value;

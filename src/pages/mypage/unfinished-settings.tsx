@@ -6,12 +6,16 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useAtom } from "jotai";
 import Dropdown from "@/components/Dropdown";
-import { accessTokenAtom, writingDataAtom } from "../../../public/atoms";
+import {
+  accessTokenAtom,
+  useWritingDataAtom,
+  writingDataAtom,
+} from "../../../public/atoms";
 
 export default function UnfinishedSettings() {
   const router = useRouter();
 
-  const [writingInfo, setWritingInfo] = useAtom(writingDataAtom);
+  const writingInfo = useWritingDataAtom();
   const [isFirst, setIsFirst] = useState<boolean>(false);
   const [subject, setSubject] = useState("");
   const [period, setPeriod] = useState(0);
@@ -28,6 +32,7 @@ export default function UnfinishedSettings() {
     !writingHours;
 
   const [accessToken] = useAtom(accessTokenAtom);
+  const idAsString: string = writingInfo?.data?.id?.toString() || "";
 
   const handleStart = async () => {
     let adjustedHour = startAt[1] || 0; // 초기값은 그대로
@@ -45,7 +50,7 @@ export default function UnfinishedSettings() {
 
     try {
       const response = await unfinishedWritingSetUp(
-        writingInfo?.data?.id,
+        idAsString,
         {
           subject,
           period,
@@ -71,6 +76,7 @@ export default function UnfinishedSettings() {
     }
   };
 
+  if (!writingInfo) return;
   return (
     <div className="flex flex-col my-[50px] w-full">
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>

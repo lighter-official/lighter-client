@@ -2,6 +2,7 @@ import Image from "next/image";
 import { useAtom } from "jotai";
 import { NextRouter, useRouter } from "next/router";
 import { accessTokenAtom } from "../../public/atoms";
+import { useEffect, useState } from "react";
 
 interface MenuProps {
   showMenu: boolean;
@@ -138,6 +139,14 @@ export const MenuWithTopbar: React.FC<MenuProps> = ({
   router,
 }) => {
   const isCurrentPath = (path: string) => router.pathname === path;
+  const [login, setLogin] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("access_token");
+      if (token !== null) setLogin(true);
+    }
+  }, []);
 
   return (
     <div className="flex flex-row justify-between sm:max-w-[682px] lg:max-w-none lg:w-full">
@@ -197,7 +206,7 @@ export const MenuWithTopbar: React.FC<MenuProps> = ({
           나의 보관함
         </a>
         <a className="cursor-pointer" onClick={handleLogIn}>
-          {loginState.isLoggedIn === false ? "로그인" : "로그아웃"}
+          {login === true ? "로그아웃" : "로그인"}
         </a>
       </div>
     </div>

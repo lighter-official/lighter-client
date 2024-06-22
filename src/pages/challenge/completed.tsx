@@ -6,15 +6,18 @@ import Image from "next/image";
 import { useAtom } from "jotai";
 import {
   accessTokenAtom,
+  useUserInfoAtom,
+  useWritingDataAtom,
   userInfoAtom,
   writingDataAtom,
 } from "../../../public/atoms";
+import { WritingData } from "../../../interface";
 
 export default function MyBook() {
   const router = useRouter();
   const [accessToken] = useAtom(accessTokenAtom);
-  const [writingInfo, setWritingInfo] = useAtom(writingDataAtom);
-  const [userInfo, setUserInfo] = useAtom(userInfoAtom);
+  const userInfo = useUserInfoAtom();
+  const writingInfo = useWritingDataAtom();
 
   useEffect(() => {
     console.log(userInfo);

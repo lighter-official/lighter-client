@@ -2,7 +2,10 @@ import Script from "next/script";
 
 declare global {
   interface Window {
-    Kakao: any;
+    Kakao: {
+      init: (appKey: string) => void;
+      isInitialized: Function;
+    };
   }
 }
 

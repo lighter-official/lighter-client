@@ -4,11 +4,12 @@ import React, { useEffect, useState } from "react";
 import "../globals.css";
 import { getCurrentSessions, editWritingSetUp } from "@/api/api";
 import Dropdown from "@/components/Dropdown";
-import { SettingData } from "../../../interface";
+import { SettingData, WritingData } from "../../../interface";
 import { useAtom } from "jotai";
 import {
   accessTokenAtom,
   loginAtom,
+  useWritingDataAtom,
   writingDataAtom,
 } from "../../../public/atoms";
 import { useMenu } from "../../../public/utils/utils";
@@ -86,7 +87,8 @@ export default function ChangeSettings() {
     subject: "",
     writingHours: 0,
   });
-  const writingData = useAtom(writingDataAtom);
+  // const writingData = useAtom<WritingData | null>(writingDataAtom);
+  const writingData = useWritingDataAtom();
   useEffect(() => {
     const fetchUserData = async () => {
       if (!accessToken) {
@@ -115,6 +117,10 @@ export default function ChangeSettings() {
 
     fetchUserData();
   }, []);
+
+  useEffect(() => {
+    console.log("loginState 변경 ---------", loginState);
+  }, [loginState]);
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -178,7 +184,7 @@ export default function ChangeSettings() {
                 </div>
                 <div className="flex text-[15px] lg:text-[20px] cursor-pointer lg:mt-[20px]">
                   글쓰기 시간을 변경할 수 있어요. (
-                  {writingData[0]?.data?.modifyingCount}/3)
+                  {writingData?.data?.modifyingCount}/3)
                 </div>
                 <div
                   className="flex text-[14px] cursor-pointer mt-[8px]"

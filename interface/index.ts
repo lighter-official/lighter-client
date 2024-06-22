@@ -1,5 +1,3 @@
-import { Session } from "inspector";
-
 export interface StartAt {
   hour: number;
   minute: number;
@@ -12,8 +10,8 @@ export interface SessionInfo {
   finishDate: string;
   isActivated: boolean;
   modifyingCount: number;
-  nearestFinishDate: string;
-  nearestStartDate: string;
+  nearestFinishDate?: string;
+  nearestStartDate?: string;
   page: number;
   period: number;
   progressPercentage: number;
@@ -27,8 +25,15 @@ export interface SessionInfo {
   writingHours: number;
 }
 
+interface Writing {
+  content: string;
+  createdAt: string;
+  id: number;
+  title: string;
+}
+
 export interface WritingData {
-  code: string;
+  code?: string;
   data: {
     coverImageType: string;
     createdAt: string;
@@ -36,8 +41,8 @@ export interface WritingData {
     id: number;
     isActivated: boolean;
     modifyingCount: number;
-    nearestFinishDate: string;
-    nearestStartDate: string;
+    nearestFinishDate?: string;
+    nearestStartDate?: string;
     page: number;
     period: number;
     progressPercentage: number;
@@ -49,7 +54,7 @@ export interface WritingData {
     updatedAt: string;
     userId: string;
     writingHours: number;
-    writings?: any[]; // writings 데이터 형식이 제공되지 않아서 임시로 any[] 사용
+    writings?: Writing[];
   };
   statusCode: number;
   success: boolean;
@@ -101,18 +106,29 @@ export interface EditData {
 }
 
 export interface UserInfo {
-  code: string;
-  data: {
-    createdAt: string;
-    id: string;
-    nickname: string;
-    Type: string;
-    updatedAt: string;
-    userBadges: Badge[];
-    writingSessions: WritingData[];
-  };
-  statusCode: number;
-  success: boolean;
+  code?: string;
+  data?: UserData;
+  statusCode?: number;
+  success?: boolean;
+}
+
+export interface UserData {
+  createdAt: string;
+  id: string;
+  nickname: string;
+  Type: string;
+  updatedAt: string;
+  userBadges: Badge[];
+  writingSessions: WritingData[];
+}
+
+export interface BookItemProps {
+  imageUrl: string;
+  title: string;
+  date: string;
+  username?: string;
+  id: number;
+  session: SessionInfo;
 }
 
 export interface PostingInfo {
@@ -121,7 +137,6 @@ export interface PostingInfo {
     count: number;
     newBadges: Badge[];
     createdAt: string;
-
     id: string;
     nickname: string;
     providerType: string;
@@ -142,7 +157,7 @@ export interface EditOrSetData {
   subject: string;
   period: number;
   page: number;
-  startAt: { hour: number; minute: number | undefined };
+  startAt: { hour: number; minute?: number };
   writingHours: number;
 }
 

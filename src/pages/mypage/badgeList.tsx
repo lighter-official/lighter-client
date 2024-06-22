@@ -1,18 +1,18 @@
 "use client";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAtom } from "jotai";
 import {
   accessTokenAtom,
   loginAtom,
-  userInfoAtom,
-  writingDataAtom,
+  useUserInfoAtom,
 } from "../../../public/atoms";
 import "../globals.css";
 import BadgeItem from "../../components/BadgeItem";
 import { useMenu } from "../../../public/utils/utils";
 import MenuWithTopbar from "@/components/MenuWithTopbar";
 import { SideMenu } from "@/components/SideMenu";
+import { UserInfo } from "../../../interface";
 
 interface BadgeItem {
   badge: {
@@ -80,8 +80,7 @@ export default function BadgeList() {
   const [accessToken] = useAtom(accessTokenAtom);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggedIn, setLoggedIn] = useState(false);
-  const [userInfo, setUserInfo] = useAtom(userInfoAtom);
-  const [writingData, setWritingData] = useAtom(writingDataAtom);
+  const userInfo = useUserInfoAtom();
   const [loginState, setLoginState] = useAtom(loginAtom);
   const { showMenu, setShowMenu, toggleMenu } = useMenu();
 
@@ -91,6 +90,23 @@ export default function BadgeList() {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+  };
+
+  const showBadgeList = () => {
+    if (!userInfo) {
+      return <div className="text-[20px]">Loading...</div>;
+    } else if (userInfo && userInfo != null) {
+      return userInfo?.data?.userBadges?.map((item: any) => (
+        <BadgeItem
+          key={item?.id}
+          badge={item?.badge}
+          createdAt={item?.createdAt}
+          badgeId={item?.badgeId}
+          id={item?.id}
+          userId={item?.userId}
+        />
+      ));
+    }
   };
 
   return (
@@ -143,16 +159,7 @@ export default function BadgeList() {
                         </a>
                       </div>
                       <div className="container space-between flex-wrap mt-[20px] xl:flex-nowrap flex flex-row gap-x-[26px] gap-y-[20px]">
-                        {userInfo?.data?.userBadges?.map((item: any) => (
-                          <BadgeItem
-                            key={item.id}
-                            badge={item.badge}
-                            createdAt={item.createdAt}
-                            badgeId={item.badgeId}
-                            id={item.id}
-                            userId={item.userId}
-                          />
-                        ))}
+                        {showBadgeList()}
                       </div>
                     </div>
                   )}
