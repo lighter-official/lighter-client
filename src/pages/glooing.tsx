@@ -4,7 +4,6 @@ import {
   getWritingInfo,
   putWriting,
   startWriting,
-  submitWriting,
   temporarySaveWriting,
 } from "@/api/api";
 import { useRouter } from "next/router";
@@ -17,9 +16,7 @@ import { formatDate } from "../../public/utils/utils";
 import { useAtom } from "jotai";
 import {
   loginAtom,
-  userInfoAtom,
   accessTokenAtom,
-  writingDataAtom,
   remainingTimeAtom,
   remainingTime2Atom,
   useUserInfoAtom,
@@ -284,7 +281,6 @@ const EditModal: React.FC<ModalProps> = ({
     try {
       // 기존 글 수정
       const editedContent = await putWriting(id, editedData, accessToken);
-
       // 페이지 새로 고침 없이 현재 URL에 토큰을 포함하여 다시 로드
       const currentURL = window.location.href;
       const newURL = `${currentURL}`;

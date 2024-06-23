@@ -8,71 +8,17 @@ import {
   loginAtom,
   useUserInfoAtom,
   useWritingDataAtom,
-  userInfoAtom,
-  writingDataAtom,
 } from "../../../public/atoms";
 import BookItem from "../../components/BookItem";
 import { formatDate, useMenu } from "../../../public/utils/utils";
-import { UserInfo, WritingData } from "../../../interface";
+import { SessionInfo, UserInfo } from "../../../interface";
 import MenuWithTopbar from "@/components/MenuWithTopbar";
 import { SideMenu } from "@/components/SideMenu";
 
-// interface ModalProps {
-//   isOpen: boolean;
-//   onClose: () => void;
-// }
-
-// const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
-//   if (!isOpen) return null;
-
-//   return (
-//     <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
-//       <div
-//         className="absolute w-full h-full bg-gray-800 opacity-50"
-//         onClick={onClose}
-//       ></div>
-//       <div className="relative flex flex-col bg-white w-[800px] h-[550px] rounded-lg z-50">
-//         <div className="p-8">
-//           <div className="text-[16px]">4번째 글</div>
-//           <div className="mb-[10px] text-[22px]">뮤직비디오 해석하기</div>
-//           <textarea
-//             className="text-[40px] w-full mb-[30px] h-[50px]"
-//             placeholder="제목을 입력해주세요."
-//           />
-//           <hr
-//             className="w-full bg-[#7C766C] h-[1px] my-[17px]"
-//             style={{ color: "#7C766C", borderColor: "#7C766C" }}
-//           />
-//           <textarea
-//             className="mt-[30px] w-full h-[220px] overflow-y-auto"
-//             placeholder="내용을 입력해주세요."
-//           />
-//         </div>
-//         <div className="flex flex-col w-full rounded-md">
-//           <div
-//             className="h-[100px] flex justify-between  p-8 items-center rounded-md w-full"
-//             style={{ backgroundColor: "#F1F1F1" }}
-//           >
-//             <a className="items-start justify-start flex">남은 시간 01:03:55</a>
-//             <button
-//               className="w-[152px] h-[53px] rounded-md"
-//               style={{ backgroundColor: "#979797" }}
-//               onClick={onClose}
-//             >
-//               저장
-//             </button>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
 const FinishedItem = ({ data }: UserInfo) => {
   const filteredWritingSessions = data?.writingSessions?.filter(
-    (session: WritingData) =>
-      session?.data?.progressPercentage >= 75 &&
-      session?.data?.status === "completed"
+    (session: SessionInfo) =>
+      session?.progressPercentage >= 75 && session?.status === "completed"
   );
 
   const imageUrls = [
@@ -115,14 +61,13 @@ const FinishedItem = ({ data }: UserInfo) => {
 export default function MyBook() {
   const router = useRouter();
   const [accessToken] = useAtom(accessTokenAtom);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const { showMenu, setShowMenu, toggleMenu } = useMenu();
   const [loginState, setLoginState] = useAtom(loginAtom);
   const userInfo = useUserInfoAtom();
   const writingInfo = useWritingDataAtom();
   const filteredWritingSessions = userInfo?.data?.writingSessions?.filter(
-    (session: any) =>
-      session.progressPercentage >= 75 && session.status === "completed"
+    (session: SessionInfo) =>
+      session?.progressPercentage >= 75 && session?.status === "completed"
   );
 
   useEffect(() => {
@@ -164,7 +109,7 @@ export default function MyBook() {
                 <div className="mt-2 text-[15px] lg:text-[20px]">
                   글쓰기 완료 달성한 전자책을 둘러보세요!
                 </div>
-                <div className="flex flex-col max-h-[643px] overflow-y-auto mt-5 mb-2">
+                <div className="flex flex-col max-h-[643px] overflow-y-auto mb-2">
                   <div className="mt-2 flex flex-row gap-x-[46px]">
                     <div className=" mt-2 flex flex-row gap-x-[46px]">
                       <FinishedItem {...userInfo} />
@@ -176,7 +121,6 @@ export default function MyBook() {
           </div>
         </div>
       </div>
-      {/* <Modal isOpen={isModalOpen} onClose={handleCloseModal} /> */}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import "../globals.css";
 import { useAtom } from "jotai";
 import {
@@ -8,21 +8,18 @@ import {
   loginAtom,
   useUserInfoAtom,
   useWritingDataAtom,
-  userInfoAtom,
-  writingDataAtom,
 } from "../../../public/atoms";
 import BookItem from "../../components/BookItem";
-import { UserInfo, WritingData } from "../../../interface";
+import { SessionInfo, UserInfo } from "../../../interface";
 import { formatDate, useMenu } from "../../../public/utils/utils";
 import MenuWithTopbar from "@/components/MenuWithTopbar";
 import { SideMenu } from "@/components/SideMenu";
 
-const UnfinishedItem = ({ data }: UserInfo) => {
-  const filteredWritingSessions = data?.writingSessions?.filter(
-    (session: any) =>
+const UnfinishedItem = (data: UserInfo) => {
+  const filteredWritingSessions = data?.data?.writingSessions?.filter(
+    (session: SessionInfo) =>
       session.progressPercentage < 75 && session.status === "aborted"
   );
-  console.log(data?.writingSessions, "[===========");
 
   const imageUrls = [
     "https://gloo-image-bucket.s3.amazonaws.com/archive/cover_1.png",
@@ -44,7 +41,7 @@ const UnfinishedItem = ({ data }: UserInfo) => {
               imageUrl={getRandomImageUrl()}
               title={session?.subject}
               date={formatDate(session?.finishDate)}
-              username={data?.nickname}
+              username={data?.data?.nickname}
               session={session}
             />
           </div>
@@ -64,15 +61,13 @@ const UnfinishedItem = ({ data }: UserInfo) => {
 export default function UnfinishedBook() {
   const router = useRouter();
   const [accessToken] = useAtom(accessTokenAtom);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [loginState, setLoginState] = useAtom(loginAtom);
   const userInfo = useUserInfoAtom();
   const writingInfo = useWritingDataAtom();
 
   const filteredWritingSessions = userInfo?.data?.writingSessions?.filter(
-    (session: WritingData) =>
-      session?.data?.progressPercentage < 75 &&
-      session?.data?.status === "aborted"
+    (session: SessionInfo) =>
+      session?.progressPercentage < 75 && session?.status === "aborted"
   );
 
   const { showMenu, setShowMenu, toggleMenu } = useMenu();
@@ -82,14 +77,6 @@ export default function UnfinishedBook() {
     console.log(writingInfo);
     console.log(accessTokenAtom);
   }, []);
-
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
 
   return (
     <div className="flex flex-col my-[50px] w-full">

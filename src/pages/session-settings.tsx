@@ -213,7 +213,6 @@ export default function Settings() {
                           // 숫자로 변환 가능한 경우에만 set
                           if (!isNaN(numericValue) && numericValue >= 10) {
                             setPage(numericValue);
-                            console.log(numericValue, typeof numericValue);
                           }
                         }}
                       ></textarea>

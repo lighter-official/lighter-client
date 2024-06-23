@@ -122,7 +122,7 @@ export const temporarySaveWriting = async (
         },
       }
     );
-    console.log("임시 저장?============", response.data);
+    console.log("임시 저장한 데이터", response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching data:", error);

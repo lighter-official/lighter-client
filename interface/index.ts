@@ -3,6 +3,21 @@ export interface StartAt {
   minute: number;
 }
 
+export interface UserInfo {
+  success?: boolean;
+  code?: string;
+  data?: {
+    createdAt: string;
+    id: string;
+    nickname: string;
+    providerType: string;
+    updatedAt: string;
+    userBadges: Badge[];
+    writingSessions: SessionInfo[];
+  };
+  statusCode?: number;
+}
+
 export interface SessionInfo {
   id: number;
   coverImageType: string | null;
@@ -77,7 +92,7 @@ export interface Badge {
 
 export interface BadgeItemProps {
   badge: {
-    condition: string;
+    condition?: string;
     description: string;
     id: number;
     imageUrl: string;
@@ -103,23 +118,6 @@ export interface EditData {
   };
   statusCode: number;
   success: boolean;
-}
-
-export interface UserInfo {
-  code?: string;
-  data?: UserData;
-  statusCode?: number;
-  success?: boolean;
-}
-
-export interface UserData {
-  createdAt: string;
-  id: string;
-  nickname: string;
-  Type: string;
-  updatedAt: string;
-  userBadges: Badge[];
-  writingSessions: WritingData[];
 }
 
 export interface BookItemProps {
