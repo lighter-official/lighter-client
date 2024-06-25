@@ -38,13 +38,11 @@
 
 갓생(God+生)을 꿈꾸며 글쓰는 사람들을 위해, 포텐데이를 시작으로 꾸준히 사람들의 글쓰기를 도울 기능들을 업데이트할 예정입니다!
 
-<a href="https://gloo-writing.vercel.app">→ Gloo 홈페이지</a>
-
-<a href="https://drive.google.com/file/d/1a8LdmUTysVW7r2axOhe1NpKMdsfFgT3-/view">→ Gloo 시연 영상</a>
+<a href="http://lighter-client.vercel.app">→ Gloo 홈페이지</a>
 
 <a href="https://lavender-seal-56e.notion.site/e15fe534f65b4c0c934917d8f87e4196">→ Gloo 소개 페이지(노션)</a>
 
-<a href="./sources/[Lighter!] Gloo 서비스 소개.pdf">→ Gloo 보고서</a>
+<a href="/Users/yihyun/Desktop/[Gloo] 서비스 소개_.pdf">→ Gloo 보고서</a>
 
 </p>
 
@@ -60,7 +58,7 @@
 <br>
 
 ## 진행기간
-2024.01.26 - 2024.02.04
+2024.01.26 - 2024.02.04 (develop 진행중)
 <br>
 <br>
 
@@ -73,42 +71,23 @@
 <br>
 
 ## 담당한 업무
-- 팀장
-- Front-end Developer
+- 팀장 (프로젝트 매니징)
+- 단독 Front-end 개발
 <br>
 
 ## 구현 기능
 
-### setInterval() 함수를 이용한 동적 타이머/글쓰기 기능 구현
-- 첫 번째 타이머와 두 번째 타이머를 설정, 사용자가 설정한 글쓰기 시간이 아닐 경우/글쓰기 시간인 경우를 관리해 일정 시간에만 글을 쓸 수 있도록 관리
+#### Jotai를 이용한 전역 상태 관리
 
-- 1초 단위로 타이머 업데이트, 이에 따른 글쓰기 기능 활성화 여부를 결정
+#### 반응형 웹사이트 구축(태블릿/데스크탑)
 
-- 타이머가 종료될 경우 사용자에게 모달을 통해 알림 전송/페이지 리로드
+#### OAuth 2.0 인증 카카오 소셜 로그인
 
-### nookies 라이브러리 활용
-- Next.js와 호환 가능한 nookies 라이브러리를 통해 클라이언트 측에서 쿠키 관리 및 사용자 정보 추출
+#### 하루 한 번의 글쓰기만을 허용해 FOMO 심리 자극 - setInterval() 함수를 이용한 동적 타이머/글쓰기 기능 구현
 
-- 쿠키에서 가져온 access Token을 이용해 사용자 인증 및 기타 정보 활용
-
-### html2pdf 라이브러리 활용
-- 사용자가 목표를 달성했을 경우 html2pdf 라이브러리를 통해 pdf 형식의 전자책을 다운로드할 수 있는 기능 구현
-
-
-### useEffect() 훅을 활용한 비동기 데이터 처리
-- useEffect() 훅을 사용해 비동기 함수 호출 및 상태 업데이트
-
-- 페이지 로드 시에 사용자 정보 & 그에 따른 글쓰기 정보 업데이트 및 렌더링
-
-- 글쓰기 시간에 대한 타이머 제어
-
-### useState() 훅을 활용한 상태 관리
-- 모달의 열림/닫힘 여부, 사용자 정보에 따른 글쓰기 내역, 선택된 글의 ID 등에 대한 관리에 활용
-
-### 카카오 소셜 로그인
-- 카카오 developers에서 REST API KEY 발급/REDIRECT URI 등록을 통해 카카오 소셜 로그인 링크 생성
-
-- 사용자 인증 후 code를 통해 access Token 발급, 쿠키에 토큰을 저장해 로그인 상태를 유지
+#### 단계별 보상 지급을 통해 사용자의 참여 독려
+- 감각적 이미지의 badge 지급
+- 완료시 나만의 전자책 발행, 미완료시 못다쓴 책 이어쓰기 기능
 
 
 <br>
