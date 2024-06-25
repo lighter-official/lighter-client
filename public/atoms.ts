@@ -2,6 +2,7 @@ import { getCurrentSessions, getUserInfo } from "@/api/api";
 import { atom, useAtom } from "jotai";
 import { useEffect } from "react";
 import { UserInfo, WritingData } from "../interface";
+import { getInitialLoginState } from "./utils/utils";
 
 export const accessTokenAtom = atom<string | null>(null);
 export const sessionDataAtom = atom<any>(null);
@@ -9,7 +10,7 @@ export const remainingTimeAtom = atom(0);
 export const remainingTime2Atom = atom(0);
 
 export const loginAtom = atom(
-  { isLoggedIn: false, accessToken: null as string | null },
+  getInitialLoginState(),
   (
     get,
     set,
@@ -18,8 +19,12 @@ export const loginAtom = atom(
       isLoggedIn: boolean;
     }
   ) => {
-    set(accessTokenAtom, update.accessToken);
     set(loginAtom, update);
+    if (update.accessToken) {
+      localStorage.setItem("access_token", update.accessToken);
+    } else {
+      localStorage.removeItem("access_token");
+    }
   }
 );
 
@@ -46,7 +51,7 @@ export const useUserInfoAtom = () => {
     fetchUserInfo();
   }, [setUserInfo]);
 
-  return userInfo; // 상태 반환
+  return userInfo;
 };
 
 export const useWritingDataAtom = () => {
@@ -68,7 +73,6 @@ export const useWritingDataAtom = () => {
 
     fetchWritingData();
   }, [setWritingData]);
-  console.log(writingData);
 
   return writingData;
 };

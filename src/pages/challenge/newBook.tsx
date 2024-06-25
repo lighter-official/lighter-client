@@ -5,57 +5,26 @@ import "../globals.css";
 import Image from "next/image";
 import { useAtom } from "jotai";
 import { accessTokenAtom, loginAtom } from "../../../public/atoms";
+import MenuWithTopbar from "@/components/MenuWithTopbar";
+import { useMenu } from "../../../public/utils/utils";
 
 export default function MyBook() {
   const router = useRouter();
   const [accessToken] = useAtom(accessTokenAtom);
   const [loginState, setLoginState] = useAtom(loginAtom);
-
+  const { showMenu, setShowMenu, toggleMenu } = useMenu();
   return (
     <div className="flex flex-col my-[50px] w-full">
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
       <div className="flex flex-row mx-auto w-full">
         <div className="flex flex-col w-full mx-[120px]">
-          <div className="flex flex-row justify-between sm:max-w-[682px] lg:max-w-none lg:w-full">
-            <Image
-              className="lg:mb-[20px] mb-0 w-[74px] lg:w-[105px] h-[24px] lg:h-[35px]"
-              src="https://gloo-image-bucket.s3.amazonaws.com/archive/logo.svg"
-              width="105"
-              height="35"
-              alt="Logo"
-            />
-            <div className="flex gap-x-[70px]">
-              <a
-                className="cursor-pointer"
-                style={{ color: "#191919" }}
-                onClick={() =>
-                  router.push({
-                    pathname: "/glooing",
-                  })
-                }
-              >
-                글루ING
-              </a>
-              <a
-                className="cursor-pointer font-bold"
-                style={{ color: "#A49E90" }}
-                onClick={() =>
-                  router.push({
-                    pathname: "/mypage/badgeList",
-                  })
-                }
-              >
-                나의 보관함
-              </a>
-              <a
-                className="cursor-pointer"
-                style={{ color: "#A49E90" }}
-                onClick={() => router.push("/")}
-              >
-                {loginState.isLoggedIn ? "로그아웃" : "로그인"}
-              </a>
-            </div>
-          </div>
+          <MenuWithTopbar
+            showMenu={showMenu}
+            setShowMenu={setShowMenu}
+            toggleMenu={toggleMenu}
+            accessToken={accessToken}
+            router={router}
+          />
           <hr
             className="w-full bg-[#7C766C] h-[1px] lg:my-0 my-[17px]"
             style={{ color: "#7C766C", borderColor: "#7C766C" }}

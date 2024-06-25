@@ -78,9 +78,11 @@ export const NewWriting = () => {
       const newURL = `${currentURL}`;
       window.history.replaceState({}, document.title, newURL);
 
-      // mini(true);
       router.push({
         pathname: "/glooing",
+        query: {
+          mini: true,
+        },
       });
     } catch (error) {
       console.error("Error saving writing:", error);
@@ -98,7 +100,6 @@ export const NewWriting = () => {
           setShowMenu={setShowMenu}
           toggleMenu={toggleMenu}
           accessToken={accessToken}
-          loginState={loginState}
           router={router}
         />
       </div>

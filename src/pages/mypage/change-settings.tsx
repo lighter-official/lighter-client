@@ -96,7 +96,6 @@ export default function ChangeSettings() {
             setShowMenu={setShowMenu}
             toggleMenu={toggleMenu}
             accessToken={accessToken}
-            loginState={loginState}
             router={router}
           />
           <hr

@@ -88,7 +88,6 @@ export default function UnfinishedBook() {
             setShowMenu={setShowMenu}
             toggleMenu={toggleMenu}
             accessToken={accessToken}
-            loginState={loginState}
             router={router}
           />
           <hr

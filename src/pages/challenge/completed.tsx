@@ -6,17 +6,22 @@ import Image from "next/image";
 import { useAtom } from "jotai";
 import {
   accessTokenAtom,
+  loginAtom,
   useUserInfoAtom,
   useWritingDataAtom,
   userInfoAtom,
   writingDataAtom,
 } from "../../../public/atoms";
+import { useMenu } from "../../../public/utils/utils";
+import MenuWithTopbar from "@/components/MenuWithTopbar";
 
 export default function MyBook() {
   const router = useRouter();
+  const [loginState, setLoginState] = useAtom(loginAtom);
   const [accessToken] = useAtom(accessTokenAtom);
   const userInfo = useUserInfoAtom();
   const writingInfo = useWritingDataAtom();
+  const { showMenu, setShowMenu, toggleMenu } = useMenu();
 
   useEffect(() => {
     console.log(userInfo);
@@ -28,46 +33,13 @@ export default function MyBook() {
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
       <div className="flex flex-row mx-auto w-full">
         <div className="flex flex-col w-full mx-[120px]">
-          <div className="flex flex-row justify-between">
-            <Image
-              className="lg:mb-[20px] mb-0 w-[74px] lg:w-[105px] h-[24px] lg:h-[35px]"
-              src="https://gloo-image-bucket.s3.amazonaws.com/archive/logo.svg"
-              width="105"
-              height="35"
-              alt="Logo"
-            />
-            <div className="flex gap-x-[70px]">
-              <a
-                className="cursor-pointer  font-bold"
-                style={{ color: "#191919" }}
-                onClick={() =>
-                  router.push({
-                    pathname: "/glooing",
-                  })
-                }
-              >
-                글루ING
-              </a>
-              <a
-                className="cursor-pointer"
-                style={{ color: "#A49E90" }}
-                onClick={() =>
-                  router.push({
-                    pathname: "/mypage/badgeList",
-                  })
-                }
-              >
-                나의 보관함
-              </a>
-              <a
-                className="cursor-pointer"
-                style={{ color: "#A49E90" }}
-                onClick={() => router.push("/")}
-              >
-                로그아웃
-              </a>
-            </div>
-          </div>
+          <MenuWithTopbar
+            showMenu={showMenu}
+            setShowMenu={setShowMenu}
+            toggleMenu={toggleMenu}
+            accessToken={accessToken}
+            router={router}
+          />
           <hr
             className="w-full bg-[#7C766C] h-[1px] lg:my-0 my-[17px]"
             style={{ color: "#7C766C", borderColor: "#7C766C" }}

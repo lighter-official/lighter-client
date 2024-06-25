@@ -25,195 +25,6 @@ import {
 import { useMenu } from "../../public/utils/utils";
 import MenuWithTopbar from "../components/MenuWithTopbar";
 
-// // 새로 등록하는 모달
-// const Modal: React.FC<ModalProps> = ({
-//   isOpen,
-//   onClose,
-//   writingData,
-//   remainingTime,
-//   mini,
-//   id,
-//   remainingSecond,
-//   remainingTime2,
-//   postedWriting,
-//   setPostedWriting,
-// }) => {
-//   const [title, setTitle] = useState("");
-//   const [content, setContent] = useState("");
-//   const [accessToken] = useAtom(accessTokenAtom);
-//   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
-//   const disabled = !title || !content;
-
-//   useEffect(() => {
-//     let intervalId: NodeJS.Timeout;
-//     if (isOpen) {
-//       intervalId = setInterval(async () => {
-//         try {
-//           await temporarySaveWriting(writingData?.data?.id, accessToken, {
-//             title,
-//             content,
-//           });
-//           console.log("임시 저장 성공");
-//         } catch (error) {
-//           console.error("임시 저장 실패:", error);
-//         }
-//       }, 30000); // 30초마다 호출
-//     }
-
-//     // 컴포넌트 언마운트 or 모달이 닫힐 경우 clear interval하도록 설정
-//     return () => clearInterval(intervalId);
-//   }, [isOpen, title, content]);
-
-//   const handleCancelPost = () => {
-//     setIsConfirmationModalOpen(false);
-//   };
-
-//   const handleTitleChange = (e) => {
-//     const inputText = e.target.value;
-
-//     // 최대 길이를 40으로 설정
-//     if (inputText.length <= 40) {
-//       // 40자 이내일 때만 setTitle 호출하여 상태 업데이트, 초과하면 무시
-//       setTitle(inputText);
-//     }
-//   };
-
-//   const handlePost = async () => {
-//     // 모달 열기 전에 확인 모달을 띄우도록 수정
-//     setIsConfirmationModalOpen(true);
-//   };
-
-//   const handleConfirmPost = async () => {
-//     const writingData = {
-//       title: title || null, // 만약 title이 빈 문자열이면 null로 설정
-//       content: content || null, // 만약 content가 빈 문자열이면 null로 설정
-//     };
-//     try {
-//       const response = await submitWriting(writingData, id, accessToken);
-//       console.log(response, "정상 제출?");
-//       console.log(postedWriting.data, "posted?");
-//       setPostedWriting(response.data);
-
-//       const currentURL = window.location.href;
-//       const newURL = `${currentURL}`;
-//       window.history.replaceState({}, document.title, newURL);
-
-//       mini(true);
-//     } catch (error) {
-//       console.error("Error saving writing:", error);
-//     }
-
-//     onClose();
-//     setIsConfirmationModalOpen(false);
-//   };
-
-//   if (!isOpen) return null;
-
-//   return (
-//     <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
-//       <div
-//         className="absolute w-full h-full bg-gray-800 opacity-50"
-//         onClick={onClose}
-//       ></div>
-//       <div className="relative flex flex-col bg-white w-[800px] h-[550px] rounded-lg z-50">
-//         <div className="p-8">
-//           <div className="text-[16px]">
-//             {writingData?.data?.writings?.length + 1}번째 글
-//           </div>
-//           <div
-//             className="mb-[10px] font-bold text-[22px]"
-//             style={{ color: "#646464" }}
-//           >
-//             {writingData?.data?.subject}
-//           </div>
-//           <textarea
-//             className="text-[40px] w-full mb-[10px] h-[50px] resize-none"
-//             placeholder="제목을 입력해주세요."
-//             value={title}
-//             onChange={handleTitleChange}
-//             maxLength={40}
-//           />
-
-//           <hr
-//             className="w-full bg-[#7C766C] h-[1px] my-[17px]"
-//             style={{ color: "#7C766C", borderColor: "#7C766C" }}
-//           />
-//           <textarea
-//             className="mt-[20px] w-full h-[220px] overflow-y-auto resize-none"
-//             placeholder="내용을 입력해주세요."
-//             value={content}
-//             onChange={(e) => {
-//               const inputValue = e.target.value;
-//               // 최대 입력 글자수 - 4000자로 제한
-//               if (inputValue.length <= 4000) {
-//                 setContent(inputValue);
-//               }
-//             }}
-//           />
-//           <div className="text-[14px] text-gray-500 items-end justify-end flex">{`${content.length}/4000`}</div>
-//         </div>
-//         <div className="flex flex-col w-full rounded-md">
-//           <div
-//             className="h-[100px] flex justify-between  p-8 items-center rounded-md w-full"
-//             style={{ backgroundColor: "#F1F1F1" }}
-//           >
-//             <a
-//               className={`items-start justify-start flex ${
-//                 remainingTime2 < 10 ? "text-orange-500" : "text-black"
-//               }`}
-//             >
-//               남은 시간 {remainingTime2}
-//             </a>
-//             <button
-//               className={`w-[152px] h-[53px] cursor-pointer rounded-md ${
-//                 disabled
-//                   ? "bg-zinc-400 text-gray-100"
-//                   : "bg-orange-500 text-black"
-//               }`}
-//               disabled={disabled}
-//               onClick={handlePost}
-//             >
-//               저장
-//             </button>
-//           </div>
-//         </div>
-//       </div>
-//       {isConfirmationModalOpen && (
-//         <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
-//           <div
-//             className="absolute w-full h-full bg-gray-800 opacity-50"
-//             onClick={onClose}
-//           ></div>
-//           <div className="flex flex-col bg-white w-[300px] h-[155px] text-center justify-center items-center rounded-lg z-50">
-//             <div className="p-8 ">
-//               <div className="text-[16px] mb-[30px]">
-//                 해당 내용으로 발행하시겠습니까?
-//               </div>
-//               <div className="flex justify-center gap-x-[10px]">
-//                 <button
-//                   className="w-[120px] text-[14px] cursor-pointer h-[40px] rounded-md"
-//                   style={{ backgroundColor: "#D9D9D9" }}
-//                   onClick={handleCancelPost}
-//                 >
-//                   취소
-//                 </button>
-//                 <button
-//                   className="w-[120px] text-[14px] cursor-pointer h-[40px] rounded-md"
-//                   style={{ backgroundColor: "#FF8126" }}
-//                   onClick={handleConfirmPost}
-//                 >
-//                   확인
-//                 </button>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// 수정용 모달로 사용
 const EditModal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
@@ -561,9 +372,8 @@ export default function Writer() {
   const handleNewWriting = async () => {
     try {
       const response = await startWriting(writingInfo?.data?.id, accessToken);
-      console.log(response, "시작 ???");
       const newWritingId = response?.data?.writing?.id;
-      console.log(writingId, "???????????????");
+      console.log(writingId, "writingId === ??");
       if (newWritingId) {
         setWritingId(newWritingId);
         router.push({
@@ -587,6 +397,21 @@ export default function Writer() {
     }
   }, [isSubmissionSuccessful]);
 
+  useEffect(() => {
+    if (router.query.mini) {
+      setIsMiniModalOpen(true);
+
+      router.replace(
+        {
+          pathname: router.pathname,
+          query: { ...router.query, mini: undefined },
+        },
+        undefined,
+        { shallow: true }
+      );
+    }
+  }, [router.query.mini]);
+
   const handleCloseWriterModal = async () => {
     try {
       router.push({
@@ -597,10 +422,6 @@ export default function Writer() {
     }
     setIsWriterModalOpen(false);
     if (isMiniModalOpen == true) setIsSubmissionSuccessful(true);
-  };
-
-  const handleOpenEditModal = () => {
-    setIsEditModalOpen(true);
   };
 
   const handleCloseEditModal = () => {
@@ -621,6 +442,7 @@ export default function Writer() {
   // 수정할 글 클릭했을 때
   const handleEditClick = async (writingId: string) => {
     try {
+      console.log(writingId, "0");
       const writingData = await getWritingInfo(writingId, accessToken);
       setEditData(writingData?.data);
       setSelectedWritingId(writingData?.data?.id);
@@ -696,9 +518,9 @@ export default function Writer() {
             showMenu={showMenu}
             setShowMenu={setShowMenu}
             toggleMenu={toggleMenu}
-            handleLogIn={handleLogIn}
             accessToken={accessToken}
             loginState={loginState}
+            setLoginState={setLoginState}
             router={router}
           />
           <hr
@@ -935,18 +757,6 @@ export default function Writer() {
           )}
         </div>
       </div>
-      {/* <Modal
-        isOpen={isWriterModalOpen}
-        onClose={handleCloseWriterModal}
-        id={writingId}
-        writingData={writingInfo}
-        mini={setIsMiniModalOpen}
-        remainingTime={remainingTime}
-        remainingSecond={remainingSecond}
-        remainingTime2={remainingTime2}
-        postedWriting={postedWriting}
-        setPostedWriting={setPostedWriting}
-      /> */}
       <EditModal
         isOpen={isEditModalOpen}
         onClose={handleCloseEditModal}
