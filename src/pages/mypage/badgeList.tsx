@@ -48,7 +48,6 @@ export default function BadgeList() {
             setShowMenu={setShowMenu}
             toggleMenu={toggleMenu}
             accessToken={accessToken}
-            loginState={loginState}
             router={router}
           />
           <hr

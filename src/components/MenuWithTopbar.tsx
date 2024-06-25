@@ -1,8 +1,9 @@
 import Image from "next/image";
 import { useAtom } from "jotai";
 import { NextRouter, useRouter } from "next/router";
-import { accessTokenAtom } from "../../public/atoms";
+import { accessTokenAtom, loginAtom } from "../../public/atoms";
 import { useEffect, useState } from "react";
+import { toggleLoginState } from "../../public/utils/utils";
 
 interface MenuProps {
   showMenu: boolean;
@@ -10,19 +11,26 @@ interface MenuProps {
   toggleMenu?: () => void;
   handleLogIn?: () => void;
   accessToken: string | null;
-  loginState: { isLoggedIn: boolean };
   router: NextRouter;
 }
 
-export const Menubar: React.FC<MenuProps> = ({
-  toggleMenu,
-  showMenu,
-  setShowMenu,
-  loginState,
-}) => {
+export const Menubar: React.FC<MenuProps> = ({ showMenu, setShowMenu }) => {
   const router = useRouter();
-  const [accessToken] = useAtom(accessTokenAtom);
+  const [loginState, setLoginState] = useAtom(loginAtom);
+  const handleToggleLogin = toggleLoginState();
   const isCurrentPath = (path: string) => router.pathname === path;
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("access_token");
+      if (token) {
+        setLoginState({
+          isLoggedIn: true,
+          accessToken: token,
+        });
+      }
+    }
+  }, [setLoginState]);
 
   return (
     <div>
@@ -120,8 +128,11 @@ export const Menubar: React.FC<MenuProps> = ({
           >
             설정
           </div>
-          <div className="text-[#858178] text-[20px] cursor-pointer">
-            {loginState.isLoggedIn === false ? "로그인" : "로그아웃"}
+          <div
+            className="text-[#858178] text-[20px] cursor-pointer"
+            onClick={handleToggleLogin}
+          >
+            {loginState.isLoggedIn === true ? "로그아웃" : "로그인"}
           </div>
         </div>
       </div>
@@ -135,18 +146,28 @@ export const MenuWithTopbar: React.FC<MenuProps> = ({
   toggleMenu,
   handleLogIn,
   accessToken,
-  loginState,
   router,
 }) => {
+  const [loginState, setLoginState] = useAtom(loginAtom);
   const isCurrentPath = (path: string) => router.pathname === path;
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const handleToggleLogin = toggleLoginState();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("access_token");
-      if (token !== null) setIsLoggedIn(true);
+      if (token) {
+        setLoginState({
+          accessToken: token,
+          isLoggedIn: true,
+        });
+      } else {
+        setLoginState({
+          accessToken: null,
+          isLoggedIn: false,
+        });
+      }
     }
-  }, []);
+  }, [setLoginState]);
 
   return (
     <div className="flex flex-row justify-between sm:max-w-[682px] lg:max-w-none lg:w-full">
@@ -171,7 +192,6 @@ export const MenuWithTopbar: React.FC<MenuProps> = ({
           showMenu={showMenu}
           setShowMenu={setShowMenu}
           accessToken={accessToken}
-          loginState={loginState}
           router={router}
         />
       )}
@@ -205,8 +225,8 @@ export const MenuWithTopbar: React.FC<MenuProps> = ({
         >
           나의 보관함
         </a>
-        <a className="cursor-pointer" onClick={handleLogIn}>
-          {isLoggedIn === true ? "로그아웃" : "로그인"}
+        <a className="cursor-pointer" onClick={handleToggleLogin}>
+          {loginState.isLoggedIn === true ? "로그아웃" : "로그인"}
         </a>
       </div>
     </div>

@@ -161,11 +161,11 @@ export default function Settings() {
                       </button>
                       <button
                         className={`w-[82px] h-[40px] border-1 rounded-md ${
-                          period === 100 ? "bg-black text-white" : " bg-white"
+                          period === 3 ? "bg-black text-white" : " bg-white"
                         }`}
-                        onClick={() => setPeriod(100)}
+                        onClick={() => setPeriod(3)}
                       >
-                        100일
+                        3일
                       </button>
                     </div>
                   </div>
@@ -194,13 +194,13 @@ export default function Settings() {
                       </button>
                       <button
                         className={`w-[82px] h-[40px] border-1 rounded-md ${
-                          page === 30 ? "bg-black text-white" : " bg-white"
+                          page === 3 ? "bg-black text-white" : " bg-white"
                         }`}
                         onClick={() => {
-                          setPage(30);
+                          setPage(3);
                         }}
                       >
-                        30편
+                        3편
                       </button>
                       <textarea
                         className={`w-[82px] flex text-center items-center justify-center h-[40px] border-1 border-black rounded-lg`}

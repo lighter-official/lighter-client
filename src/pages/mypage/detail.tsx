@@ -51,7 +51,6 @@ export default function MyBookItem() {
             setShowMenu={setShowMenu}
             toggleMenu={toggleMenu}
             accessToken={accessToken}
-            loginState={loginState}
             router={router}
           />
           <hr

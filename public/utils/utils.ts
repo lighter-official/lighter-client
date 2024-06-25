@@ -1,4 +1,4 @@
-import { loginAtom, userInfoAtom, writingDataAtom } from "../atoms";
+import { loginAtom } from "../atoms";
 import { useAtom } from "jotai";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -23,17 +23,34 @@ export function formatDate(dateString: string | undefined): string {
   return `${year}/${month}/${day}`;
 }
 
-export const Logout = () => {
+export const getInitialLoginState = () => {
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("access_token");
+    return {
+      isLoggedIn: token !== null,
+      accessToken: token,
+    };
+  }
+  return {
+    isLoggedIn: false,
+    accessToken: null,
+  };
+};
+
+export const toggleLoginState = () => {
   const router = useRouter();
   const [loginState, setLoginState] = useAtom(loginAtom);
 
-  const handleLogout = () => {
+  const handleToggleLogin = () => {
     setLoginState({
-      isLoggedIn: false,
-      accessToken: null,
+      isLoggedIn: loginState.isLoggedIn,
+      accessToken: loginState.isLoggedIn ? null : loginState.accessToken,
     });
+    if (loginState.isLoggedIn == true) {
+      alert("로그아웃 되었습니다.");
+    }
     router.push("/");
   };
 
-  return handleLogout;
+  return handleToggleLogin;
 };
