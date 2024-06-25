@@ -7,18 +7,11 @@ import {
   accessTokenAtom,
   loginAtom,
   remainingTime2Atom,
-  useUserInfoAtom,
-  userInfoAtom,
-  writingDataAtom,
 } from "../../../public/atoms";
 import { putWriting, submitWriting } from "@/api/api";
 import React, { useState } from "react";
-
-interface WritingState {
-  dataArray: {
-    arrayData: any[];
-  };
-}
+import MenuWithTopbar from "@/components/MenuWithTopbar";
+import { useMenu } from "../../../public/utils/utils";
 
 const convertTimeToMinutes = (timeString: Number) => {
   const [hours, minutes, seconds] = timeString
@@ -32,13 +25,12 @@ export const NewWriting = () => {
   const router = useRouter();
   const { writingId } = router.query;
   const [accessToken] = useAtom(accessTokenAtom);
-  // const userInfo = useUserInfoAtom();
   const [loginState, setLoginState] = useAtom(loginAtom);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [remainingTime] = useAtom(remainingTime2Atom);
-
+  const { showMenu, setShowMenu, toggleMenu } = useMenu();
   const handleTitleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const inputText = e.target.value;
 
@@ -101,51 +93,14 @@ export const NewWriting = () => {
     <div className="w-full max-w-[1200px] rounded-sm flex flex-col mx-auto lg:my-[50px]">
       <style>{`body { background: #F2EBDD; margin: 0; height: 100%; }`}</style>
       <div className="hidden lg:block">
-        {/* MenuWithTopBar 추가 예정 */}
-        <div className="flex flex-row justify-between">
-          <Image
-            className="cursor-pointer lg:mb-[20px] mb-0 w-[74px] h-[24px]"
-            src="https://gloo-image-bucket.s3.amazonaws.com/archive/logo.svg"
-            width="105"
-            height="35"
-            alt="Logo"
-          />
-          <Image
-            className="lg:hidden block h-[18px] w-[18px]"
-            src="https://gloo-image-bucket.s3.amazonaws.com/archive/menu_small.png"
-            width={18}
-            height={18}
-            alt="menu"
-          />
-          <div className="hidden lg:block flex-row">
-            <a
-              className="lg:pr-10 cursor-pointer font-bold"
-              onClick={() =>
-                router.push({
-                  pathname: "/glooing",
-                })
-              }
-            >
-              글루ING
-            </a>
-            <a
-              className="lg:pr-10 cursor-pointer"
-              onClick={() =>
-                router.push({
-                  pathname: "/mypage/badgeList",
-                })
-              }
-            >
-              나의 보관함
-            </a>
-            <a
-              className="cursor-pointer"
-              //   onClick={handleLogIn}
-            >
-              {loginState.isLoggedIn == true ? "로그아웃" : "로그인"}
-            </a>
-          </div>
-        </div>
+        <MenuWithTopbar
+          showMenu={showMenu}
+          setShowMenu={setShowMenu}
+          toggleMenu={toggleMenu}
+          accessToken={accessToken}
+          loginState={loginState}
+          router={router}
+        />
       </div>
       <hr
         className="lg:block hidden w-full bg-[#7C766C] h-[1px] sm:my-[17px] lg:my-0"
@@ -175,12 +130,6 @@ export const NewWriting = () => {
                   maxLength={40}
                 />
               </div>
-              {/* <div
-                className="lg:block hidden w-[300px] text-[12px] lg:text-[16px]"
-                style={{ color: "#706B61" }}
-              >
-                날짜
-              </div> */}
             </div>
             <hr
               className="mx-[64px] items-center h-[1px]"
