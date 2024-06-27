@@ -236,8 +236,6 @@ export default function Writer() {
 
   useEffect(() => {
     if (userInfo !== null && writingInfo !== null) {
-      console.log(userInfo);
-      console.log(writingInfo, "???????");
       setWritingInfoLoaded(true); // writingInfo가 로딩된 후 상태 업데이트
     }
   }, [userInfo, writingInfo]);
@@ -336,7 +334,6 @@ export default function Writer() {
   }, [buttonActivated, writingInfoLoaded]);
 
   useEffect(() => {
-    // currentWritings?.data?.isActivated 값이 true이면 버튼 활성화, false이면 비활성화
     if (writingInfo?.data?.isActivated === true) {
       setButtonActivated(true);
     } else {
@@ -373,7 +370,7 @@ export default function Writer() {
     try {
       const response = await startWriting(writingInfo?.data?.id, accessToken);
       const newWritingId = response?.data?.writing?.id;
-      console.log(writingId, "writingId === ??");
+      console.log(writingId, "========ㄴ");
       if (newWritingId) {
         setWritingId(newWritingId);
         router.push({
@@ -688,61 +685,64 @@ export default function Writer() {
               </div>
             </div>
           )}
-          {isMiniModalOpen && writingInfo?.data?.status == "onProcess" && (
-            <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
-              <div
-                className="absolute w-full h-full bg-gray-800 opacity-50"
-                onClick={handleCloseMiniModal}
-              ></div>
-              <div className="flex flex-col bg-white w-[264px] max-w-[328px] py-[20px] min-h-[171px] max-h-[500px] text-center justify-center items-center rounded-lg z-50">
-                <div className="text-center items-center flex flex-col">
-                  <div className="text-[15px] font-bold mb-[2px]">
-                    {writingInfo?.data?.writings.length + 1}번째
-                  </div>
-                  <div className="text-[15px] mb-[6px]">
-                    글 등록을 완료했어요!
-                  </div>
-                  <div
-                    className="text-[13px] mb-[10px]"
-                    style={{ color: "#7F7F7F" }}
-                  >
-                    다음{" "}
-                    <a>
-                      {writingInfo?.data?.startAt?.hour}:
-                      {writingInfo?.data?.startAt?.minute === 0
-                        ? "00"
-                        : writingInfo?.data?.startAt?.minute}
-                    </a>
-                    에 꼭 다시 만나요!
-                  </div>
-                  {showBadge && (
-                    <div className="w-[140px] h-[148px] mb-[18px]">
-                      <Image
-                        src={
-                          postedWriting?.newBadges[badgeCount - 1]?.badge
-                            ?.imageUrl
-                        }
-                        width={152}
-                        height={153}
-                        alt={
-                          postedWriting?.newBadges[badgeCount - 1]?.badge?.name
-                        }
-                      />
+          {isMiniModalOpen &&
+            writingInfo?.data?.status == "onProcess" &&
+            completion_percentage < 100 && (
+              <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
+                <div
+                  className="absolute w-full h-full bg-gray-800 opacity-50"
+                  onClick={handleCloseMiniModal}
+                ></div>
+                <div className="flex flex-col bg-white w-[264px] max-w-[328px] py-[20px] min-h-[171px] max-h-[500px] text-center justify-center items-center rounded-lg z-50">
+                  <div className="text-center items-center flex flex-col">
+                    <div className="text-[15px] font-bold mb-[2px]">
+                      {writingInfo?.data?.writings.length + 1}번째
                     </div>
-                  )}
-                  <div className="flex justify-center">
-                    <button
-                      className="w-[120px] text-[15px] font-bold cursor-pointer h-[40px] rounded-md"
-                      style={{ backgroundColor: "#FF8126" }}
-                      onClick={handleCloseMiniModal}
+                    <div className="text-[15px] mb-[6px]">
+                      글 등록을 완료했어요!
+                    </div>
+                    <div
+                      className="text-[13px] mb-[10px]"
+                      style={{ color: "#7F7F7F" }}
                     >
-                      확인
-                    </button>
+                      다음{" "}
+                      <a>
+                        {writingInfo?.data?.startAt?.hour}:
+                        {writingInfo?.data?.startAt?.minute === 0
+                          ? "00"
+                          : writingInfo?.data?.startAt?.minute}
+                      </a>
+                      에 꼭 다시 만나요!
+                    </div>
+                    {showBadge && (
+                      <div className="w-[140px] h-[148px] mb-[18px]">
+                        <Image
+                          src={
+                            postedWriting?.newBadges[badgeCount - 1]?.badge
+                              ?.imageUrl
+                          }
+                          width={152}
+                          height={153}
+                          alt={
+                            postedWriting?.newBadges[badgeCount - 1]?.badge
+                              ?.name
+                          }
+                        />
+                      </div>
+                    )}
+                    <div className="flex justify-center">
+                      <button
+                        className="w-[120px] text-[15px] font-bold cursor-pointer h-[40px] rounded-md"
+                        style={{ backgroundColor: "#FF8126" }}
+                        onClick={handleCloseMiniModal}
+                      >
+                        확인
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
           {isMiniModalOpen && writingInfo?.data?.status == "aborted" && (
             <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
               <div
@@ -818,7 +818,7 @@ export default function Writer() {
                         }}
                         onClick={() =>
                           router.push({
-                            pathname: `/session-settings`,
+                            pathname: "/mypage/unfinished-settings",
                           })
                         }
                       >

@@ -8,14 +8,20 @@ import { useAtom } from "jotai";
 import Dropdown from "@/components/Dropdown";
 import {
   accessTokenAtom,
+  useUserInfoAtom,
   useWritingDataAtom,
   writingDataAtom,
 } from "../../../public/atoms";
 
 export default function UnfinishedSettings() {
   const router = useRouter();
-
+  const userInfo = useUserInfoAtom();
   const writingInfo = useWritingDataAtom();
+  const lastSession =
+    userInfo?.data?.writingSessions[userInfo?.data?.writingSessions.length - 1];
+  const uncompletedPage = lastSession
+    ? lastSession.page - lastSession.progressStep
+    : 0;
   const [isFirst, setIsFirst] = useState<boolean>(false);
   const [subject, setSubject] = useState("");
   const [period, setPeriod] = useState(0);
@@ -69,7 +75,6 @@ export default function UnfinishedSettings() {
           isFirst: isFirst,
         },
       });
-      // 서버 응답에 따른 처리 추가
     } catch (error) {
       console.error("Error fetching data:", error);
       throw error;
@@ -109,21 +114,17 @@ export default function UnfinishedSettings() {
             <div className="my-[30px] text-[17px] flex flex-col items-center text-[#7C766C] gap-y-2">
               <a>
                 글쓰기 주제는{" "}
-                <a className="font-bold">{writingInfo?.data?.subject}</a>
+                <a className="font-bold">{lastSession?.subject}</a>
                 였어요.
               </a>
               <a>
                 글쓰기 달성률은{" "}
-                <a className="font-bold">
-                  {writingInfo?.data?.progressPercentage}
-                </a>
+                <a className="font-bold">{lastSession?.progressPercentage}</a>
                 %였어요.
               </a>
               <a>
-                <a className="font-bold">{writingInfo?.data?.page}</a>편 중{" "}
-                <a className="font-bold">
-                  {writingInfo?.data?.page - writingInfo?.data?.progressStep}
-                </a>
+                <a className="font-bold">{lastSession?.page}</a>편 중{" "}
+                <a className="font-bold">{uncompletedPage}</a>
                 편만 더 작성하면 책을 완성할 수 있어요.
               </a>
             </div>
@@ -165,8 +166,7 @@ export default function UnfinishedSettings() {
                         onChange={(e) => {
                           setPage(0);
                           const inputValue = e.target.value;
-                          const numericValue = parseInt(inputValue, 10); // 문자열을 숫자로 변환
-                          // 숫자로 변환 가능한 경우에만 set, 못다쓴 책에서는 0일 이상이면 모두 설정 가능
+                          const numericValue = parseInt(inputValue, 10);
                           if (!isNaN(numericValue) && numericValue > 0) {
                             setPage(numericValue);
                             console.log(numericValue, typeof numericValue);

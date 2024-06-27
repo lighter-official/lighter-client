@@ -5,12 +5,19 @@ import "./globals.css";
 import Image from "next/image";
 import Script from "next/script";
 import { useAtom } from "jotai";
-import { accessTokenAtom, loginAtom } from "../../public/atoms";
+import {
+  accessTokenAtom,
+  loginAtom,
+  sessionDataAtom,
+  useUserInfoAtom,
+} from "../../public/atoms";
 
 export default function Home({ initialLoginState }: any) {
   const router = useRouter();
   const [loginState, setLoginState] = useAtom(loginAtom);
   const [accessToken, setAccessToken] = useAtom(accessTokenAtom);
+  const [sessionData, setSessionData] = useAtom(sessionDataAtom);
+  const userInfo = useUserInfoAtom();
   const APP_KEY = "67511eea297fb0f856f791b369c67355";
   const REDIRECT_URI = "https://lighter-client.vercel.app";
   // const REDIRECT_URI = "http://localhost:8000";
@@ -68,17 +75,25 @@ export default function Home({ initialLoginState }: any) {
           accessToken,
           isLoggedIn: true,
         });
-        if (
-          data?.data?.isSignUp === true ||
-          data?.data?.hasOnProcessedWritingSession === false
-        ) {
-          // 신규 회원가입이거나 진행중인 세션이 없을 경우
+        if (data?.data?.isSignUp === true) {
+          // 신규 회원가입인 경우
           router.push({
             pathname: "/session-settings",
           });
         } else if (data?.data?.hasOnProcessedWritingSession === true) {
           router.push({
             pathname: "/glooing",
+          });
+        }
+        //진행중인 세션이 없고 + 회원가입이 아닌 경우
+        else if (data?.data?.hasOnProcessedWritingSession === false) {
+          setSessionData(
+            userInfo?.data?.writingSessions[
+              userInfo?.data?.writingSessions.length - 1
+            ]
+          );
+          router.push({
+            pathname: "/completed",
           });
         }
       }

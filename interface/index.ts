@@ -175,3 +175,13 @@ export interface ModalProps {
   postedWriting: PostingInfo;
   setPostedWriting: React.Dispatch<React.SetStateAction<PostingInfo>>;
 }
+
+export interface ProgressProps {
+  progressPercentage: number | undefined;
+}
+
+export interface CardProps {
+  title: string;
+  description: string;
+  route: string;
+}

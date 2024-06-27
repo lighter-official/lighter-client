@@ -5,14 +5,59 @@ import "./globals.css";
 import { useAtom } from "jotai";
 import {
   accessTokenAtom,
+  sessionDataAtom,
   useUserInfoAtom,
   useWritingDataAtom,
 } from "../../public/atoms";
 import { formatDate, useMenu } from "../../public/utils/utils";
 import MenuWithTopbar from "@/components/MenuWithTopbar";
+import { CardProps, ProgressProps } from "../../interface";
 
-//신규 사용자가 아니면서 기존 사용자 플로우 중 진행중인 세션이 없는 경우(완료한 경우)
-export default function FinishedPage() {
+const Progress: React.FC<ProgressProps> = ({ progressPercentage }) => (
+  <div className="flex flex-col mt-[40px] gap-x-[46px] gap-y-2">
+    <div className="flex flex-row items-center justify-between">
+      <div>글쓰기 목표 달성률</div>
+      <div className="text-[24px] font-bold">{progressPercentage}%</div>
+    </div>
+    <div
+      className="w-[498px] h-3 flex items-center rounded-xl"
+      style={{
+        backgroundColor: "#DADADA",
+      }}
+    >
+      <div
+        className="h-3 rounded-xl"
+        style={{
+          width: `${progressPercentage}%`,
+          backgroundColor: "#FF8126",
+          transition: "width 0.5s ease",
+        }}
+      ></div>
+    </div>
+  </div>
+);
+
+const Card: React.FC<CardProps> = ({ title, description, route }) => {
+  const router = useRouter();
+
+  return (
+    <div
+      className="flex flex-col gap-y-2 w-[161px] h-[200px] rounded-md px-3 py-3 cursor-pointer"
+      style={{
+        backgroundColor: "#FFFCF6",
+        border: "1px solid black",
+        borderColor: "black",
+      }}
+      onClick={() => router.push(route)}
+    >
+      <span className="font-bold">{title}</span>
+      <span>{description}</span>
+    </div>
+  );
+};
+
+export default function CompletedPage() {
+  const [sessionData] = useAtom(sessionDataAtom);
   const router = useRouter();
   const [accessToken] = useAtom(accessTokenAtom);
   const userInfo = useUserInfoAtom();
@@ -20,7 +65,13 @@ export default function FinishedPage() {
   const { showMenu, setShowMenu, toggleMenu } = useMenu();
 
   useEffect(() => {
-    console.log(userInfo);
+    console.log(
+      userInfo?.data?.writingSessions[
+        userInfo?.data?.writingSessions.length - 1
+      ],
+      "?"
+    );
+    console.log(sessionData, "=======");
     console.log(writingInfo);
   }, [userInfo, writingInfo]);
 
@@ -48,7 +99,11 @@ export default function FinishedPage() {
                     <span className="relative">
                       <span className="bg-[#FF8126] opacity-[47%] absolute top-2 left-0 right-0 h-[20px]"></span>
                       <span className="relative">
-                        {userInfo?.data?.writingSessions[3]?.subject}
+                        {
+                          userInfo?.data?.writingSessions[
+                            userInfo?.data?.writingSessions.length - 1
+                          ]?.subject
+                        }
                       </span>
                     </span>
                     <br />
@@ -57,89 +112,42 @@ export default function FinishedPage() {
                   <div className="mt-[12px] text-[#8C8575]">
                     {" "}
                     {formatDate(
-                      userInfo?.data?.writingSessions[3]?.startDate
+                      userInfo?.data?.writingSessions[
+                        userInfo?.data?.writingSessions.length - 1
+                      ]?.startDate
                     )}{" "}
                     ~{" "}
-                    {formatDate(userInfo?.data?.writingSessions[3]?.finishDate)}
+                    {formatDate(
+                      userInfo?.data?.writingSessions[
+                        userInfo?.data?.writingSessions.length - 1
+                      ]?.finishDate
+                    )}
                   </div>
                 </div>
                 <div className="flex flex-col overflow-y-auto mt-5 mb-2 items-center justify-center">
-                  <div className="flex flex-col mt-[40px] gap-x-[46px] gap-y-2">
-                    <div className="flex flex-row items-center justify-between">
-                      <div>글쓰기 목표 달성률</div>
-                      <div className="text-[24px] font-bold">
-                        {userInfo?.data?.writingSessions[2]?.progressPercentage}
-                        %
-                      </div>
-                    </div>
-                    <div
-                      className="w-[498px] h-3 flex items-center rounded-xl"
-                      style={{
-                        backgroundColor: "#DADADA",
-                      }}
-                    >
-                      <div
-                        className=" h-3 rounded-xl"
-                        style={{
-                          width: `${
-                            userInfo?.data?.writingSessions[2]
-                              ?.progressPercentage || 0
-                          }%`,
-                          backgroundColor: "#FF8126",
-                          transition: "width 0.5s ease",
-                        }}
-                      ></div>
-                    </div>
-                  </div>
+                  <Progress
+                    progressPercentage={
+                      userInfo?.data?.writingSessions[
+                        userInfo?.data?.writingSessions.length - 1
+                      ]?.progressPercentage
+                    }
+                  />
                   <div className="flex flex-row items-center my-[50px] gap-x-[15px]">
-                    <div
-                      className="flex flex-col gap-y-2 w-[161px] h-[200px] rounded-md px-3 py-3 cursor-pointer"
-                      style={{
-                        backgroundColor: "#FFFCF6",
-                        border: "1px solid black",
-                        borderColor: "black",
-                      }}
-                      onClick={() =>
-                        router.push({
-                          pathname: "/session-settings",
-                        })
-                      }
-                    >
-                      <span className="font-bold">새로운 주제</span>
-                      <span>글쓰기 도전 시작</span>
-                    </div>
-                    <div
-                      className="flex flex-col gap-y-2 w-[161px] h-[200px] rounded-md px-3 py-3 cursor-pointer"
-                      style={{
-                        backgroundColor: "#FFFCF6",
-                        border: "1px solid black",
-                        borderColor: "black",
-                      }}
-                      onClick={() =>
-                        router.push({
-                          pathname: "/mypage/change-settings",
-                        })
-                      }
-                    >
-                      <span className="font-bold">지금 주제</span>
-                      <span>이어서 글쓰기</span>
-                    </div>
-                    <div
-                      className="flex flex-col gap-y-2 w-[161px] h-[200px] rounded-md px-3 py-3 cursor-pointer"
-                      style={{
-                        backgroundColor: "#FFFCF6",
-                        border: "1px solid black",
-                        borderColor: "black",
-                      }}
-                      onClick={() =>
-                        router.push({
-                          pathname: "/mypage/unfinished",
-                        })
-                      }
-                    >
-                      <span className="font-bold">이전에 쓰던 주제</span>
-                      <span>이어서 글쓰기</span>
-                    </div>
+                    <Card
+                      title="새로운 주제"
+                      description="글쓰기 도전 시작"
+                      route="/session-settings"
+                    />
+                    <Card
+                      title="지금 주제"
+                      description="이어서 글쓰기"
+                      route="/mypage/unfinished-settings"
+                    />
+                    <Card
+                      title="이전에 쓰던 주제"
+                      description="이어서 글쓰기"
+                      route="/mypage/unfinished"
+                    />
                   </div>
                   <div className="flex flex-col mt-[100px] text-[#8C8575]">
                     시도하지 않으면 아무것도 얻을 수 없다.
