@@ -3,6 +3,12 @@ import { useAtom } from "jotai";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
+export const imageUrls = [
+  "https://gloo-image-bucket.s3.amazonaws.com/archive/cover_1.png",
+  "https://gloo-image-bucket.s3.amazonaws.com/archive/cover_2.png",
+  "https://gloo-image-bucket.s3.amazonaws.com/archive/cover_3.png",
+];
+
 export const useMenu = () => {
   const router = useRouter();
   const [showMenu, setShowMenu] = useState(false);
@@ -53,4 +59,11 @@ export const toggleLoginState = () => {
   };
 
   return handleToggleLogin;
+};
+
+export const randomImageUrl =
+  imageUrls[Math.floor(Math.random() * imageUrls.length)];
+
+export const getRandomImageUrl = () => {
+  return imageUrls[Math.floor(Math.random() * imageUrls.length)];
 };

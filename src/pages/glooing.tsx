@@ -237,7 +237,7 @@ export default function Writer() {
   useEffect(() => {
     if (userInfo !== null && writingInfo !== null) {
       console.log(userInfo);
-      console.log(writingInfo);
+      console.log(writingInfo, "???????");
       setWritingInfoLoaded(true); // writingInfo가 로딩된 후 상태 업데이트
     }
   }, [userInfo, writingInfo]);
@@ -411,18 +411,6 @@ export default function Writer() {
       );
     }
   }, [router.query.mini]);
-
-  const handleCloseWriterModal = async () => {
-    try {
-      router.push({
-        pathname: "/glooing",
-      });
-    } catch (error) {
-      console.error("Error redirecting after closing writer modal:", error);
-    }
-    setIsWriterModalOpen(false);
-    if (isMiniModalOpen == true) setIsSubmissionSuccessful(true);
-  };
 
   const handleCloseEditModal = () => {
     setIsEditModalOpen(false);
@@ -700,7 +688,7 @@ export default function Writer() {
               </div>
             </div>
           )}
-          {isMiniModalOpen && (
+          {isMiniModalOpen && writingInfo?.data?.status == "onProcess" && (
             <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
               <div
                 className="absolute w-full h-full bg-gray-800 opacity-50"
@@ -751,6 +739,93 @@ export default function Writer() {
                       확인
                     </button>
                   </div>
+                </div>
+              </div>
+            </div>
+          )}
+          {isMiniModalOpen && writingInfo?.data?.status == "aborted" && (
+            <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
+              <div
+                className="absolute w-full h-full bg-gray-800 opacity-50"
+                onClick={handleCloseMiniModal}
+              ></div>
+              <div className="flex flex-col bg-white w-[264px] max-w-[328px] py-[20px] min-h-[171px] max-h-[500px] text-center justify-center items-center rounded-lg z-50">
+                <div className="text-start items-start flex flex-col">
+                  {completion_percentage >= 75 ? (
+                    <div>
+                      <div className="text-[12px] items-start justify-start text-gray-400 mb-[2px]">
+                        축하합니다!
+                      </div>
+                      <div className="text-[15px] font-bold mb-[6px]">
+                        목표 {completion_percentage}% 달성으로 <br />
+                        글쓰기 도전에 성공했어요!
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="text-[15px] font-bold mb-[6px]">
+                        이번에 아쉽게 <br />
+                        글쓰기 도전이 끝났어요
+                      </div>
+                    </div>
+                  )}
+                  <hr className="w-full h-[1px] text-gray-400 py-2" />
+                  {showBadge && (
+                    <div className="w-[140px] h-[148px] mb-[18px]">
+                      <Image
+                        src={
+                          postedWriting?.newBadges[badgeCount - 1]?.badge
+                            ?.imageUrl
+                        }
+                        width={152}
+                        height={153}
+                        alt={
+                          postedWriting?.newBadges[badgeCount - 1]?.badge?.name
+                        }
+                      />
+                    </div>
+                  )}
+                  {completion_percentage >= 75 ? (
+                    <div className="flex justify-center">
+                      <button
+                        className="w-[200px] text-[14px] cursor-pointer h-[40px] rounded-md bg-black text-white"
+                        onClick={() =>
+                          router.push({
+                            pathname: `/challenge/newBook`,
+                          })
+                        }
+                      >
+                        나만의 전자책 발행하기
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-y-2 justify-center">
+                      <button
+                        className="w-[200px] text-[14px] cursor-pointer h-[40px] rounded-md bg-black text-white"
+                        onClick={() =>
+                          router.push({
+                            pathname: `/mypage/unfinished`,
+                          })
+                        }
+                      >
+                        이어서 하기
+                      </button>
+                      <button
+                        className="w-[200px] text-[14px] cursor-pointer h-[40px] rounded-md bg-white text-black"
+                        style={{
+                          border: "1px solid black",
+                          borderColor: "black",
+                        }}
+                        onClick={() =>
+                          router.push({
+                            pathname: `/session-settings`,
+                          })
+                        }
+                      >
+                        새로운 도전하기
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

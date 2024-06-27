@@ -10,36 +10,25 @@ import {
   useUserInfoAtom,
   useWritingDataAtom,
 } from "../../../public/atoms";
-import { formatDate, useMenu } from "../../../public/utils/utils";
+import {
+  formatDate,
+  randomImageUrl,
+  useMenu,
+} from "../../../public/utils/utils";
 import BookItem from "@/components/BookItem";
 import MenuWithTopbar from "@/components/MenuWithTopbar";
 
 export default function MyBookItem() {
   const router = useRouter();
   const [accessToken, setAccessToken] = useAtom(accessTokenAtom);
-  const [loginState, setLoginState] = useAtom(loginAtom);
   const userInfo = useUserInfoAtom();
   const writingInfo = useWritingDataAtom();
   const { showMenu, setShowMenu, toggleMenu } = useMenu();
   const [sessionData] = useAtom(sessionDataAtom);
 
-  const imageUrls = [
-    "https://gloo-image-bucket.s3.amazonaws.com/archive/cover_1.png",
-    "https://gloo-image-bucket.s3.amazonaws.com/archive/cover_2.png",
-    "https://gloo-image-bucket.s3.amazonaws.com/archive/cover_3.png",
-  ];
-  const randomImageUrl =
-    imageUrls[Math.floor(Math.random() * imageUrls.length)];
-
   useEffect(() => {
     setAccessToken(accessToken);
   }, [accessToken, setAccessToken]);
-
-  useEffect(() => {
-    console.log(userInfo);
-    console.log(sessionData, writingInfo, "???????????");
-    console.log(accessTokenAtom);
-  }, [userInfo, writingInfo]);
 
   return (
     <div className="flex flex-col my-[50px] w-full">
