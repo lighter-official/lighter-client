@@ -7,7 +7,6 @@ import {
   accessTokenAtom,
   sessionDataAtom,
   useUserInfoAtom,
-  useWritingDataAtom,
 } from "../../public/atoms";
 import { formatDate, useMenu } from "../../public/utils/utils";
 import MenuWithTopbar from "@/components/MenuWithTopbar";
@@ -57,23 +56,16 @@ const Card: React.FC<CardProps> = ({ title, description, route }) => {
 };
 
 export default function CompletedPage() {
-  const [sessionData] = useAtom(sessionDataAtom);
+  const [sessionData, setSessionData] = useAtom(sessionDataAtom);
   const router = useRouter();
   const [accessToken] = useAtom(accessTokenAtom);
   const userInfo = useUserInfoAtom();
-  const writingInfo = useWritingDataAtom();
   const { showMenu, setShowMenu, toggleMenu } = useMenu();
 
   useEffect(() => {
-    console.log(
-      userInfo?.data?.writingSessions[
-        userInfo?.data?.writingSessions.length - 1
-      ],
-      "?"
-    );
-    console.log(sessionData, "=======");
-    console.log(writingInfo);
-  }, [userInfo, writingInfo]);
+    setSessionData(userInfo?.data?.writingSessions[0]);
+    console.log(sessionData);
+  }, []);
 
   return (
     <div className="flex flex-col my-[50px] w-full">
@@ -98,39 +90,20 @@ export default function CompletedPage() {
                   <div className="w-full text-black text-center text-[22px] font-bold">
                     <span className="relative">
                       <span className="bg-[#FF8126] opacity-[47%] absolute top-2 left-0 right-0 h-[20px]"></span>
-                      <span className="relative">
-                        {
-                          userInfo?.data?.writingSessions[
-                            userInfo?.data?.writingSessions.length - 1
-                          ]?.subject
-                        }
-                      </span>
+                      <span className="relative">{sessionData?.subject}</span>
                     </span>
                     <br />
                     글쓰기 도전이 끝났어요!
                   </div>
                   <div className="mt-[12px] text-[#8C8575]">
                     {" "}
-                    {formatDate(
-                      userInfo?.data?.writingSessions[
-                        userInfo?.data?.writingSessions.length - 1
-                      ]?.startDate
-                    )}{" "}
-                    ~{" "}
-                    {formatDate(
-                      userInfo?.data?.writingSessions[
-                        userInfo?.data?.writingSessions.length - 1
-                      ]?.finishDate
-                    )}
+                    {formatDate(sessionData?.startDate)} ~
+                    {formatDate(sessionData?.finishDate)}
                   </div>
                 </div>
                 <div className="flex flex-col overflow-y-auto mt-5 mb-2 items-center justify-center">
                   <Progress
-                    progressPercentage={
-                      userInfo?.data?.writingSessions[
-                        userInfo?.data?.writingSessions.length - 1
-                      ]?.progressPercentage
-                    }
+                    progressPercentage={sessionData?.progressPercentage}
                   />
                   <div className="flex flex-row items-center my-[50px] gap-x-[15px]">
                     <Card

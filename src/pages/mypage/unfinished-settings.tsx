@@ -10,22 +10,20 @@ import {
   accessTokenAtom,
   useUserInfoAtom,
   useWritingDataAtom,
-  writingDataAtom,
 } from "../../../public/atoms";
 
 export default function UnfinishedSettings() {
   const router = useRouter();
   const userInfo = useUserInfoAtom();
   const writingInfo = useWritingDataAtom();
-  const lastSession =
-    userInfo?.data?.writingSessions[userInfo?.data?.writingSessions.length - 1];
+  const lastSession = userInfo?.data?.writingSessions[0];
+  const page = lastSession ? lastSession.page : 0;
   const uncompletedPage = lastSession
     ? lastSession.page - lastSession.progressStep
     : 0;
   const [isFirst, setIsFirst] = useState<boolean>(false);
-  const [subject, setSubject] = useState("");
+  const [subject, setSubject] = useState(lastSession?.subject || "");
   const [period, setPeriod] = useState(0);
-  const [page, setPage] = useState(0);
   const [startAt, setStartAt] = useState<
     [string, number | undefined, number | undefined]
   >(["", undefined, undefined]);
@@ -38,10 +36,10 @@ export default function UnfinishedSettings() {
     !writingHours;
 
   const [accessToken] = useAtom(accessTokenAtom);
-  const idAsString: string = writingInfo?.data?.id?.toString() || "";
+  const idAsString: string = lastSession?.id?.toString() || "";
 
   const handleStart = async () => {
-    let adjustedHour = startAt[1] || 0; // 초기값은 그대로
+    let adjustedHour = startAt[1] || 0;
 
     if (startAt[0] === "AM" && startAt[1] === 12) {
       adjustedHour = 0; // AM 0시로 설정
@@ -164,11 +162,11 @@ export default function UnfinishedSettings() {
                         placeholder="직접입력"
                         style={{ lineHeight: "40px" }}
                         onChange={(e) => {
-                          setPage(0);
+                          setPeriod(0);
                           const inputValue = e.target.value;
                           const numericValue = parseInt(inputValue, 10);
                           if (!isNaN(numericValue) && numericValue > 0) {
-                            setPage(numericValue);
+                            setPeriod(numericValue);
                             console.log(numericValue, typeof numericValue);
                           }
                         }}

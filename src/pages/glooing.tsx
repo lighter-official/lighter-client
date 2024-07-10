@@ -224,7 +224,7 @@ export default function Writer() {
   const badgeCount = postedWriting?.newBadges?.length || 0;
   const { showMenu, setShowMenu, toggleMenu } = useMenu();
   const [accessToken] = useAtom(accessTokenAtom);
-  const [writingInfoLoaded, setWritingInfoLoaded] = useState(false); // writingInfo가 로딩되었음을 나타내는 상태
+  const [writingInfoLoaded, setWritingInfoLoaded] = useState(false);
 
   useEffect(() => {
     if (badgeCount > 0) {
@@ -236,7 +236,7 @@ export default function Writer() {
 
   useEffect(() => {
     if (userInfo !== null && writingInfo !== null) {
-      setWritingInfoLoaded(true); // writingInfo가 로딩된 후 상태 업데이트
+      setWritingInfoLoaded(true);
     }
   }, [userInfo, writingInfo]);
 
