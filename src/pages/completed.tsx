@@ -93,7 +93,9 @@ export default function CompletedPage() {
                       <span className="relative">{sessionData?.subject}</span>
                     </span>
                     <br />
-                    글쓰기 도전이 끝났어요!
+                    {sessionData?.progressPercentage >= 75
+                      ? "글쓰기 도전을 성공했어요!"
+                      : "글쓰기 도전이 끝났어요!"}
                   </div>
                   <div className="mt-[12px] text-[#8C8575]">
                     {" "}
@@ -106,11 +108,19 @@ export default function CompletedPage() {
                     progressPercentage={sessionData?.progressPercentage}
                   />
                   <div className="flex flex-row items-center my-[50px] gap-x-[15px]">
-                    <Card
-                      title="새로운 주제"
-                      description="글쓰기 도전 시작"
-                      route="/session-settings"
-                    />
+                    {sessionData?.progressPercentage >= 75 ? (
+                      <Card
+                        title="내가 발생한 전자책"
+                        description="보러가기"
+                        route="/mypage/finished"
+                      />
+                    ) : (
+                      <Card
+                        title="새로운 주제"
+                        description="글쓰기 도전 시작"
+                        route="/session-settings"
+                      />
+                    )}
                     <Card
                       title="지금 주제"
                       description="이어서 글쓰기"
