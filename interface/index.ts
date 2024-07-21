@@ -38,6 +38,7 @@ export interface SessionInfo {
   updatedAt: string;
   userId: string;
   writingHours: number;
+  writings: Writing[];
 }
 
 interface Writing {

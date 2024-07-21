@@ -59,13 +59,7 @@ export default function CompletedPage() {
   const [sessionData, setSessionData] = useAtom(sessionDataAtom);
   const router = useRouter();
   const [accessToken] = useAtom(accessTokenAtom);
-  const userInfo = useUserInfoAtom();
   const { showMenu, setShowMenu, toggleMenu } = useMenu();
-
-  useEffect(() => {
-    setSessionData(userInfo?.data?.writingSessions[0]);
-    console.log(sessionData);
-  }, []);
 
   return (
     <div className="flex flex-col my-[50px] w-full">
@@ -93,7 +87,8 @@ export default function CompletedPage() {
                       <span className="relative">{sessionData?.subject}</span>
                     </span>
                     <br />
-                    {sessionData?.progressPercentage >= 75
+                    {sessionData?.progressPercentage &&
+                    sessionData?.progressPercentage >= 75
                       ? "글쓰기 도전을 성공했어요!"
                       : "글쓰기 도전이 끝났어요!"}
                   </div>
@@ -108,9 +103,10 @@ export default function CompletedPage() {
                     progressPercentage={sessionData?.progressPercentage}
                   />
                   <div className="flex flex-row items-center my-[50px] gap-x-[15px]">
-                    {sessionData?.progressPercentage >= 75 ? (
+                    {sessionData?.progressPercentage &&
+                    sessionData?.progressPercentage >= 75 ? (
                       <Card
-                        title="내가 발생한 전자책"
+                        title="내가 발행한 전자책"
                         description="보러가기"
                         route="/mypage/finished"
                       />
@@ -121,11 +117,20 @@ export default function CompletedPage() {
                         route="/session-settings"
                       />
                     )}
-                    <Card
-                      title="지금 주제"
-                      description="이어서 글쓰기"
-                      route="/mypage/unfinished-settings"
-                    />
+                    {sessionData?.progressPercentage &&
+                    sessionData?.progressPercentage >= 75 ? (
+                      <Card
+                        title="새로운 주제"
+                        description="글쓰기 도전 시작"
+                        route="/session-settings"
+                      />
+                    ) : (
+                      <Card
+                        title="지금 주제"
+                        description="이어서 글쓰기"
+                        route="/mypage/unfinished-settings"
+                      />
+                    )}
                     <Card
                       title="이전에 쓰던 주제"
                       description="이어서 글쓰기"

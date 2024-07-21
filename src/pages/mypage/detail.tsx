@@ -9,6 +9,7 @@ import {
   sessionDataAtom,
   useUserInfoAtom,
   useWritingDataAtom,
+  writingDataAtom,
 } from "../../../public/atoms";
 import {
   formatDate,
@@ -18,7 +19,7 @@ import {
 import BookItem from "@/components/BookItem";
 import MenuWithTopbar from "@/components/MenuWithTopbar";
 
-export default function MyBookItem() {
+export default function SelectedItemDetail() {
   const router = useRouter();
   const [accessToken, setAccessToken] = useAtom(accessTokenAtom);
   const userInfo = useUserInfoAtom();
@@ -26,6 +27,7 @@ export default function MyBookItem() {
   const { showMenu, setShowMenu, toggleMenu } = useMenu();
   const [sessionData] = useAtom(sessionDataAtom);
 
+  console.log(sessionData, "detail?");
   useEffect(() => {
     setAccessToken(accessToken);
   }, [accessToken, setAccessToken]);
@@ -58,18 +60,18 @@ export default function MyBookItem() {
                         border: "1px solid gray",
                       }}
                     >
-                      <div className="flex flex-row gap-x-[46px]">
-                        <BookItem
-                          id={sessionData?.id}
-                          imageUrl={randomImageUrl}
-                          title={sessionData?.subject}
-                          date={formatDate(
-                            writingInfo?.data?.nearestFinishDate
-                          )}
-                          username={userInfo?.data?.nickname}
-                          session={sessionData}
-                        />
-                      </div>
+                      {sessionData && (
+                        <div className="flex flex-row gap-x-[46px]">
+                          <BookItem
+                            id={sessionData?.id}
+                            imageUrl={randomImageUrl}
+                            title={sessionData?.subject}
+                            date={formatDate(sessionData?.nearestFinishDate)}
+                            username={userInfo?.data?.nickname}
+                            session={sessionData}
+                          />
+                        </div>
+                      )}
                     </div>
                     <div className="justify-end gap-y-2 flex flex-col">
                       <div
@@ -79,8 +81,8 @@ export default function MyBookItem() {
                         {formatDate(sessionData?.finishDate)} 완료
                       </div>
                       <div className="lg:text-[20px] text-[16px]">
-                        총 {sessionData?.writings?.length ?? 0}/
-                        {sessionData?.page}편
+                        총 {sessionData?.progressStep ?? 0}/{sessionData?.page}
+                        편
                       </div>
                       <div className="flex flex-row gap-x-5">
                         <button
@@ -89,25 +91,26 @@ export default function MyBookItem() {
                         >
                           목록으로 돌아가기
                         </button>
-                        {sessionData?.progressPercentage < 100 && (
-                          <button
-                            className="rounded-lg text-[14px] bg-orange-500 text-black lg:text-[16px] lg:rounded-xl w-[150px] lg:w-[200px] h-[30px] lg:h-[42px]"
-                            onClick={() =>
-                              router.push({
-                                pathname: "/mypage/unfinished-settings",
-                              })
-                            }
-                          >
-                            이어서 진행하기
-                          </button>
-                        )}
+                        {sessionData &&
+                          sessionData?.progressPercentage < 100 && (
+                            <button
+                              className="rounded-lg text-[14px] bg-orange-500 text-black lg:text-[16px] lg:rounded-xl w-[150px] lg:w-[200px] h-[30px] lg:h-[42px]"
+                              onClick={() =>
+                                router.push({
+                                  pathname: "/mypage/unfinished-settings",
+                                })
+                              }
+                            >
+                              이어서 진행하기
+                            </button>
+                          )}
                       </div>
                     </div>
                   </div>
                 </div>
                 <div className="flex flex-col mt-[30px] max-h-[500px]">
                   <div className="font-bold text-[20px]">기록한 글</div>
-                  {sessionData?.writings ? (
+                  {sessionData && sessionData?.progressPercentage > 0 ? (
                     <div className="flex flex-col gap-y-2 lg:gap-y-4 my-5 overflow-y-scroll rounded-xl">
                       {sessionData?.writings?.map(
                         (writing: any, index: number) => (

@@ -87,11 +87,6 @@ export default function Home({ initialLoginState }: any) {
         }
         //진행중인 세션이 없고 + 회원가입이 아닌 경우
         else if (data?.data?.hasOnProcessedWritingSession === false) {
-          setSessionData(
-            userInfo?.data?.writingSessions[
-              userInfo?.data?.writingSessions.length - 1
-            ]
-          );
           router.push({
             pathname: "/completed",
           });

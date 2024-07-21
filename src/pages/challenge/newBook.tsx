@@ -60,16 +60,20 @@ export default function NewBook() {
                 </div>
                 <div className="flex flex-col overflow-y-auto mt-5 mb-2 items-center justify-center">
                   <div className="mt-[40px] flex flex-row gap-x-[46px]">
-                    <div>
-                      <BookItem
-                        id={sessionData?.id}
-                        imageUrl={randomImageUrl}
-                        title={sessionData?.subject}
-                        date={formatDate(writingInfo?.data?.nearestFinishDate)}
-                        username={userInfo?.data?.nickname}
-                        session={sessionData}
-                      />
-                    </div>
+                    {sessionData && (
+                      <div>
+                        <BookItem
+                          id={sessionData?.id}
+                          imageUrl={randomImageUrl}
+                          title={sessionData?.subject}
+                          date={formatDate(
+                            writingInfo?.data?.nearestFinishDate
+                          )}
+                          username={userInfo?.data?.nickname}
+                          session={sessionData}
+                        />
+                      </div>
+                    )}
                   </div>
                   <div className="mt-[65px] flex flex-col gap-y-[17px]">
                     <button
